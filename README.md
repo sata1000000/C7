@@ -3,9 +3,9 @@
 </div>
 
 <div align="center">
-    <img src="https://img.shields.io/github/stars/sata1000000/C7">
-    <img src="https://img.shields.io/github/issues/sata1000000/C7">
-    <img src="https://img.shields.io/github/issues-closed/sata1000000/C7">
+    <img src="https://img.shields.io/github/stars/sata1000000/C7?style=flat">
+    <img src="https://img.shields.io/github/issues/sata1000000/C7?style=flat">
+    <img src="https://img.shields.io/github/issues-closed/sata1000000/C7?style=flat">
 </div>
 
 ---
