@@ -1,0 +1,44 @@
+name: Build C7 on Linux
+
+# Called by `publish-release.yml` on a version bump. Also runnable on its own.
+on:
+  workflow_call:
+  workflow_dispatch:
+
+jobs:
+  build-linux:
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/flathub-infra/flatpak-github-actions:gnome-50 # Official image that ships flatpak-builder.
+      options: --privileged # Required for flatpak to function inside a container.
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v6
+
+      - name: Generate Cargo Sources
+        # The sandbox build runs offline, so `flatpak-builder` needs every crate tarball fetched up front.
+        run: |
+
+          # The PyPI package has a broken `__main__` entry point. The official approach is to clone the repo and call `python3` directly, which follows symlinks correctly.
+          git clone --depth 1 https://github.com/flatpak/flatpak-builder-tools.git fbt
+          pip install toml aiohttp aiofiles
+
+          # Convert `Cargo.lock` into a JSON list of crate tarballs.
+          python3 fbt/cargo/flatpak-cargo-generator.py Cargo.lock -o cargo-sources.json
+
+          # Move it into the flatpak directory so the builder can find it.
+          mv cargo-sources.json packaging/flatpak/
+
+      - name: Build Flatpak
+        uses: flatpak/flatpak-github-actions/flatpak-builder@v6 # Uses official Flatpak compiler action to parse the manifest file.
+        with:
+          bundle: C7_Linux.flatpak
+          manifest-path: packaging/flatpak/io.github.sata1000000.C7.yml
+          cache-key: flatpak-builder-${{ hashFiles('Cargo.lock', 'packaging/flatpak/io.github.sata1000000.C7.yml') }} # Update cache when dependencies change.
+
+      - name: Upload Flatpak
+        uses: actions/upload-artifact@v7
+        with:
+          name: linux-asset
+          path: C7_Linux.flatpak
+          retention-days: 1

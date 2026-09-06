@@ -1,0 +1,42 @@
+# Temporary files (General Debugging):
+
+*.bin
+
+# Temporary files (Rust):
+
+target/
+crates/c7_app/bridge/
+
+# Temporary files (Python):
+
+__pycache__/
+*.py[cod]
+*.class
+venv/
+.venv/
+tmp_venv/
+env/
+dist/
+build/
+*.egg-info/
+python3-requirements.json
+
+# User-generated files:
+
+crates/c7_app/settings/settings.json
+
+# Throwaway project files:
+
+.reference/
+share.sh
+
+# OS files:
+
+.DS_Store
+
+# AI stuff:
+
+.agents/
+GEMINI.md
+.claude/
+CLAUDE.md

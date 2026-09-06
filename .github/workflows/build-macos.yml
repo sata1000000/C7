@@ -1,0 +1,147 @@
+name: Build C7 on MacOS
+
+# Called by `publish-release.yml` on a version bump. Also runnable on its own.
+on:
+  workflow_call:
+  workflow_dispatch:
+
+jobs:
+  build-macos:
+    name: build-${{ matrix.label }}
+    strategy:
+      matrix:
+        include:
+          # Params for the arm64 build.
+          - label: arm64
+            arch: AppleSilicon
+            runner: macos-latest
+            brew_prefix: /opt/homebrew
+
+          # Params for the intel build.
+          - label: intel
+            arch: Intel
+            runner: macos-26-intel # The last MacOS runner for Intel.
+            brew_prefix: /usr/local
+
+    runs-on: ${{ matrix.runner }}
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v6
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Setup Environment
+        run: |
+          brew install gtk4 libadwaita librsvg adwaita-icon-theme hicolor-icon-theme dylibbundler fastfetch
+          cargo install --git https://github.com/free-audio/clap-validator --locked
+
+      - name: Compile C7
+        run: |
+          # Build the C7 Bridge plugin.
+          cargo build --release --package c7_bridge
+
+          # `pkg-config` finds GTK4/libadwaita via Homebrew.
+          export PKG_CONFIG_PATH="${{ matrix.brew_prefix }}/lib/pkgconfig:${{ matrix.brew_prefix }}/share/pkgconfig"
+
+          # Build the C7 application.
+          cargo build --release --package c7_app
+
+      - name: Build DMG
+        run: |
+          # Generate the `.icns` app icon from the SVG.
+          rsvg-convert -w 1024 -h 1024 crates/c7_app/icon.svg -o icon.png
+          mkdir -p C7.iconset
+          for entry in "16:icon_16x16" "32:icon_16x16@2x" "32:icon_32x32" "64:icon_32x32@2x" \
+                       "128:icon_128x128" "256:icon_128x128@2x" "256:icon_256x256" \
+                       "512:icon_256x256@2x" "512:icon_512x512" "1024:icon_512x512@2x"; do
+            px="${entry%%:*}"; name="${entry##*:}"
+            sips -z $px $px icon.png --out "C7.iconset/${name}.png" >/dev/null
+          done
+          iconutil -c icns C7.iconset -o C7.icns
+          rm -rf C7.iconset
+
+          # Create standard macOS app bundle structure.
+          mkdir -p dist/C7.app/Contents/MacOS
+          mkdir -p dist/C7.app/Contents/Frameworks
+          mkdir -p dist/C7.app/Contents/Resources/share
+
+          # Package the C7 application binary.
+          cp target/release/c7_app dist/C7.app/Contents/MacOS/c7_app
+
+          # Package the data directories into `Resources/`.
+          cp -r crates/c7_app/settings dist/C7.app/Contents/Resources/
+          cp -r crates/c7_core/devices dist/C7.app/Contents/Resources/
+
+          # Package the SVG icon.
+          cp crates/c7_app/icon.svg dist/C7.app/Contents/Resources/
+
+          # Bundle the macOS CLAP plugin.
+          # A `.clap` is a bundle on macOS, so assemble `Contents/MacOS/<binary>` + `Info.plist`.
+          CLAP_DIR="dist/C7.app/Contents/Resources/bridge/C7-Bridge.clap"
+          mkdir -p "$CLAP_DIR/Contents/MacOS"
+          cp target/release/libc7_bridge.dylib "$CLAP_DIR/Contents/MacOS/C7-Bridge"
+          cp packaging/macos/bridge-info.plist "$CLAP_DIR/Contents/Info.plist"
+
+          # Package the app icon and metadata.
+          cp C7.icns dist/C7.app/Contents/Resources/
+          cp packaging/macos/app-info.plist dist/C7.app/Contents/Info.plist
+
+          # Inject version numbers into the bundled plists.
+          VERSION=$(cargo pkgid -p c7_app | cut -d'#' -f2)
+          /usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString $VERSION" dist/C7.app/Contents/Info.plist
+          /usr/libexec/PlistBuddy -c "Set :CFBundleVersion $VERSION" dist/C7.app/Contents/Info.plist
+          /usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString $VERSION" "$CLAP_DIR/Contents/Info.plist"
+          /usr/libexec/PlistBuddy -c "Set :CFBundleVersion $VERSION" "$CLAP_DIR/Contents/Info.plist"
+
+          # Package the GTK schemas.
+          mkdir -p dist/C7.app/Contents/Resources/share/glib-2.0/schemas
+          cp "${{ matrix.brew_prefix }}/share/glib-2.0/schemas/gschemas.compiled" dist/C7.app/Contents/Resources/share/glib-2.0/schemas/
+
+          # Package the icon themes.
+          cp -r "${{ matrix.brew_prefix }}/share/icons/hicolor" dist/C7.app/Contents/Resources/share/icons/
+          cp -r "${{ matrix.brew_prefix }}/share/icons/Adwaita" dist/C7.app/Contents/Resources/share/icons/
+
+          # Bundle all dylib dependencies into Frameworks and relink the binary.
+          dylibbundler -od -b \
+            -x dist/C7.app/Contents/MacOS/c7_app \
+            -d dist/C7.app/Contents/Frameworks/ \
+            -p @executable_path/../Frameworks/
+
+          # Move all the application contents to the disk image root.
+          mkdir -p dmg_root
+          cp -r dist/C7.app dmg_root/
+
+          # Create the standard shortcut arrow pointing to the Mac Applications folder.
+          ln -s /Applications dmg_root/Applications
+
+          # Force disk sync and wait 5 seconds to bypass macOS background indexing locks.
+          sync && sleep 5
+
+          # Compile the folder into a compressed UDZO Disk Image (`.dmg`).
+          hdiutil create -volname "C7" -srcfolder dmg_root -ov -format UDZO C7_MacOS-${{ matrix.arch }}.dmg
+
+      - name: Test C7 Application
+        run: bash packaging/macos/app-test.sh
+
+      - name: Test C7 Bridge
+        run: bash packaging/macos/bridge-test.sh
+
+      - name: Upload Testing Artifacts
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: ${{ matrix.arch }}-test-artifacts
+          path: |
+            /tmp/C7_before.png
+            /tmp/C7_after.png
+            /tmp/C7_launch.log
+            /tmp/C7_bridge_test.log
+          retention-days: 3
+
+      - name: Upload DMG
+        uses: actions/upload-artifact@v7
+        with:
+          name: ${{ matrix.arch }}-asset
+          path: C7_MacOS-${{ matrix.arch }}.dmg
+          retention-days: 1

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>io.github.sata1000000.C7</id>
+  <name>C7</name>
+  <summary>Control legacy Elektron hardware</summary>
+  <developer id="io.github.sata1000000">
+    <name>sata1000000</name>
+  </developer>
+  <description>
+    <p>
+      C7 is a desktop application designed to control legacy Elektron hardware with SysEx &amp; MIDI.
+    </p>
+  </description>
+  <screenshots>
+    <screenshot type="default">
+      <image>https://raw.githubusercontent.com/sata1000000/C7/main/docs/images/device_selector.png</image>
+      <caption>Device Selector</caption>
+    </screenshot>
+    <screenshot>
+      <image>https://raw.githubusercontent.com/sata1000000/C7/main/docs/images/librarian.png</image>
+      <caption>Librarian</caption>
+    </screenshot>
+    <screenshot>
+      <image>https://raw.githubusercontent.com/sata1000000/C7/main/docs/images/kit_editor.png</image>
+      <caption>Kit Editor</caption>
+    </screenshot>
+    <screenshot>
+      <image>https://raw.githubusercontent.com/sata1000000/C7/main/docs/images/upload_sample.png</image>
+      <caption>Upload Sample</caption>
+    </screenshot>
+    <screenshot>
+      <image>https://raw.githubusercontent.com/sata1000000/C7/main/docs/images/upload_digipro.png</image>
+      <caption>Upload DigiPro</caption>
+    </screenshot>
+  </screenshots>
+  <launchable type="desktop-id">io.github.sata1000000.C7.desktop</launchable>
+  <icon type="stock">io.github.sata1000000.C7</icon>
+  <url type="homepage">https://github.com/sata1000000/C7</url>
+  <metadata_license>MIT</metadata_license>
+  <project_license>GPL-3.0-or-later</project_license>
+  <categories>
+    <category>Midi</category>
+    <category>HardwareSettings</category>
+    <category>AudioVideo</category>
+    <category>Audio</category>
+    <category>Utility</category>
+  </categories>
+  <requires>
+    <display_length compare="ge">768</display_length>
+  </requires>
+  <content_rating type="oars-1.1"/>
+</component>

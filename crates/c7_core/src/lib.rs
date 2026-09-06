@@ -1,0 +1,19 @@
+#![doc = include_str!("../README.md")]
+
+pub mod audio_playback;
+pub mod bpm_detector;
+pub mod bridge_interfacing;
+pub mod c7_file_interfacing;
+pub mod device_config;
+pub mod digipro;
+pub mod dsp_utils;
+pub mod firmware;
+pub mod global;
+pub mod kit;
+pub mod midi;
+pub mod pattern;
+pub mod sds;
+pub mod sysex;
+pub mod utils;
+pub mod wavetable_presets;
+pub mod wavetable_utils;

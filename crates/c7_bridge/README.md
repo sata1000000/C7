@@ -1,0 +1,1 @@
+This crate contains all the logic for the C7 Bridge [CLAP](https://en.wikipedia.org/wiki/CLever_Audio_Plug-in) plugin.

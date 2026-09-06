@@ -1,0 +1,3465 @@
+{
+  "brand": "Elektron",
+  "device": "Machinedrum SPS-1",
+  "device_max": "Machinedrum SPS-1UW+ MKII",
+  "device_short": "Machinedrum",
+  "device_shorter": "MD",
+  "firmware": {
+    "links": [
+      {
+        "label": "Elektron Firmware",
+        "url": "https://www.elektron.se/support-downloads/machinedrum-uw#resources",
+        "official": true
+      },
+      {
+        "label": "MCL Firmware",
+        "url": "https://github.com/jmamma/MCL/releases/",
+        "official": false
+      }
+    ],
+    "upload_instructions": [
+      "Set the MIDI Inter-packet delay to 30 ms.",
+      "Hold FUNCTION during power-on and select TRIG 5 (MIDI UPGRADE).",
+      "Click 'Upload MIDI Upgrade File' below and pick the .syx file."
+    ],
+    "receive_instructions": [
+      "Click 'Start Firmware Listener' below.",
+      "Hold FUNCTION during power-on and select TRIG 6 (SEND UPGRADE)."
+    ]
+  },
+  "sysex_header": [
+    240,
+    0,
+    32,
+    60,
+    2
+  ],
+  "system": {
+    "panic_all_notes_off": {
+      "cc": 123,
+      "val": 0,
+      "description": "Triggered by double-tapping STOP."
+    },
+    "bank_select_reset": {
+      "cc": 0,
+      "val": 0,
+      "description": "Sent alongside Panic to reset bank selects."
+    },
+    "piano_keyboard_input": false,
+    "piano_keyboard_output": false,
+    "pitch_bend_input": false,
+    "machine_model_byte": 28
+  },
+  "sampler": {
+    "native_bit_depth": 12,
+    "lowest_accepted_bit_depth": 8,
+    "highest_accepted_bit_depth": 16,
+    "lowest_sample_rate_hz": 4000,
+    "highest_sample_rate_hz": 48000
+  },
+  "sysex_api": {
+    "librarian": true,
+    "has_turbomidi": true,
+    "commands": {
+      "sample_name_tag": {
+        "block_byte": "73",
+        "description": "Contains the ASCII name of a sample. Cannot be requested directly. Only sent by the MD immediately after an SDS Header (`0x01`) during a sample transfer.",
+        "format": "F0 00 20 3C 02 00 73 [slot] [ascii_name] F7"
+      },
+      "identity_inquiry": {
+        "request": [
+          240,
+          126,
+          127,
+          6,
+          1,
+          247
+        ],
+        "reply_id": 2,
+        "description": "Standard Universal Device Inquiry. Request: `F0 7E 7F 06 01 F7`. Response: `F0 7E [dev] 06 02 [manuf] [family] [model] [version] F7`."
+      }
+    },
+    "global": {
+      "request_cmd": 81,
+      "write_cmd": 80,
+      "slots": 8,
+      "first_slot": 0,
+      "display_offset": 1,
+      "bpm_multiplier": 24,
+      "bpm_min": 30,
+      "bpm_max": 682,
+      "sequencer_modes": {
+        "description": "Sets the sequencer to Classic mode (32 steps) or Extended mode (64 steps + param locks).",
+        "options": [
+          {
+            "value": 0,
+            "label": "Classic"
+          },
+          {
+            "value": 1,
+            "label": "Extended"
+          }
+        ]
+      },
+      "sync_flags": [
+        {
+          "key": "tempo_in",
+          "bit": 1,
+          "inverted": false,
+          "label": "Tempo In",
+          "off_label": "Internal",
+          "on_label": "External"
+        },
+        {
+          "key": "tempo_out",
+          "bit": 32,
+          "inverted": false,
+          "label": "Tempo Out",
+          "off_label": "Off",
+          "on_label": "On"
+        },
+        {
+          "key": "ctrl_in",
+          "bit": 16,
+          "inverted": true,
+          "label": "CTRL In",
+          "off_label": "Off",
+          "on_label": "On"
+        },
+        {
+          "key": "ctrl_out",
+          "bit": 64,
+          "inverted": false,
+          "label": "CTRL Out",
+          "off_label": "Off",
+          "on_label": "On"
+        }
+      ],
+      "local_control_toggle": {
+        "description": "Enables or disables the physical controls. When Off, the front panel does not trigger the internal sound engine directly.",
+        "options": [
+          {
+            "value": 1,
+            "label": "On"
+          },
+          {
+            "value": 0,
+            "label": "Off"
+          }
+        ]
+      }
+    },
+    "pattern": {
+      "request_cmd": 104,
+      "write_cmd": 103,
+      "slots": 128,
+      "write_arm_type": 8,
+      "banks": 8,
+      "first_slot": 0,
+      "note_trigger": {
+        "channel": 0,
+        "note": "Factory default bank A notes from the `keymap` global field. The device plays the pattern once when a note is sent.",
+        "notes": [64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79]
+      }
+    },
+    "kit": {
+      "request_cmd": 83,
+      "write_cmd": 82,
+      "slots": 64,
+      "write_arm_type": 4,
+      "workspace_slot": 127,
+      "first_slot": 0,
+      "display_offset": 1
+    },
+    "song": {
+      "request_cmd": 106,
+      "write_cmd": 105,
+      "slots": 32,
+      "write_arm_type": 16,
+      "first_slot": 0,
+      "display_offset": 1
+    },
+    "sample": {
+      "request_cmd": 0,
+      "write_cmd": 0,
+      "slots": 48,
+      "first_slot": 0,
+      "display_offset": 1,
+      "name_length": 4,
+      "can_dump": true
+    },
+    "bpm_live_cmd": 97,
+    "bpm_query_cmd": 63,
+    "navigation": {
+      "load_pattern": {
+        "cmd": 87,
+        "min": 0,
+        "max": 127
+      },
+      "load_kit": {
+        "cmd": 88,
+        "min": 0,
+        "max": 63,
+        "note": "Anything above 63 loads the UNDO KIT instead of a flash slot."
+      },
+      "save_kit": {
+        "cmd": 89,
+        "min": 0,
+        "max": 63
+      },
+      "load_song": {
+        "cmd": 108,
+        "min": 0,
+        "max": 31
+      },
+      "save_song": {
+        "cmd": 109,
+        "min": 0,
+        "max": 31
+      }
+    },
+    "status": {
+      "query_cmd": 112,
+      "set_cmd": 113,
+      "reply_cmd": 114,
+      "note": "Sending `query_cmd` with no sub-byte is a bare presence ping. The device answers with `reply_cmd` and no parameter.",
+      "params": {
+        "global_slot": {"cmd": 1, "fullname": "Global Slot", "min": 0, "max": 7},
+        "kit_number": {"cmd": 2, "fullname": "Kit Number", "min": 0, "max": 63},
+        "pattern_number": {"cmd": 4, "fullname": "Pattern Number", "min": 0, "max": 127},
+        "song_number": {"cmd": 8, "fullname": "Song Number", "min": 0, "max": 31},
+        "sequencer_mode": {"cmd": 16, "fullname": "Sequencer Mode", "min": 0, "max": 1},
+        "lock_mode": {"cmd": 32, "fullname": "Lock Mode", "min": 0, "max": 1},
+        "selected_track": {"cmd": 34, "fullname": "Selected Track", "min": 0, "max": 15}
+      }
+    },
+    "write_arm": {
+      "cmd": 107,
+      "description": "Arms the device to receive a kit/pattern/song dump. Payload: `[write_arm.cmd, write_arm_type, slot, 0x01]`. `write_arm_type` is per-kind, see `sysex_api.{kit,pattern,song}.write_arm_type`."
+    },
+    "assign_machine": {
+      "cmd": 91,
+      "default_init_flag": 0,
+      "has_bank_byte": true,
+      "init_scopes": [
+        "Synthesis only",
+        "Synth + FX",
+        "Synth + FX + Routing"
+      ]
+    },
+    "track_routing": {
+      "cmd": 92,
+      "outputs": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F",
+        "MAIN"
+      ],
+      "default_output": 6
+    },
+    "note_map": {
+      "set_cmd": 90,
+      "reset_cmd": 100
+    },
+    "groups": {
+      "trig_cmd": 101,
+      "mute_cmd": 102
+    },
+    "machines": {
+      "machine_order": {
+        "GND": [
+          "EMPTY",
+          "SIN",
+          "NS",
+          "IM",
+          "SW",
+          "PU"
+        ],
+        "TRX": [
+          "BD",
+          "SD",
+          "XT",
+          "CP",
+          "RS",
+          "CB",
+          "CH",
+          "OH",
+          "CY",
+          "MA",
+          "CL",
+          "XC",
+          "B2",
+          "S2"
+        ],
+        "EFM": [
+          "BD",
+          "SD",
+          "XT",
+          "CP",
+          "RS",
+          "CB",
+          "HH",
+          "CY"
+        ],
+        "E12": [
+          "BD",
+          "SD",
+          "HT",
+          "LT",
+          "CP",
+          "RS",
+          "CB",
+          "CH",
+          "OH",
+          "RC",
+          "CC",
+          "BR",
+          "TA",
+          "TR",
+          "SH",
+          "BC"
+        ],
+        "P-I": [
+          "BD",
+          "SD",
+          "MT",
+          "ML",
+          "MA",
+          "RS",
+          "RC",
+          "CC",
+          "HH"
+        ],
+        "INP": [
+          "GA",
+          "GB",
+          "FA",
+          "FB",
+          "EA",
+          "EB",
+          "CA",
+          "CB"
+        ],
+        "MID": [
+          "01",
+          "02",
+          "03",
+          "04",
+          "05",
+          "06",
+          "07",
+          "08",
+          "09",
+          "10",
+          "11",
+          "12",
+          "13",
+          "14",
+          "15",
+          "16"
+        ],
+        "CTR": [
+          "AL",
+          "8P",
+          "RE",
+          "GB",
+          "EQ",
+          "DX"
+        ],
+        "ROM": [
+          "01",
+          "02",
+          "03",
+          "04",
+          "05",
+          "06",
+          "07",
+          "08",
+          "09",
+          "10",
+          "11",
+          "12",
+          "13",
+          "14",
+          "15",
+          "16",
+          "17",
+          "18",
+          "19",
+          "20",
+          "21",
+          "22",
+          "23",
+          "24",
+          "25",
+          "26",
+          "27",
+          "28",
+          "29",
+          "30",
+          "31",
+          "32",
+          "33",
+          "34",
+          "35",
+          "36",
+          "37",
+          "38",
+          "39",
+          "40",
+          "41",
+          "42",
+          "43",
+          "44",
+          "45",
+          "46",
+          "47",
+          "48"
+        ],
+        "RAM": [
+          "R1",
+          "R2",
+          "P1",
+          "P2",
+          "R3",
+          "R4",
+          "P3",
+          "P4"
+        ],
+        "NFX": [
+          "EV",
+          "CO",
+          "UC"
+        ]
+      },
+      "base": [
+        {
+          "id": 0,
+          "name": "GND-EMPTY",
+          "params": [
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            ""
+          ]
+        },
+        {
+          "id": 1,
+          "name": "GND-SIN",
+          "tonal": true,
+          "params": [
+            "PTCH1",
+            "DEC",
+            "RAMP",
+            "RDEC",
+            "PTCH2",
+            "PTCH3",
+            "PT4",
+            "UNIS"
+          ]
+        },
+        {
+          "id": 2,
+          "name": "GND-NS",
+          "params": [
+            "DEC",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            ""
+          ]
+        },
+        {
+          "id": 3,
+          "name": "GND-IM",
+          "params": [
+            "UP",
+            "UVAL",
+            "DOWN",
+            "DVAL",
+            "",
+            "",
+            "",
+            ""
+          ]
+        },
+        {
+          "id": 4,
+          "name": "GND-SW",
+          "tonal": true,
+          "params": [
+            "PTCH1",
+            "DEC",
+            "RAMP",
+            "RDEC",
+            "PTCH2",
+            "PTCH3",
+            "SKEW",
+            "UNIS"
+          ]
+        },
+        {
+          "id": 5,
+          "name": "GND-PU",
+          "tonal": true,
+          "params": [
+            "PTCH1",
+            "DEC",
+            "RAMP",
+            "RDEC",
+            "PTCH2",
+            "PTCH3",
+            "WIDT",
+            "UNIS"
+          ]
+        },
+        {
+          "id": 7,
+          "name": "NFX-EV",
+          "params": [
+            "DEL",
+            "ATK",
+            "DEC",
+            "SUS",
+            "HOLD",
+            "REL",
+            "RING",
+            "NBAL"
+          ]
+        },
+        {
+          "id": 8,
+          "name": "NFX-CO",
+          "params": [
+            "ATK",
+            "REL",
+            "THRE",
+            "RTIO",
+            "KNEE",
+            "SIDE",
+            "MKUP",
+            "NBAL"
+          ]
+        },
+        {
+          "id": 9,
+          "name": "NFX-UC",
+          "tonal": true,
+          "params": [
+            "TIM1",
+            "TIM2",
+            "TD",
+            "TI",
+            "FF",
+            "FB",
+            "DMIX",
+            "NBAL"
+          ]
+        },
+        {
+          "id": 16,
+          "name": "TRX-BD",
+          "tonal": true,
+          "params": [
+            "PTCH",
+            "DEC",
+            "RAMP",
+            "RDEC",
+            "STRT",
+            "NOIS",
+            "HARM",
+            "CLIP"
+          ]
+        },
+        {
+          "id": 17,
+          "name": "TRX-SD",
+          "tonal": true,
+          "params": [
+            "PTCH",
+            "DEC",
+            "BUMP",
+            "BENV",
+            "SNAP",
+            "TONE",
+            "TUNE",
+            "CLIP"
+          ]
+        },
+        {
+          "id": 18,
+          "name": "TRX-XT",
+          "tonal": true,
+          "params": [
+            "PTCH",
+            "DEC",
+            "RAMP",
+            "RDEC",
+            "DAMP",
+            "DIST",
+            "DTYP",
+            ""
+          ]
+        },
+        {
+          "id": 19,
+          "name": "TRX-CP",
+          "tonal": true,
+          "params": [
+            "CLIP",
+            "TONE",
+            "HARD",
+            "RICH",
+            "RATE",
+            "ROOM",
+            "RSIZ",
+            "RTUN"
+          ]
+        },
+        {
+          "id": 20,
+          "name": "TRX-RS",
+          "tonal": true,
+          "params": [
+            "PTCH",
+            "DEC",
+            "DIST",
+            "",
+            "",
+            "",
+            "",
+            ""
+          ]
+        },
+        {
+          "id": 21,
+          "name": "TRX-CB",
+          "tonal": true,
+          "params": [
+            "PTCH",
+            "DEC",
+            "ENH",
+            "DAMP",
+            "TONE",
+            "BUMP",
+            "",
+            ""
+          ]
+        },
+        {
+          "id": 22,
+          "name": "TRX-CH",
+          "params": [
+            "GAP",
+            "DEC",
+            "HPF",
+            "LPF",
+            "MTAL",
+            "",
+            "",
+            ""
+          ]
+        },
+        {
+          "id": 23,
+          "name": "TRX-OH",
+          "params": [
+            "GAP",
+            "DEC",
+            "HPF",
+            "LPF",
+            "MTAL",
+            "",
+            "",
+            ""
+          ]
+        },
+        {
+          "id": 24,
+          "name": "TRX-CY",
+          "params": [
+            "RICH",
+            "DEC",
+            "TOP",
+            "TTUN",
+            "SIZE",
+            "PEAK",
+            "",
+            ""
+          ]
+        },
+        {
+          "id": 25,
+          "name": "TRX-MA",
+          "params": [
+            "ATT",
+            "SUS",
+            "REV",
+            "DAMP",
+            "RATL",
+            "RTYP",
+            "TONE",
+            "HARD"
+          ]
+        },
+        {
+          "id": 26,
+          "name": "TRX-CL",
+          "tonal": true,
+          "params": [
+            "PTCH",
+            "DEC",
+            "DUAL",
+            "ENH",
+            "TUNE",
+            "CLIC",
+            "",
+            ""
+          ]
+        },
+        {
+          "id": 27,
+          "name": "TRX-XC",
+          "tonal": true,
+          "params": [
+            "PTCH",
+            "DEC",
+            "RAMP",
+            "RDEC",
+            "DAMP",
+            "DIST",
+            "DTYP",
+            ""
+          ]
+        },
+        {
+          "id": 28,
+          "name": "TRX-B2",
+          "tonal": true,
+          "params": [
+            "PTCH",
+            "DEC",
+            "RAMP",
+            "HOLD",
+            "TICK",
+            "NOIS",
+            "DIRT",
+            "DIST"
+          ]
+        },
+        {
+          "id": 29,
+          "name": "TRX-S2",
+          "tonal": true,
+          "params": [
+            "PTCH",
+            "DEC",
+            "NOIS",
+            "NDE",
+            "POWR",
+            "TUNE",
+            "NTUN",
+            "NTYP"
+          ]
+        },
+        {
+          "id": 32,
+          "name": "EFM-BD",
+          "tonal": true,
+          "params": [
+            "PTCH",
+            "DEC",
+            "RAMP",
+            "RDEC",
+            "MOD",
+            "MFRQ",
+            "MDEC",
+            "MFB"
+          ]
+        },
+        {
+          "id": 33,
+          "name": "EFM-SD",
+          "tonal": true,
+          "params": [
+            "PTCH",
+            "DEC",
+            "NOIS",
+            "NDC",
+            "MOD",
+            "MFRQ",
+            "MDEC",
+            "HPF"
+          ]
+        },
+        {
+          "id": 34,
+          "name": "EFM-XT",
+          "tonal": true,
+          "params": [
+            "PTCH",
+            "DEC",
+            "RAMP",
+            "RDEC",
+            "MOD",
+            "MFRQ",
+            "MDEC",
+            "CLIC"
+          ]
+        },
+        {
+          "id": 35,
+          "name": "EFM-CP",
+          "tonal": true,
+          "params": [
+            "PTCH",
+            "DEC",
+            "CLIP",
+            "CDEC",
+            "MOD",
+            "MFRQ",
+            "MDEC",
+            "HPF"
+          ]
+        },
+        {
+          "id": 36,
+          "name": "EFM-RS",
+          "tonal": true,
+          "params": [
+            "PTCH",
+            "DEC",
+            "MOD",
+            "HPF",
+            "SNR",
+            "SPT",
+            "SDC",
+            "SMD"
+          ]
+        },
+        {
+          "id": 37,
+          "name": "EFM-CB",
+          "tonal": true,
+          "params": [
+            "PTCH",
+            "DEC",
+            "SNAP",
+            "FB",
+            "MOD",
+            "MFRQ",
+            "MDEC",
+            ""
+          ]
+        },
+        {
+          "id": 38,
+          "name": "EFM-HH",
+          "tonal": true,
+          "params": [
+            "PTCH",
+            "DEC",
+            "TREM",
+            "TFQ",
+            "MOD",
+            "MFRQ",
+            "MDEC",
+            "FB"
+          ]
+        },
+        {
+          "id": 39,
+          "name": "EFM-CY",
+          "params": [
+            "PTCH",
+            "DEC",
+            "FB",
+            "HPF",
+            "MOD",
+            "MFRQ",
+            "MDEC",
+            ""
+          ]
+        },
+        {
+          "id": 48,
+          "name": "E12-BD",
+          "params": [
+            "PTCH",
+            "DEC",
+            "SNAP",
+            "SPLN",
+            "STRT",
+            "RTRG",
+            "RTIM",
+            "BEND"
+          ]
+        },
+        {
+          "id": 49,
+          "name": "E12-SD",
+          "params": [
+            "PTCH",
+            "DEC",
+            "HP",
+            "RING",
+            "STRT",
+            "RTRG",
+            "RTIM",
+            "BEND"
+          ]
+        },
+        {
+          "id": 50,
+          "name": "E12-HT",
+          "params": [
+            "PTCH",
+            "DEC",
+            "HP",
+            "HPQ",
+            "STRT",
+            "RTRG",
+            "RTIM",
+            "BEND"
+          ]
+        },
+        {
+          "id": 51,
+          "name": "E12-LT",
+          "params": [
+            "PTCH",
+            "DEC",
+            "HP",
+            "RING",
+            "STRT",
+            "RTRG",
+            "RTIM",
+            "BEND"
+          ]
+        },
+        {
+          "id": 52,
+          "name": "E12-CP",
+          "params": [
+            "PTCH",
+            "DEC",
+            "HP",
+            "HPQ",
+            "STRT",
+            "RTRG",
+            "RTIM",
+            "BEND"
+          ]
+        },
+        {
+          "id": 53,
+          "name": "E12-RS",
+          "params": [
+            "PTCH",
+            "DEC",
+            "HP",
+            "RATL",
+            "STRT",
+            "RTRG",
+            "RTIM",
+            "BEND"
+          ]
+        },
+        {
+          "id": 54,
+          "name": "E12-CB",
+          "params": [
+            "PTCH",
+            "DEC",
+            "HP",
+            "HPQ",
+            "STRT",
+            "RTRG",
+            "RTIM",
+            "BEND"
+          ]
+        },
+        {
+          "id": 55,
+          "name": "E12-CH",
+          "params": [
+            "PTCH",
+            "DEC",
+            "HP",
+            "HPQ",
+            "STRT",
+            "RTRG",
+            "RTIM",
+            "BEND"
+          ]
+        },
+        {
+          "id": 56,
+          "name": "E12-OH",
+          "params": [
+            "PTCH",
+            "DEC",
+            "HP",
+            "STOP",
+            "STRT",
+            "RTRG",
+            "RTIM",
+            "BEND"
+          ]
+        },
+        {
+          "id": 57,
+          "name": "E12-RC",
+          "params": [
+            "PTCH",
+            "DEC",
+            "HP",
+            "BELL",
+            "STRT",
+            "RTRG",
+            "RTIM",
+            "BEND"
+          ]
+        },
+        {
+          "id": 58,
+          "name": "E12-CC",
+          "params": [
+            "PTCH",
+            "DEC",
+            "HP",
+            "HPQ",
+            "STRT",
+            "RTRG",
+            "RTIM",
+            "BEND"
+          ]
+        },
+        {
+          "id": 59,
+          "name": "E12-BR",
+          "params": [
+            "PTCH",
+            "DEC",
+            "HP",
+            "REAL",
+            "STRT",
+            "RTRG",
+            "RTIM",
+            "BEND"
+          ]
+        },
+        {
+          "id": 60,
+          "name": "E12-TA",
+          "params": [
+            "PTCH",
+            "DEC",
+            "HP",
+            "HPQ",
+            "STRT",
+            "RTRG",
+            "RTIM",
+            "BEND"
+          ]
+        },
+        {
+          "id": 61,
+          "name": "E12-TR",
+          "params": [
+            "PTCH",
+            "DEC",
+            "HP",
+            "HPQ",
+            "STRT",
+            "RTRG",
+            "RTIM",
+            "BEND"
+          ]
+        },
+        {
+          "id": 62,
+          "name": "E12-SH",
+          "params": [
+            "PTCH",
+            "DEC",
+            "HP",
+            "SLEW",
+            "STRT",
+            "RTRG",
+            "RTIM",
+            "BEND"
+          ]
+        },
+        {
+          "id": 63,
+          "name": "E12-BC",
+          "params": [
+            "PTCH",
+            "DEC",
+            "HP",
+            "BC",
+            "STRT",
+            "RTRG",
+            "RTIM",
+            "BEND"
+          ]
+        },
+        {
+          "id": 64,
+          "name": "P-I-BD",
+          "params": [
+            "PTCH",
+            "DEC",
+            "HARD",
+            "HAMR",
+            "TENS",
+            "DAMP",
+            "",
+            ""
+          ]
+        },
+        {
+          "id": 65,
+          "name": "P-I-SD",
+          "params": [
+            "PTCH",
+            "DEC",
+            "HARD",
+            "RING",
+            "TENS",
+            "RVOL",
+            "RDEC",
+            ""
+          ]
+        },
+        {
+          "id": 66,
+          "name": "P-I-MT",
+          "params": [
+            "PTCH",
+            "DEC",
+            "HARD",
+            "HAMR",
+            "TUNE",
+            "DAMP",
+            "SIZE",
+            "POS"
+          ]
+        },
+        {
+          "id": 67,
+          "name": "P-I-ML",
+          "params": [
+            "PTCH",
+            "DEC",
+            "HARD",
+            "TENS",
+            "",
+            "",
+            "",
+            ""
+          ]
+        },
+        {
+          "id": 68,
+          "name": "P-I-MA",
+          "params": [
+            "GRNS",
+            "DEC",
+            "GLEN",
+            "",
+            "SIZE",
+            "HARD",
+            "",
+            ""
+          ]
+        },
+        {
+          "id": 69,
+          "name": "P-I-RS",
+          "params": [
+            "PTCH",
+            "DEC",
+            "HARD",
+            "RING",
+            "RVOL",
+            "RDEC",
+            "",
+            ""
+          ]
+        },
+        {
+          "id": 70,
+          "name": "P-I-RC",
+          "params": [
+            "PTCH",
+            "DEC",
+            "HARD",
+            "RING",
+            "AG",
+            "AU",
+            "BR",
+            "GRAB"
+          ]
+        },
+        {
+          "id": 71,
+          "name": "P-I-CC",
+          "params": [
+            "PTCH",
+            "DEC",
+            "HARD",
+            "RING",
+            "AG",
+            "AU",
+            "BR",
+            "GRAB"
+          ]
+        },
+        {
+          "id": 72,
+          "name": "P-I-HH",
+          "params": [
+            "PTCH",
+            "DEC",
+            "CLSN",
+            "RING",
+            "AG",
+            "AU",
+            "BR",
+            "CLOS"
+          ]
+        },
+        {
+          "id": 80,
+          "name": "INP-GA",
+          "params": [
+            "VOL",
+            "GATE",
+            "ATCK",
+            "HOLD",
+            "DEC",
+            "",
+            "",
+            ""
+          ]
+        },
+        {
+          "id": 81,
+          "name": "INP-GB",
+          "params": [
+            "VOL",
+            "GATE",
+            "ATCK",
+            "HOLD",
+            "DEC",
+            "",
+            "",
+            ""
+          ]
+        },
+        {
+          "id": 82,
+          "name": "INP-FA",
+          "params": [
+            "ALEV",
+            "GATE",
+            "FATK",
+            "FHLD",
+            "FDEC",
+            "FDPH",
+            "FFRQ",
+            "FQ"
+          ]
+        },
+        {
+          "id": 83,
+          "name": "INP-FB",
+          "params": [
+            "ALEV",
+            "GATE",
+            "FATK",
+            "FHLD",
+            "FDEC",
+            "FDPH",
+            "FFRQ",
+            "FQ"
+          ]
+        },
+        {
+          "id": 84,
+          "name": "INP-EA",
+          "params": [
+            "ALEV",
+            "AHLD",
+            "ADEC",
+            "FQ",
+            "FDPH",
+            "FHLD",
+            "FDEC",
+            "FFRQ"
+          ]
+        },
+        {
+          "id": 85,
+          "name": "INP-EB",
+          "params": [
+            "ALEV",
+            "AHLD",
+            "ADEC",
+            "FQ",
+            "FDPH",
+            "FHLD",
+            "FDEC",
+            "FFRQ"
+          ]
+        },
+        {
+          "id": 86,
+          "name": "INP-CA",
+          "params": [
+            "ATCK",
+            "REL",
+            "THRE",
+            "RTIO",
+            "KNEE",
+            "SIDE",
+            "MKUP",
+            "IVOL"
+          ]
+        },
+        {
+          "id": 87,
+          "name": "INP-CB",
+          "params": [
+            "ATCK",
+            "REL",
+            "THRE",
+            "RTIO",
+            "KNEE",
+            "SIDE",
+            "MKUP",
+            "IVOL"
+          ]
+        },
+        {
+          "id": 96,
+          "name": "MID-01",
+          "params": [
+            "NOTE",
+            "N2",
+            "N3",
+            "LEN",
+            "VEL",
+            "PB",
+            "MW",
+            "AT"
+          ]
+        },
+        {
+          "id": 97,
+          "name": "MID-02",
+          "params": [
+            "NOTE",
+            "N2",
+            "N3",
+            "LEN",
+            "VEL",
+            "PB",
+            "MW",
+            "AT"
+          ]
+        },
+        {
+          "id": 98,
+          "name": "MID-03",
+          "params": [
+            "NOTE",
+            "N2",
+            "N3",
+            "LEN",
+            "VEL",
+            "PB",
+            "MW",
+            "AT"
+          ]
+        },
+        {
+          "id": 99,
+          "name": "MID-04",
+          "params": [
+            "NOTE",
+            "N2",
+            "N3",
+            "LEN",
+            "VEL",
+            "PB",
+            "MW",
+            "AT"
+          ]
+        },
+        {
+          "id": 100,
+          "name": "MID-05",
+          "params": [
+            "NOTE",
+            "N2",
+            "N3",
+            "LEN",
+            "VEL",
+            "PB",
+            "MW",
+            "AT"
+          ]
+        },
+        {
+          "id": 101,
+          "name": "MID-06",
+          "params": [
+            "NOTE",
+            "N2",
+            "N3",
+            "LEN",
+            "VEL",
+            "PB",
+            "MW",
+            "AT"
+          ]
+        },
+        {
+          "id": 102,
+          "name": "MID-07",
+          "params": [
+            "NOTE",
+            "N2",
+            "N3",
+            "LEN",
+            "VEL",
+            "PB",
+            "MW",
+            "AT"
+          ]
+        },
+        {
+          "id": 103,
+          "name": "MID-08",
+          "params": [
+            "NOTE",
+            "N2",
+            "N3",
+            "LEN",
+            "VEL",
+            "PB",
+            "MW",
+            "AT"
+          ]
+        },
+        {
+          "id": 104,
+          "name": "MID-09",
+          "params": [
+            "NOTE",
+            "N2",
+            "N3",
+            "LEN",
+            "VEL",
+            "PB",
+            "MW",
+            "AT"
+          ]
+        },
+        {
+          "id": 105,
+          "name": "MID-10",
+          "params": [
+            "NOTE",
+            "N2",
+            "N3",
+            "LEN",
+            "VEL",
+            "PB",
+            "MW",
+            "AT"
+          ]
+        },
+        {
+          "id": 106,
+          "name": "MID-11",
+          "params": [
+            "NOTE",
+            "N2",
+            "N3",
+            "LEN",
+            "VEL",
+            "PB",
+            "MW",
+            "AT"
+          ]
+        },
+        {
+          "id": 107,
+          "name": "MID-12",
+          "params": [
+            "NOTE",
+            "N2",
+            "N3",
+            "LEN",
+            "VEL",
+            "PB",
+            "MW",
+            "AT"
+          ]
+        },
+        {
+          "id": 108,
+          "name": "MID-13",
+          "params": [
+            "NOTE",
+            "N2",
+            "N3",
+            "LEN",
+            "VEL",
+            "PB",
+            "MW",
+            "AT"
+          ]
+        },
+        {
+          "id": 109,
+          "name": "MID-14",
+          "params": [
+            "NOTE",
+            "N2",
+            "N3",
+            "LEN",
+            "VEL",
+            "PB",
+            "MW",
+            "AT"
+          ]
+        },
+        {
+          "id": 110,
+          "name": "MID-15",
+          "params": [
+            "NOTE",
+            "N2",
+            "N3",
+            "LEN",
+            "VEL",
+            "PB",
+            "MW",
+            "AT"
+          ]
+        },
+        {
+          "id": 111,
+          "name": "MID-16",
+          "params": [
+            "NOTE",
+            "N2",
+            "N3",
+            "LEN",
+            "VEL",
+            "PB",
+            "MW",
+            "AT"
+          ]
+        },
+        {
+          "id": 112,
+          "name": "CTR-AL",
+          "params": [
+            "SYN1",
+            "SYN2",
+            "SYN3",
+            "SYN4",
+            "SYN5",
+            "SYN6",
+            "SYN7",
+            "SYN8"
+          ]
+        },
+        {
+          "id": 113,
+          "name": "CTR-8P",
+          "params": [
+            "P1",
+            "P2",
+            "P3",
+            "P4",
+            "P5",
+            "P6",
+            "P7",
+            "P8"
+          ]
+        },
+        {
+          "id": 120,
+          "name": "CTR-RE",
+          "params": [
+            "TIME",
+            "MOD",
+            "MFRQ",
+            "FB",
+            "FLTF",
+            "FLTW",
+            "MONO",
+            "LEV"
+          ]
+        },
+        {
+          "id": 121,
+          "name": "CTR-GB",
+          "params": [
+            "DVOL",
+            "PRED",
+            "DEC",
+            "DAMP",
+            "HP",
+            "LP",
+            "GATE",
+            "LEV"
+          ]
+        },
+        {
+          "id": 122,
+          "name": "CTR-EQ",
+          "params": [
+            "LF",
+            "LG",
+            "HF",
+            "HG",
+            "PF",
+            "PG",
+            "PQ",
+            "GAIN"
+          ]
+        },
+        {
+          "id": 123,
+          "name": "CTR-DX",
+          "params": [
+            "ATCK",
+            "REL",
+            "TRHD",
+            "RTIO",
+            "KNEE",
+            "HP",
+            "OUTG",
+            "MIX"
+          ]
+        },
+        {
+          "id": 128,
+          "name": "ROM-01",
+          "params": [
+            "PTCH",
+            "DEC",
+            "HOLD",
+            "BRR",
+            "STRT",
+            "END",
+            "RTRG",
+            "RTIM"
+          ]
+        },
+        {
+          "id": 129,
+          "name": "ROM-02",
+          "params": [
+            "PTCH",
+            "DEC",
+            "HOLD",
+            "BRR",
+            "STRT",
+            "END",
+            "RTRG",
+            "RTIM"
+          ]
+        },
+        {
+          "id": 130,
+          "name": "ROM-03",
+          "params": [
+            "PTCH",
+            "DEC",
+            "HOLD",
+            "BRR",
+            "STRT",
+            "END",
+            "RTRG",
+            "RTIM"
+          ]
+        },
+        {
+          "id": 131,
+          "name": "ROM-04",
+          "params": [
+            "PTCH",
+            "DEC",
+            "HOLD",
+            "BRR",
+            "STRT",
+            "END",
+            "RTRG",
+            "RTIM"
+          ]
+        },
+        {
+          "id": 132,
+          "name": "ROM-05",
+          "params": [
+            "PTCH",
+            "DEC",
+            "HOLD",
+            "BRR",
+            "STRT",
+            "END",
+            "RTRG",
+            "RTIM"
+          ]
+        },
+        {
+          "id": 133,
+          "name": "ROM-06",
+          "params": [
+            "PTCH",
+            "DEC",
+            "HOLD",
+            "BRR",
+            "STRT",
+            "END",
+            "RTRG",
+            "RTIM"
+          ]
+        },
+        {
+          "id": 134,
+          "name": "ROM-07",
+          "params": [
+            "PTCH",
+            "DEC",
+            "HOLD",
+            "BRR",
+            "STRT",
+            "END",
+            "RTRG",
+            "RTIM"
+          ]
+        },
+        {
+          "id": 135,
+          "name": "ROM-08",
+          "params": [
+            "PTCH",
+            "DEC",
+            "HOLD",
+            "BRR",
+            "STRT",
+            "END",
+            "RTRG",
+            "RTIM"
+          ]
+        },
+        {
+          "id": 136,
+          "name": "ROM-09",
+          "params": [
+            "PTCH",
+            "DEC",
+            "HOLD",
+            "BRR",
+            "STRT",
+            "END",
+            "RTRG",
+            "RTIM"
+          ]
+        },
+        {
+          "id": 137,
+          "name": "ROM-10",
+          "params": [
+            "PTCH",
+            "DEC",
+            "HOLD",
+            "BRR",
+            "STRT",
+            "END",
+            "RTRG",
+            "RTIM"
+          ]
+        },
+        {
+          "id": 138,
+          "name": "ROM-11",
+          "params": [
+            "PTCH",
+            "DEC",
+            "HOLD",
+            "BRR",
+            "STRT",
+            "END",
+            "RTRG",
+            "RTIM"
+          ]
+        },
+        {
+          "id": 139,
+          "name": "ROM-12",
+          "params": [
+            "PTCH",
+            "DEC",
+            "HOLD",
+            "BRR",
+            "STRT",
+            "END",
+            "RTRG",
+            "RTIM"
+          ]
+        },
+        {
+          "id": 140,
+          "name": "ROM-13",
+          "params": [
+            "PTCH",
+            "DEC",
+            "HOLD",
+            "BRR",
+            "STRT",
+            "END",
+            "RTRG",
+            "RTIM"
+          ]
+        },
+        {
+          "id": 141,
+          "name": "ROM-14",
+          "params": [
+            "PTCH",
+            "DEC",
+            "HOLD",
+            "BRR",
+            "STRT",
+            "END",
+            "RTRG",
+            "RTIM"
+          ]
+        },
+        {
+          "id": 142,
+          "name": "ROM-15",
+          "params": [
+            "PTCH",
+            "DEC",
+            "HOLD",
+            "BRR",
+            "STRT",
+            "END",
+            "RTRG",
+            "RTIM"
+          ]
+        },
+        {
+          "id": 143,
+          "name": "ROM-16",
+          "params": [
+            "PTCH",
+            "DEC",
+            "HOLD",
+            "BRR",
+            "STRT",
+            "END",
+            "RTRG",
+            "RTIM"
+          ]
+        },
+        {
+          "id": 144,
+          "name": "ROM-17",
+          "params": [
+            "PTCH",
+            "DEC",
+            "HOLD",
+            "BRR",
+            "STRT",
+            "END",
+            "RTRG",
+            "RTIM"
+          ]
+        },
+        {
+          "id": 145,
+          "name": "ROM-18",
+          "params": [
+            "PTCH",
+            "DEC",
+            "HOLD",
+            "BRR",
+            "STRT",
+            "END",
+            "RTRG",
+            "RTIM"
+          ]
+        },
+        {
+          "id": 146,
+          "name": "ROM-19",
+          "params": [
+            "PTCH",
+            "DEC",
+            "HOLD",
+            "BRR",
+            "STRT",
+            "END",
+            "RTRG",
+            "RTIM"
+          ]
+        },
+        {
+          "id": 147,
+          "name": "ROM-20",
+          "params": [
+            "PTCH",
+            "DEC",
+            "HOLD",
+            "BRR",
+            "STRT",
+            "END",
+            "RTRG",
+            "RTIM"
+          ]
+        },
+        {
+          "id": 148,
+          "name": "ROM-21",
+          "params": [
+            "PTCH",
+            "DEC",
+            "HOLD",
+            "BRR",
+            "STRT",
+            "END",
+            "RTRG",
+            "RTIM"
+          ]
+        },
+        {
+          "id": 149,
+          "name": "ROM-22",
+          "params": [
+            "PTCH",
+            "DEC",
+            "HOLD",
+            "BRR",
+            "STRT",
+            "END",
+            "RTRG",
+            "RTIM"
+          ]
+        },
+        {
+          "id": 150,
+          "name": "ROM-23",
+          "params": [
+            "PTCH",
+            "DEC",
+            "HOLD",
+            "BRR",
+            "STRT",
+            "END",
+            "RTRG",
+            "RTIM"
+          ]
+        },
+        {
+          "id": 151,
+          "name": "ROM-24",
+          "params": [
+            "PTCH",
+            "DEC",
+            "HOLD",
+            "BRR",
+            "STRT",
+            "END",
+            "RTRG",
+            "RTIM"
+          ]
+        },
+        {
+          "id": 152,
+          "name": "ROM-25",
+          "params": [
+            "PTCH",
+            "DEC",
+            "HOLD",
+            "BRR",
+            "STRT",
+            "END",
+            "RTRG",
+            "RTIM"
+          ]
+        },
+        {
+          "id": 153,
+          "name": "ROM-26",
+          "params": [
+            "PTCH",
+            "DEC",
+            "HOLD",
+            "BRR",
+            "STRT",
+            "END",
+            "RTRG",
+            "RTIM"
+          ]
+        },
+        {
+          "id": 154,
+          "name": "ROM-27",
+          "params": [
+            "PTCH",
+            "DEC",
+            "HOLD",
+            "BRR",
+            "STRT",
+            "END",
+            "RTRG",
+            "RTIM"
+          ]
+        },
+        {
+          "id": 155,
+          "name": "ROM-28",
+          "params": [
+            "PTCH",
+            "DEC",
+            "HOLD",
+            "BRR",
+            "STRT",
+            "END",
+            "RTRG",
+            "RTIM"
+          ]
+        },
+        {
+          "id": 156,
+          "name": "ROM-29",
+          "params": [
+            "PTCH",
+            "DEC",
+            "HOLD",
+            "BRR",
+            "STRT",
+            "END",
+            "RTRG",
+            "RTIM"
+          ]
+        },
+        {
+          "id": 157,
+          "name": "ROM-30",
+          "params": [
+            "PTCH",
+            "DEC",
+            "HOLD",
+            "BRR",
+            "STRT",
+            "END",
+            "RTRG",
+            "RTIM"
+          ]
+        },
+        {
+          "id": 158,
+          "name": "ROM-31",
+          "params": [
+            "PTCH",
+            "DEC",
+            "HOLD",
+            "BRR",
+            "STRT",
+            "END",
+            "RTRG",
+            "RTIM"
+          ]
+        },
+        {
+          "id": 159,
+          "name": "ROM-32",
+          "params": [
+            "PTCH",
+            "DEC",
+            "HOLD",
+            "BRR",
+            "STRT",
+            "END",
+            "RTRG",
+            "RTIM"
+          ]
+        },
+        {
+          "id": 160,
+          "name": "RAM-R1",
+          "params": [
+            "MLEV",
+            "MBAL",
+            "ILEV",
+            "IBAL",
+            "CUE1",
+            "CUE2",
+            "LEN",
+            "RATE"
+          ]
+        },
+        {
+          "id": 161,
+          "name": "RAM-R2",
+          "params": [
+            "MLEV",
+            "MBAL",
+            "ILEV",
+            "IBAL",
+            "CUE1",
+            "CUE2",
+            "LEN",
+            "RATE"
+          ]
+        },
+        {
+          "id": 162,
+          "name": "RAM-P1",
+          "params": [
+            "PTCH",
+            "DEC",
+            "HOLD",
+            "BRR",
+            "STRT",
+            "END",
+            "RTRG",
+            "RTIM"
+          ]
+        },
+        {
+          "id": 163,
+          "name": "RAM-P2",
+          "params": [
+            "PTCH",
+            "DEC",
+            "HOLD",
+            "BRR",
+            "STRT",
+            "END",
+            "RTRG",
+            "RTIM"
+          ]
+        },
+        {
+          "id": 165,
+          "name": "RAM-R3",
+          "params": [
+            "MLEV",
+            "MBAL",
+            "ILEV",
+            "IBAL",
+            "CUE1",
+            "CUE2",
+            "LEN",
+            "RATE"
+          ]
+        },
+        {
+          "id": 166,
+          "name": "RAM-R4",
+          "params": [
+            "MLEV",
+            "MBAL",
+            "ILEV",
+            "IBAL",
+            "CUE1",
+            "CUE2",
+            "LEN",
+            "RATE"
+          ]
+        },
+        {
+          "id": 167,
+          "name": "RAM-P3",
+          "params": [
+            "PTCH",
+            "DEC",
+            "HOLD",
+            "BRR",
+            "STRT",
+            "END",
+            "RTRG",
+            "RTIM"
+          ]
+        },
+        {
+          "id": 168,
+          "name": "RAM-P4",
+          "params": [
+            "PTCH",
+            "DEC",
+            "HOLD",
+            "BRR",
+            "STRT",
+            "END",
+            "RTRG",
+            "RTIM"
+          ]
+        },
+        {
+          "id": 176,
+          "name": "ROM-33",
+          "params": [
+            "PTCH",
+            "DEC",
+            "HOLD",
+            "BRR",
+            "STRT",
+            "END",
+            "RTRG",
+            "RTIM"
+          ]
+        },
+        {
+          "id": 177,
+          "name": "ROM-34",
+          "params": [
+            "PTCH",
+            "DEC",
+            "HOLD",
+            "BRR",
+            "STRT",
+            "END",
+            "RTRG",
+            "RTIM"
+          ]
+        },
+        {
+          "id": 178,
+          "name": "ROM-35",
+          "params": [
+            "PTCH",
+            "DEC",
+            "HOLD",
+            "BRR",
+            "STRT",
+            "END",
+            "RTRG",
+            "RTIM"
+          ]
+        },
+        {
+          "id": 179,
+          "name": "ROM-36",
+          "params": [
+            "PTCH",
+            "DEC",
+            "HOLD",
+            "BRR",
+            "STRT",
+            "END",
+            "RTRG",
+            "RTIM"
+          ]
+        },
+        {
+          "id": 180,
+          "name": "ROM-37",
+          "params": [
+            "PTCH",
+            "DEC",
+            "HOLD",
+            "BRR",
+            "STRT",
+            "END",
+            "RTRG",
+            "RTIM"
+          ]
+        },
+        {
+          "id": 181,
+          "name": "ROM-38",
+          "params": [
+            "PTCH",
+            "DEC",
+            "HOLD",
+            "BRR",
+            "STRT",
+            "END",
+            "RTRG",
+            "RTIM"
+          ]
+        },
+        {
+          "id": 182,
+          "name": "ROM-39",
+          "params": [
+            "PTCH",
+            "DEC",
+            "HOLD",
+            "BRR",
+            "STRT",
+            "END",
+            "RTRG",
+            "RTIM"
+          ]
+        },
+        {
+          "id": 183,
+          "name": "ROM-40",
+          "params": [
+            "PTCH",
+            "DEC",
+            "HOLD",
+            "BRR",
+            "STRT",
+            "END",
+            "RTRG",
+            "RTIM"
+          ]
+        },
+        {
+          "id": 184,
+          "name": "ROM-41",
+          "params": [
+            "PTCH",
+            "DEC",
+            "HOLD",
+            "BRR",
+            "STRT",
+            "END",
+            "RTRG",
+            "RTIM"
+          ]
+        },
+        {
+          "id": 185,
+          "name": "ROM-42",
+          "params": [
+            "PTCH",
+            "DEC",
+            "HOLD",
+            "BRR",
+            "STRT",
+            "END",
+            "RTRG",
+            "RTIM"
+          ]
+        },
+        {
+          "id": 186,
+          "name": "ROM-43",
+          "params": [
+            "PTCH",
+            "DEC",
+            "HOLD",
+            "BRR",
+            "STRT",
+            "END",
+            "RTRG",
+            "RTIM"
+          ]
+        },
+        {
+          "id": 187,
+          "name": "ROM-44",
+          "params": [
+            "PTCH",
+            "DEC",
+            "HOLD",
+            "BRR",
+            "STRT",
+            "END",
+            "RTRG",
+            "RTIM"
+          ]
+        },
+        {
+          "id": 188,
+          "name": "ROM-45",
+          "params": [
+            "PTCH",
+            "DEC",
+            "HOLD",
+            "BRR",
+            "STRT",
+            "END",
+            "RTRG",
+            "RTIM"
+          ]
+        },
+        {
+          "id": 189,
+          "name": "ROM-46",
+          "params": [
+            "PTCH",
+            "DEC",
+            "HOLD",
+            "BRR",
+            "STRT",
+            "END",
+            "RTRG",
+            "RTIM"
+          ]
+        },
+        {
+          "id": 190,
+          "name": "ROM-47",
+          "params": [
+            "PTCH",
+            "DEC",
+            "HOLD",
+            "BRR",
+            "STRT",
+            "END",
+            "RTRG",
+            "RTIM"
+          ]
+        },
+        {
+          "id": 191,
+          "name": "ROM-48",
+          "params": [
+            "PTCH",
+            "DEC",
+            "HOLD",
+            "BRR",
+            "STRT",
+            "END",
+            "RTRG",
+            "RTIM"
+          ]
+        }
+      ]
+    }
+  },
+  "sysex_layout": {
+    "global": {
+      "fields": {
+        "sysex_header": {"fullname": "SysEx Header", "offset": 0, "size": 5},
+        "sysex_channel": {"fullname": "Device Channel", "offset": 5, "size": 1},
+        "sysex_type": {"fullname": "Message Type", "offset": 6, "size": 1},
+        "sysex_version": {"fullname": "Dump Version", "offset": 7, "size": 1},
+        "sysex_revision": {"fullname": "Dump Revision", "offset": 8, "size": 1},
+        "slot": {"fullname": "Original Position", "offset": 9, "size": 1},
+        "payload": {"fullname": "Global Data", "offset": 10, "decoded_size": 182},
+        "payload_structure": {
+          "drum_routing": {"fullname": "Drum Routing", "offset": 0, "per_track": true, "stride": 1, "min": 0, "max": 6},
+          "keymap": {"fullname": "Note-to-Function Keymap", "offset": 16, "encoding": "7bit", "wire_len": 147, "decoded_size": 128, "unassigned_sentinel": 127},
+          "base_channel": {"fullname": "Base Channel", "offset": 163, "min": 0, "max": 15, "display_offset": 1},
+          "knob_resolution": {"fullname": "Knob Resolution", "offset": 164, "min": 0, "max": 1},
+          "bpm_msb": {"fullname": "BPM (High Byte)", "offset": 165, "min": 0, "max": 127},
+          "bpm_lsb": {"fullname": "BPM (Low Byte)", "offset": 166, "min": 0, "max": 127},
+          "lock_mode": {"fullname": "Lock Mode", "offset": 167, "min": 0, "max": 1},
+          "external_sync_flags": {"fullname": "Clock & Control Sync Flags", "offset": 168, "min": 0, "max": 127},
+          "local_control": {"fullname": "Local Control", "offset": 169, "min": 0, "max": 1},
+          "drum_volume_left": {"fullname": "Drum Input Volume (Left)", "offset": 170, "min": 0, "max": 16},
+          "drum_volume_right": {"fullname": "Drum Input Volume (Right)", "offset": 171, "min": 0, "max": 16},
+          "input_gate_left": {"fullname": "Input Gate Threshold (Left)", "offset": 172, "min": 0, "max": 127},
+          "input_gate_right": {"fullname": "Input Gate Threshold (Right)", "offset": 173, "min": 0, "max": 127},
+          "input_sense_left": {"fullname": "Input Sensitivity (Left)", "offset": 174, "min": 0, "max": 127},
+          "input_sense_right": {"fullname": "Input Sensitivity (Right)", "offset": 175, "min": 0, "max": 127},
+          "input_min_level_left": {"fullname": "Input Minimum Level (Left)", "offset": 176, "min": 0, "max": 127},
+          "input_min_level_right": {"fullname": "Input Minimum Level (Right)", "offset": 177, "min": 0, "max": 127},
+          "input_max_level_left": {"fullname": "Input Maximum Level (Left)", "offset": 178, "min": 0, "max": 127},
+          "input_max_level_right": {"fullname": "Input Maximum Level (Right)", "offset": 179, "min": 0, "max": 127},
+          "program_change_mode": {"fullname": "Program Change Mode", "offset": 180, "kind": "bitmask", "mask": 3, "min": 0, "max": 3},
+          "program_change_channel": {"fullname": "Program Change Channel", "offset": 180, "kind": "bitmask", "mask": 124, "shift": 2, "min": 0, "max": 16},
+          "trig_mode": {"fullname": "Trig Mode", "offset": 181, "min": 0, "max": 2}
+        }
+      },
+      "constants": {
+        "drum_routing": ["A", "B", "C", "D", "E", "F", "MAIN"],
+        "knob_resolution": ["24-bit", "32-bit"],
+        "program_change_mode": ["OFF", "IN", "OUT", "IN+OUT"],
+        "trig_mode": ["GATE", "START", "QUE"],
+        "lock_mode": ["Classic", "Extended"],
+        "base_channel": [
+          {"value": 127, "label": "None"},
+          {"value": 0, "label": "1-4"},
+          {"value": 1, "label": "2-5"},
+          {"value": 2, "label": "3-6"},
+          {"value": 3, "label": "4-7"},
+          {"value": 4, "label": "5-8"},
+          {"value": 5, "label": "6-9"},
+          {"value": 6, "label": "7-10"},
+          {"value": 7, "label": "8-11"},
+          {"value": 8, "label": "9-12"},
+          {"value": 9, "label": "10-13"},
+          {"value": 10, "label": "11-14"},
+          {"value": 11, "label": "12-15"},
+          {"value": 12, "label": "13-16"}
+        ]
+      }
+    },
+    "kit": {
+      "fields": {
+        "sysex_header": {"fullname": "SysEx Header", "offset": 0, "size": 5},
+        "sysex_channel": {"fullname": "Device Channel", "offset": 5, "size": 1},
+        "sysex_type": {"fullname": "Message Type", "offset": 6, "size": 1},
+        "sysex_version": {"fullname": "Dump Version", "offset": 7, "size": 1},
+        "sysex_revision": {"fullname": "Dump Revision", "offset": 8, "size": 1},
+        "slot": {"fullname": "Original Position", "offset": 9, "size": 1},
+        "name": {"fullname": "Kit Name", "offset": 10, "encoding": "raw", "size": 16, "kind": "ascii"},
+        "params": {"fullname": "Track Parameters (24 CC values)", "offset": 26, "encoding": "raw", "per_track": true, "stride": 24},
+        "synth_param_1": {"fullname": "Synth Control 1", "offset": 26, "per_track": true, "stride": 24, "min": 0, "max": 127},
+        "synth_param_2": {"fullname": "Synth Control 2", "offset": 27, "per_track": true, "stride": 24, "min": 0, "max": 127},
+        "synth_param_3": {"fullname": "Synth Control 3", "offset": 28, "per_track": true, "stride": 24, "min": 0, "max": 127},
+        "synth_param_4": {"fullname": "Synth Control 4", "offset": 29, "per_track": true, "stride": 24, "min": 0, "max": 127},
+        "synth_param_5": {"fullname": "Synth Control 5", "offset": 30, "per_track": true, "stride": 24, "min": 0, "max": 127},
+        "synth_param_6": {"fullname": "Synth Control 6", "offset": 31, "per_track": true, "stride": 24, "min": 0, "max": 127},
+        "synth_param_7": {"fullname": "Synth Control 7", "offset": 32, "per_track": true, "stride": 24, "min": 0, "max": 127},
+        "synth_param_8": {"fullname": "Synth Control 8", "offset": 33, "per_track": true, "stride": 24, "min": 0, "max": 127},
+        "fx_amplitude_mod_depth": {"fullname": "Amplitude Mod Depth", "offset": 34, "per_track": true, "stride": 24, "min": 0, "max": 127},
+        "fx_amplitude_mod_frequency": {"fullname": "Amplitude Mod Freq", "offset": 35, "per_track": true, "stride": 24, "min": 0, "max": 127},
+        "fx_eq_frequency": {"fullname": "EQ Frequency", "offset": 36, "per_track": true, "stride": 24, "min": 0, "max": 127},
+        "fx_eq_gain": {"fullname": "EQ Gain", "offset": 37, "per_track": true, "stride": 24, "min": 0, "max": 127},
+        "fx_filter_frequency": {"fullname": "Filter Frequency", "offset": 38, "per_track": true, "stride": 24, "min": 0, "max": 127},
+        "fx_filter_width": {"fullname": "Filter Width", "offset": 39, "per_track": true, "stride": 24, "min": 0, "max": 127},
+        "fx_filter_resonance": {"fullname": "Filter Resonance (Q)", "offset": 40, "per_track": true, "stride": 24, "min": 0, "max": 127},
+        "fx_sample_rate_reduction": {"fullname": "Sample Rate Redux", "offset": 41, "per_track": true, "stride": 24, "min": 0, "max": 127},
+        "routing_distortion": {"fullname": "Distortion", "offset": 42, "per_track": true, "stride": 24, "min": 0, "max": 127},
+        "routing_volume": {"fullname": "Volume", "offset": 43, "per_track": true, "stride": 24, "min": 0, "max": 127},
+        "routing_pan": {"fullname": "Pan", "offset": 44, "per_track": true, "stride": 24, "min": 0, "max": 127},
+        "routing_delay_send": {"fullname": "Delay Send", "offset": 45, "per_track": true, "stride": 24, "min": 0, "max": 127},
+        "routing_reverb_send": {"fullname": "Reverb Send", "offset": 46, "per_track": true, "stride": 24, "min": 0, "max": 127},
+        "routing_lfo_speed": {"fullname": "LFO Speed", "offset": 47, "per_track": true, "stride": 24, "min": 0, "max": 127},
+        "routing_lfo_depth": {"fullname": "LFO Depth", "offset": 48, "per_track": true, "stride": 24, "min": 0, "max": 127},
+        "routing_lfo_mix": {"fullname": "LFO Mix/Mode", "offset": 49, "per_track": true, "stride": 24, "min": 0, "max": 127},
+        "levels": {"fullname": "Track Level", "offset": 410, "encoding": "raw", "per_track": true, "stride": 1},
+        "models": {"fullname": "Machine Model ID", "offset": 426, "encoding": "7bit", "wire_len": 74, "per_track": true, "stride": 4},
+        "models_structure": {
+          "tonal": {"fullname": "Tonal Tuning Enabled", "offset": 1, "kind": "bitmask", "mask": 2, "shift": 1, "note": "Only some machines support tonal tuning."},
+          "model_id": {"fullname": "Machine Model Number", "offset": 3, "min": 0, "max": 191}
+        },
+        "lfos": {"fullname": "Track LFO Configuration", "offset": 500, "encoding": "7bit", "wire_len": 659, "per_track": true, "stride": 36},
+        "lfos_structure": {
+          "dest_track": {"fullname": "LFO Destination Track", "offset": 0, "min": 0, "max": 15},
+          "dest_param": {"fullname": "LFO Destination Parameter", "offset": 1, "values_ref": "lfo_dest_param"},
+          "shape_1": {"fullname": "LFO Shape 1", "offset": 2, "min": 0, "max": 10, "note": "0=TRI, 10=HTRI. Values 1-9 unconfirmed."},
+          "shape_2": {"fullname": "LFO Shape 2", "offset": 3, "min": 0, "max": 10, "note": "0=TRI, 10=HTRI. Values 1-9 unconfirmed."},
+          "type": {"fullname": "LFO Type", "offset": 4, "values_ref": "lfo_type"},
+          "state": {"fullname": "Oscillator State", "offset": 5, "size": 31, "kind": "unknown", "note": "Internal LFO oscillator state. Byte-level meaning not reverse-engineered."}
+        },
+        "reverb_delay_volume": {"fullname": "Reverb: Delay Volume", "offset": 1159, "min": 0, "max": 127},
+        "reverb_pre_delay": {"fullname": "Reverb: Pre-Delay", "offset": 1160, "min": 0, "max": 127},
+        "reverb_decay_time": {"fullname": "Reverb: Decay Time", "offset": 1161, "min": 0, "max": 127},
+        "reverb_damping": {"fullname": "Reverb: Damping", "offset": 1162, "min": 0, "max": 127},
+        "reverb_high_pass": {"fullname": "Reverb: High Pass Filter", "offset": 1163, "min": 0, "max": 127},
+        "reverb_low_pass": {"fullname": "Reverb: Low Pass Filter", "offset": 1164, "min": 0, "max": 127},
+        "reverb_gate_time": {"fullname": "Reverb: Gate Time", "offset": 1165, "min": 0, "max": 127},
+        "reverb_level": {"fullname": "Reverb: Level", "offset": 1166, "min": 0, "max": 127},
+        "echo_delay_time": {"fullname": "Rhythm Echo: Delay Time", "offset": 1167, "min": 0, "max": 127},
+        "echo_modulation": {"fullname": "Rhythm Echo: Modulation", "offset": 1168, "min": 0, "max": 127},
+        "echo_modulation_frequency": {"fullname": "Rhythm Echo: Modulation Frequency", "offset": 1169, "min": 0, "max": 127},
+        "echo_feedback": {"fullname": "Rhythm Echo: Feedback", "offset": 1170, "min": 0, "max": 127},
+        "echo_filter_frequency": {"fullname": "Rhythm Echo: Filter Frequency", "offset": 1171, "min": 0, "max": 127},
+        "echo_filter_width": {"fullname": "Rhythm Echo: Filter Width", "offset": 1172, "min": 0, "max": 127},
+        "echo_mono_toggle": {"fullname": "Rhythm Echo: Mono Toggle", "offset": 1173, "min": 0, "max": 127},
+        "echo_level": {"fullname": "Rhythm Echo: Level", "offset": 1174, "min": 0, "max": 127},
+        "eq_low_frequency": {"fullname": "EQ: Low Frequency", "offset": 1175, "min": 0, "max": 127},
+        "eq_low_gain": {"fullname": "EQ: Low Gain", "offset": 1176, "min": 0, "max": 127},
+        "eq_high_frequency": {"fullname": "EQ: High Frequency", "offset": 1177, "min": 0, "max": 127},
+        "eq_high_gain": {"fullname": "EQ: High Gain", "offset": 1178, "min": 0, "max": 127},
+        "eq_peak_frequency": {"fullname": "EQ: Parametric Frequency", "offset": 1179, "min": 0, "max": 127},
+        "eq_peak_gain": {"fullname": "EQ: Parametric Gain", "offset": 1180, "min": 0, "max": 127},
+        "eq_peak_q": {"fullname": "EQ: Parametric Q", "offset": 1181, "min": 0, "max": 127},
+        "eq_master_gain": {"fullname": "EQ: Master Gain", "offset": 1182, "min": 0, "max": 127},
+        "dyn_attack": {"fullname": "Dynamix: Attack", "offset": 1183, "min": 0, "max": 127},
+        "dyn_release": {"fullname": "Dynamix: Release", "offset": 1184, "min": 0, "max": 127},
+        "dyn_threshold": {"fullname": "Dynamix: Threshold", "offset": 1185, "min": 0, "max": 127},
+        "dyn_ratio": {"fullname": "Dynamix: Ratio", "offset": 1186, "min": 0, "max": 127},
+        "dyn_knee": {"fullname": "Dynamix: Knee", "offset": 1187, "min": 0, "max": 127},
+        "dyn_high_pass": {"fullname": "Dynamix: High Pass Filter", "offset": 1188, "min": 0, "max": 127},
+        "dyn_output_gain": {"fullname": "Dynamix: Output Gain", "offset": 1189, "min": 0, "max": 127},
+        "dyn_dry_wet_mix": {"fullname": "Dynamix: Dry/Wet Mix", "offset": 1190, "min": 0, "max": 127},
+        "trig_groups": {"fullname": "Trig Group", "offset": 1191, "encoding": "7bit", "wire_len": 37, "per_track": true, "stride": 1},
+        "mute_groups": {"fullname": "Mute Group", "offset": 1191, "encoding": "7bit", "wire_len": 37, "per_track": true, "stride": 1, "base": 16}
+      },
+      "track_blob": ["params", "levels", "models", "lfos", "trig_groups", "mute_groups"],
+      "constants": {
+        "lfo_type": ["FREE", "TRIG", "HOLD"],
+        "lfo_dest_param": [
+          "Synth Control 1",
+          "Synth Control 2",
+          "Synth Control 3",
+          "Synth Control 4",
+          "Synth Control 5",
+          "Synth Control 6",
+          "Synth Control 7",
+          "Synth Control 8",
+          "Amplitude Mod Depth",
+          "Amplitude Mod Freq",
+          "EQ Frequency",
+          "EQ Gain",
+          "Filter Frequency",
+          "Filter Width",
+          "Filter Resonance (Q)",
+          "Sample Rate Redux",
+          "Distortion",
+          "Volume",
+          "Pan",
+          "Delay Send",
+          "Reverb Send",
+          "LFO Speed",
+          "LFO Depth",
+          "LFO Mix/Mode"
+        ]
+      }
+    },
+    "pattern": {
+      "fields_32": {
+        "sysex_header": {"fullname": "SysEx Header", "offset": 0, "size": 5},
+        "sysex_channel": {"fullname": "Device Channel", "offset": 5, "size": 1},
+        "sysex_type": {"fullname": "Message Type", "offset": 6, "size": 1},
+        "sysex_version": {"fullname": "Dump Version", "offset": 7, "size": 1},
+        "sysex_revision": {"fullname": "Dump Revision", "offset": 8, "size": 1},
+        "slot": {"fullname": "Original Position", "offset": 9, "size": 1},
+        "trig_pattern_lo": {"fullname": "Trigger Step Bitmask (Steps 1-32)", "offset": 10, "encoding": "7bit", "wire_len": 74},
+        "lock_pattern": {"fullname": "Parameter Lock Step Bitmask", "offset": 84, "encoding": "7bit", "wire_len": 74},
+        "accent_pattern_lo": {"fullname": "Accent/Slide/Swing Step Bitmask (Steps 1-32)", "offset": 158, "encoding": "7bit", "wire_len": 19},
+        "accent_amount": {"fullname": "Accent Velocity Amount", "offset": 177, "encoding": "raw"},
+        "pattern_length": {"fullname": "Pattern Length (Steps)", "offset": 178, "encoding": "raw"},
+        "tempo_multiplier": {"fullname": "Tempo Multiplier", "offset": 179, "encoding": "raw"},
+        "scale": {"fullname": "Sequencer Scale", "offset": 180, "encoding": "raw"},
+        "kit": {"fullname": "Linked Kit Slot", "offset": 181, "encoding": "raw"},
+        "lock_count": {"fullname": "Active Lock Row Count", "offset": 182, "encoding": "raw"},
+        "locks_lo": {"fullname": "Parameter Lock Data (Steps 1-32)", "offset": 183, "encoding": "7bit", "wire_len": 2341},
+        "extra_pattern_lo": {"fullname": "Extended Pattern Data (Steps 1-32)", "offset": 2524, "encoding": "7bit", "wire_len": 234, "decoded_size": 204},
+        "accent_pattern_lo_structure": {
+          "accent_pattern": {"fullname": "Accent Pattern, All Tracks (Steps 1-32)", "offset": 0, "size": 4},
+          "slide_pattern": {"fullname": "Slide Pattern, All Tracks (Steps 1-32)", "offset": 4, "size": 4},
+          "swing_pattern": {"fullname": "Swing Pattern, All Tracks (Steps 1-32)", "offset": 8, "size": 4},
+          "swing_amount": {"fullname": "Swing Amount", "offset": 12, "size": 4}
+        },
+        "extra_pattern_lo_structure": {
+          "accent_edit_all": {"fullname": "Accent Edit-All Flag", "offset": 0, "size": 4},
+          "slide_edit_all": {"fullname": "Slide Edit-All Flag", "offset": 4, "size": 4},
+          "swing_edit_all": {"fullname": "Swing Edit-All Flag", "offset": 8, "size": 4},
+          "accent_patterns": {"fullname": "Per-Track Accent Step Bitmask (Steps 1-32)", "offset": 12, "per_track": true, "stride": 4},
+          "slide_patterns": {"fullname": "Per-Track Slide Step Bitmask (Steps 1-32)", "offset": 76, "per_track": true, "stride": 4},
+          "swing_patterns": {"fullname": "Per-Track Swing Step Bitmask (Steps 1-32)", "offset": 140, "per_track": true, "stride": 4}
+        }
+      },
+      "fields_64": {
+        "sysex_header": {"fullname": "SysEx Header", "offset": 0, "size": 5},
+        "sysex_channel": {"fullname": "Device Channel", "offset": 5, "size": 1},
+        "sysex_type": {"fullname": "Message Type", "offset": 6, "size": 1},
+        "sysex_version": {"fullname": "Dump Version", "offset": 7, "size": 1},
+        "sysex_revision": {"fullname": "Dump Revision", "offset": 8, "size": 1},
+        "slot": {"fullname": "Original Position", "offset": 9, "size": 1},
+        "trig_pattern_lo": {"fullname": "Trigger Step Bitmask (Steps 1-32)", "offset": 10, "encoding": "7bit", "wire_len": 74},
+        "lock_pattern": {"fullname": "Parameter Lock Step Bitmask", "offset": 84, "encoding": "7bit", "wire_len": 74},
+        "accent_pattern_lo": {"fullname": "Accent/Slide/Swing Step Bitmask (Steps 1-32)", "offset": 158, "encoding": "7bit", "wire_len": 19},
+        "accent_amount": {"fullname": "Accent Velocity Amount", "offset": 177, "encoding": "raw"},
+        "pattern_length": {"fullname": "Pattern Length (Steps)", "offset": 178, "encoding": "raw"},
+        "tempo_multiplier": {"fullname": "Tempo Multiplier", "offset": 179, "encoding": "raw"},
+        "scale": {"fullname": "Sequencer Scale", "offset": 180, "encoding": "raw"},
+        "kit": {"fullname": "Linked Kit Slot", "offset": 181, "encoding": "raw"},
+        "lock_count": {"fullname": "Active Lock Row Count", "offset": 182, "encoding": "raw"},
+        "locks_lo": {"fullname": "Parameter Lock Data (Steps 1-32)", "offset": 183, "encoding": "7bit", "wire_len": 2341},
+        "extra_pattern_lo": {"fullname": "Extended Pattern Data (Steps 1-32)", "offset": 2524, "encoding": "7bit", "wire_len": 234, "decoded_size": 204},
+        "extra_pattern_hi": {"fullname": "Extended Pattern Data (Steps 33-64)", "offset": 2758, "encoding": "7bit", "wire_len": 2647, "decoded_size": 2316},
+        "accent_pattern_lo_structure": {
+          "accent_pattern": {"fullname": "Accent Pattern, All Tracks (Steps 1-32)", "offset": 0, "size": 4},
+          "slide_pattern": {"fullname": "Slide Pattern, All Tracks (Steps 1-32)", "offset": 4, "size": 4},
+          "swing_pattern": {"fullname": "Swing Pattern, All Tracks (Steps 1-32)", "offset": 8, "size": 4},
+          "swing_amount": {"fullname": "Swing Amount", "offset": 12, "size": 4}
+        },
+        "extra_pattern_lo_structure": {
+          "accent_edit_all": {"fullname": "Accent Edit-All Flag", "offset": 0, "size": 4},
+          "slide_edit_all": {"fullname": "Slide Edit-All Flag", "offset": 4, "size": 4},
+          "swing_edit_all": {"fullname": "Swing Edit-All Flag", "offset": 8, "size": 4},
+          "accent_patterns": {"fullname": "Per-Track Accent Step Bitmask (Steps 1-32)", "offset": 12, "per_track": true, "stride": 4},
+          "slide_patterns": {"fullname": "Per-Track Slide Step Bitmask (Steps 1-32)", "offset": 76, "per_track": true, "stride": 4},
+          "swing_patterns": {"fullname": "Per-Track Swing Step Bitmask (Steps 1-32)", "offset": 140, "per_track": true, "stride": 4}
+        },
+        "extra_pattern_hi_structure": {
+          "trig_patterns_hi": {"fullname": "Per-Track Trigger Step Bitmask (Steps 33-64)", "offset": 0, "per_track": true, "stride": 4},
+          "accent_pattern_hi": {"fullname": "Accent Pattern, All Tracks (Steps 33-64)", "offset": 64, "size": 4},
+          "slide_pattern_hi": {"fullname": "Slide Pattern, All Tracks (Steps 33-64)", "offset": 68, "size": 4},
+          "swing_pattern_hi": {"fullname": "Swing Pattern, All Tracks (Steps 33-64)", "offset": 72, "size": 4},
+          "locks_hi": {"fullname": "Parameter Lock Data (Steps 33-64)", "offset": 76, "size": 2048},
+          "accent_patterns_hi": {"fullname": "Per-Track Accent Step Bitmask (Steps 33-64)", "offset": 2124, "per_track": true, "stride": 4},
+          "slide_patterns_hi": {"fullname": "Per-Track Slide Step Bitmask (Steps 33-64)", "offset": 2188, "per_track": true, "stride": 4},
+          "swing_patterns_hi": {"fullname": "Per-Track Swing Step Bitmask (Steps 33-64)", "offset": 2252, "per_track": true, "stride": 4}
+        }
+      }
+    },
+    "song": {
+      "fields": {
+        "sysex_header": {"fullname": "SysEx Header", "offset": 0, "size": 5},
+        "sysex_channel": {"fullname": "Device Channel", "offset": 5, "size": 1},
+        "sysex_type": {"fullname": "Message Type", "offset": 6, "size": 1},
+        "sysex_version": {"fullname": "Dump Version", "offset": 7, "size": 1},
+        "sysex_revision": {"fullname": "Dump Revision", "offset": 8, "size": 1},
+        "slot": {"fullname": "Original Position", "offset": 9, "size": 1},
+        "name": {"fullname": "Song Name", "offset": 10, "encoding": "raw", "size": 16, "kind": "ascii"},
+        "rows": {"fullname": "Song Rows", "offset": 26, "encoding": "7bit", "item_size": 10, "wire_item_size": 12, "dynamic_length": true},
+        "rows_structure": {
+          "pattern": {"fullname": "Pattern", "offset": 0, "min": 0, "max": 127, "end_row_sentinel": 255, "special_row_sentinel": 254},
+          "kit": {"fullname": "Kit", "offset": 1, "min": 0, "max": 63},
+          "loop_count": {"fullname": "Loop Count", "offset": 2, "min": 0, "max": 255},
+          "jump_target": {"fullname": "Jump-To Row", "offset": 3, "min": 0, "max": 255},
+          "mutes": {"fullname": "Track Mutes", "offset": 4, "size": 2, "min": 0, "max": 65535},
+          "tempo": {"fullname": "Row Tempo Override (ticks, BPM x 24)", "offset": 6, "size": 2, "min": 720, "max": 7200, "off_sentinel": 65535},
+          "start_offset": {"fullname": "Start Step Offset", "offset": 8, "min": 0, "max": 62},
+          "end_step": {"fullname": "End Step", "offset": 9, "min": 0, "max": 255}
+        }
+      }
+    }
+  },
+  "tracks": [
+    {
+      "id": 0,
+      "name": "BD",
+      "trackname": "01-BD",
+      "fullname": "Bass Drum",
+      "channel": 0,
+      "offset": 0,
+      "note": 36,
+      "mute": { "cc": 12, "muted_value": 127, "unmuted_value": 0 }
+    },
+    {
+      "id": 1,
+      "name": "SD",
+      "trackname": "02-SD",
+      "fullname": "Snare Drum",
+      "channel": 0,
+      "offset": 24,
+      "note": 38,
+      "mute": { "cc": 13, "muted_value": 127, "unmuted_value": 0 }
+    },
+    {
+      "id": 2,
+      "name": "HT",
+      "trackname": "03-HT",
+      "fullname": "High Tom",
+      "channel": 0,
+      "offset": 56,
+      "note": 40,
+      "mute": { "cc": 14, "muted_value": 127, "unmuted_value": 0 }
+    },
+    {
+      "id": 3,
+      "name": "MT",
+      "trackname": "04-MT",
+      "fullname": "Mid Tom",
+      "channel": 0,
+      "offset": 80,
+      "note": 41,
+      "mute": { "cc": 15, "muted_value": 127, "unmuted_value": 0 }
+    },
+    {
+      "id": 4,
+      "name": "LT",
+      "trackname": "05-LT",
+      "fullname": "Low Tom",
+      "channel": 1,
+      "offset": 0,
+      "note": 43,
+      "mute": { "cc": 12, "muted_value": 127, "unmuted_value": 0 }
+    },
+    {
+      "id": 5,
+      "name": "CP",
+      "trackname": "06-CP",
+      "fullname": "Hand Clap",
+      "channel": 1,
+      "offset": 24,
+      "note": 45,
+      "mute": { "cc": 13, "muted_value": 127, "unmuted_value": 0 }
+    },
+    {
+      "id": 6,
+      "name": "RS",
+      "trackname": "07-RS",
+      "fullname": "Rim Shot",
+      "channel": 1,
+      "offset": 56,
+      "note": 47,
+      "mute": { "cc": 14, "muted_value": 127, "unmuted_value": 0 }
+    },
+    {
+      "id": 7,
+      "name": "CB",
+      "trackname": "08-CB",
+      "fullname": "Cow Bell",
+      "channel": 1,
+      "offset": 80,
+      "note": 48,
+      "mute": { "cc": 15, "muted_value": 127, "unmuted_value": 0 }
+    },
+    {
+      "id": 8,
+      "name": "CH",
+      "trackname": "09-CH",
+      "fullname": "Closed Hihat",
+      "channel": 2,
+      "offset": 0,
+      "note": 50,
+      "mute": { "cc": 12, "muted_value": 127, "unmuted_value": 0 }
+    },
+    {
+      "id": 9,
+      "name": "OH",
+      "trackname": "10-OH",
+      "fullname": "Open Hihat",
+      "channel": 2,
+      "offset": 24,
+      "note": 52,
+      "mute": { "cc": 13, "muted_value": 127, "unmuted_value": 0 }
+    },
+    {
+      "id": 10,
+      "name": "RC",
+      "trackname": "11-RC",
+      "fullname": "Ride Cymbal",
+      "channel": 2,
+      "offset": 56,
+      "note": 53,
+      "mute": { "cc": 14, "muted_value": 127, "unmuted_value": 0 }
+    },
+    {
+      "id": 11,
+      "name": "CC",
+      "trackname": "12-CC",
+      "fullname": "Crash Cymbal",
+      "channel": 2,
+      "offset": 80,
+      "note": 55,
+      "mute": { "cc": 15, "muted_value": 127, "unmuted_value": 0 }
+    },
+    {
+      "id": 12,
+      "name": "M1",
+      "trackname": "13-M1",
+      "fullname": "Mid-Machine 1",
+      "channel": 3,
+      "offset": 0,
+      "note": 57,
+      "mute": { "cc": 12, "muted_value": 127, "unmuted_value": 0 }
+    },
+    {
+      "id": 13,
+      "name": "M2",
+      "trackname": "14-M2",
+      "fullname": "Mid-Machine 2",
+      "channel": 3,
+      "offset": 24,
+      "note": 59,
+      "mute": { "cc": 13, "muted_value": 127, "unmuted_value": 0 }
+    },
+    {
+      "id": 14,
+      "name": "M3",
+      "trackname": "15-M3",
+      "fullname": "Mid-Machine 3",
+      "channel": 3,
+      "offset": 56,
+      "note": 60,
+      "mute": { "cc": 14, "muted_value": 127, "unmuted_value": 0 }
+    },
+    {
+      "id": 15,
+      "name": "M4",
+      "trackname": "16-M4",
+      "fullname": "Mid-Machine 4",
+      "channel": 3,
+      "offset": 80,
+      "note": 62,
+      "mute": { "cc": 15, "muted_value": 127, "unmuted_value": 0 }
+    }
+  ],
+  "track_lfo": {
+    "transport": "sysex",
+    "sysex": {
+      "template": "F0 00 20 3C 02 00 62 [(track_id * 8) + param_index] [val] F7",
+      "block_byte": "62",
+      "description": "LFO configurations are sent as a continuous block. Param ID is calculated by track offset."
+    },
+    "lfo_shapes": [
+      {
+        "name": "TRI",
+        "fullname": "Triangle"
+      },
+      {
+        "name": "SAW",
+        "fullname": "Sawtooth"
+      },
+      {
+        "name": "SQR",
+        "fullname": "Square"
+      },
+      {
+        "name": "RMP",
+        "fullname": "Ramp"
+      },
+      {
+        "name": "EXP",
+        "fullname": "Exponential"
+      },
+      {
+        "name": "RND",
+        "fullname": "Random"
+      },
+      {
+        "name": "ISAW",
+        "fullname": "Inverted Sawtooth"
+      },
+      {
+        "name": "IEXP",
+        "fullname": "Inverted Exponential"
+      },
+      {
+        "name": "SINE",
+        "fullname": "Sine"
+      },
+      {
+        "name": "PLS",
+        "fullname": "Pulse"
+      },
+      {
+        "name": "HTRI",
+        "fullname": "Half-Triangle"
+      }
+    ],
+    "params": [
+      {
+        "name": "TRACK",
+        "fullname": "LFO Target Track",
+        "index": 0,
+        "default_val": 0
+      },
+      {
+        "name": "PARAM",
+        "fullname": "LFO Target Parameter",
+        "index": 1,
+        "default_val": 0
+      },
+      {
+        "name": "SHP1",
+        "fullname": "LFO Shape 1",
+        "index": 2,
+        "default_val": 0,
+        "widget": "shape"
+      },
+      {
+        "name": "SHP2",
+        "fullname": "LFO Shape 2",
+        "index": 3,
+        "default_val": 0,
+        "widget": "shape"
+      },
+      {
+        "name": "UPDTE",
+        "fullname": "LFO Update Mode",
+        "index": 4,
+        "default_val": 0,
+        "options": [
+          "FREE",
+          "TRIG",
+          "HOLD"
+        ]
+      },
+      {
+        "name": "SPEED",
+        "fullname": "LFO Speed",
+        "index": 5,
+        "default_val": 64
+      },
+      {
+        "name": "DEPTH",
+        "fullname": "LFO Depth",
+        "index": 6,
+        "default_val": 0
+      },
+      {
+        "name": "SHMIX",
+        "fullname": "LFO Shape Mix",
+        "index": 7,
+        "default_val": 0,
+        "widget": "mix_shape"
+      }
+    ]
+  },
+  "pages": {
+    "standalone": [
+      {
+        "name": "Level",
+        "fullname": "Level",
+        "params": [
+          {
+            "name": "LEV",
+            "fullname": "Level",
+            "cc_id": 8,
+            "default_val": 100
+          }
+        ]
+      }
+    ],
+    "synth": [
+      {
+        "name": "Synth",
+        "fullname": "Synthesis",
+        "params": [
+          {
+            "name": "CC 1",
+            "fullname": "Control 1",
+            "cc_id": 16
+          },
+          {
+            "name": "CC 2",
+            "fullname": "Control 2",
+            "cc_id": 17
+          },
+          {
+            "name": "CC 3",
+            "fullname": "Control 3",
+            "cc_id": 18
+          },
+          {
+            "name": "CC 4",
+            "fullname": "Control 4",
+            "cc_id": 19
+          },
+          {
+            "name": "CC 5",
+            "fullname": "Control 5",
+            "cc_id": 20
+          },
+          {
+            "name": "CC 6",
+            "fullname": "Control 6",
+            "cc_id": 21
+          },
+          {
+            "name": "CC 7",
+            "fullname": "Control 7",
+            "cc_id": 22
+          },
+          {
+            "name": "CC 8",
+            "fullname": "Control 8",
+            "cc_id": 23
+          }
+        ]
+      },
+      {
+        "name": "FX",
+        "fullname": "Effects",
+        "params": [
+          {
+            "name": "AMD",
+            "fullname": "Amplitude Mod Depth",
+            "cc_id": 24,
+            "default_val": 0
+          },
+          {
+            "name": "AMF",
+            "fullname": "Amplitude Mod Freq",
+            "cc_id": 25,
+            "default_val": 0
+          },
+          {
+            "name": "EQF",
+            "fullname": "EQ Frequency",
+            "cc_id": 26,
+            "default_val": 64
+          },
+          {
+            "name": "EQG",
+            "fullname": "EQ Gain",
+            "cc_id": 27,
+            "default_val": 64,
+            "display_offset": -64
+          },
+          {
+            "name": "FLTF",
+            "fullname": "Filter Frequency",
+            "cc_id": 28,
+            "default_val": 0
+          },
+          {
+            "name": "FLTW",
+            "fullname": "Filter Width",
+            "cc_id": 29,
+            "default_val": 127
+          },
+          {
+            "name": "FLTQ",
+            "fullname": "Filter Resonance (Q)",
+            "cc_id": 30,
+            "default_val": 0
+          },
+          {
+            "name": "SRR",
+            "fullname": "Sample Rate Redux",
+            "cc_id": 31,
+            "default_val": 0
+          }
+        ]
+      },
+      {
+        "name": "Routing",
+        "fullname": "Routing",
+        "params": [
+          {
+            "name": "DIST",
+            "fullname": "Distortion",
+            "cc_id": 32,
+            "default_val": 0
+          },
+          {
+            "name": "VOL",
+            "fullname": "Volume",
+            "cc_id": 33,
+            "default_val": 127
+          },
+          {
+            "name": "PAN",
+            "fullname": "Pan",
+            "cc_id": 34,
+            "default_val": 64
+          },
+          {
+            "name": "DEL",
+            "fullname": "Delay Send",
+            "cc_id": 35,
+            "default_val": 0
+          },
+          {
+            "name": "REV",
+            "fullname": "Reverb Send",
+            "cc_id": 36,
+            "default_val": 0
+          },
+          {
+            "name": "LFOS",
+            "fullname": "LFO Speed",
+            "cc_id": 37,
+            "default_val": 64
+          },
+          {
+            "name": "LFOD",
+            "fullname": "LFO Depth",
+            "cc_id": 38,
+            "default_val": 0
+          },
+          {
+            "name": "LFOM",
+            "fullname": "LFO Mix/Mode",
+            "cc_id": 39,
+            "default_val": 0
+          }
+        ]
+      }
+    ]
+  },
+  "master_fx": [
+    {
+      "name": "ECHO",
+      "fullname": "Rhythm Echo",
+      "sysex": {
+        "template": "F0 00 20 3C 02 00 5D [param_id] [val] F7",
+        "block_byte": "5D"
+      },
+      "params": [
+        {
+          "name": "TIME",
+          "fullname": "Delay Time",
+          "param_id": 0,
+          "default_val": 32,
+          "field": "echo_delay_time"
+        },
+        {
+          "name": "MOD",
+          "fullname": "Modulation",
+          "param_id": 1,
+          "default_val": 0,
+          "field": "echo_modulation"
+        },
+        {
+          "name": "MFRQ",
+          "fullname": "Modulation Frequency",
+          "param_id": 2,
+          "default_val": 32,
+          "field": "echo_modulation_frequency"
+        },
+        {
+          "name": "FB",
+          "fullname": "Feedback",
+          "param_id": 3,
+          "default_val": 0,
+          "field": "echo_feedback"
+        },
+        {
+          "name": "FLTF",
+          "fullname": "Filter Frequency",
+          "param_id": 4,
+          "default_val": 0,
+          "field": "echo_filter_frequency"
+        },
+        {
+          "name": "FLTW",
+          "fullname": "Filter Width",
+          "param_id": 5,
+          "default_val": 127,
+          "field": "echo_filter_width"
+        },
+        {
+          "name": "MONO",
+          "fullname": "Mono Toggle",
+          "param_id": 6,
+          "default_val": 0,
+          "field": "echo_mono_toggle"
+        },
+        {
+          "name": "LEV",
+          "fullname": "Level",
+          "param_id": 7,
+          "default_val": 96,
+          "field": "echo_level"
+        }
+      ]
+    },
+    {
+      "name": "REV",
+      "fullname": "Reverb",
+      "sysex": {
+        "template": "F0 00 20 3C 02 00 5E [param_id] [val] F7",
+        "block_byte": "5E"
+      },
+      "params": [
+        {
+          "name": "DVOL",
+          "fullname": "Delay Volume",
+          "param_id": 0,
+          "default_val": 0,
+          "field": "reverb_delay_volume"
+        },
+        {
+          "name": "PRED",
+          "fullname": "Pre-Delay",
+          "param_id": 1,
+          "default_val": 0,
+          "field": "reverb_pre_delay"
+        },
+        {
+          "name": "DEC",
+          "fullname": "Decay Time",
+          "param_id": 2,
+          "default_val": 64,
+          "field": "reverb_decay_time"
+        },
+        {
+          "name": "DAMP",
+          "fullname": "Damping",
+          "param_id": 3,
+          "default_val": 0,
+          "field": "reverb_damping"
+        },
+        {
+          "name": "HP",
+          "fullname": "High Pass Filter",
+          "param_id": 4,
+          "default_val": 0,
+          "field": "reverb_high_pass"
+        },
+        {
+          "name": "LP",
+          "fullname": "Low Pass Filter",
+          "param_id": 5,
+          "default_val": 127,
+          "field": "reverb_low_pass"
+        },
+        {
+          "name": "GATE",
+          "fullname": "Gate Time",
+          "param_id": 6,
+          "default_val": 127,
+          "field": "reverb_gate_time"
+        },
+        {
+          "name": "LEV",
+          "fullname": "Level",
+          "param_id": 7,
+          "default_val": 96,
+          "field": "reverb_level"
+        }
+      ]
+    },
+    {
+      "name": "EQ",
+      "fullname": "EQ",
+      "sysex": {
+        "template": "F0 00 20 3C 02 00 5F [param_id] [val] F7",
+        "block_byte": "5F"
+      },
+      "params": [
+        {
+          "name": "LF",
+          "fullname": "Low Frequency",
+          "param_id": 0,
+          "default_val": 64,
+          "field": "eq_low_frequency"
+        },
+        {
+          "name": "LG",
+          "fullname": "Low Gain",
+          "param_id": 1,
+          "default_val": 64,
+          "display_offset": -64,
+          "field": "eq_low_gain"
+        },
+        {
+          "name": "HF",
+          "fullname": "High Frequency",
+          "param_id": 2,
+          "default_val": 64,
+          "field": "eq_high_frequency"
+        },
+        {
+          "name": "HG",
+          "fullname": "High Gain",
+          "param_id": 3,
+          "default_val": 64,
+          "display_offset": -64,
+          "field": "eq_high_gain"
+        },
+        {
+          "name": "PF",
+          "fullname": "Parametric Frequency",
+          "param_id": 4,
+          "default_val": 64,
+          "field": "eq_peak_frequency"
+        },
+        {
+          "name": "PG",
+          "fullname": "Parametric Gain",
+          "param_id": 5,
+          "default_val": 64,
+          "display_offset": -64,
+          "field": "eq_peak_gain"
+        },
+        {
+          "name": "PQ",
+          "fullname": "Parametric Q",
+          "param_id": 6,
+          "default_val": 64,
+          "field": "eq_peak_q"
+        },
+        {
+          "name": "GAIN",
+          "fullname": "Master Gain",
+          "param_id": 7,
+          "default_val": 64,
+          "display_offset": -64,
+          "field": "eq_master_gain"
+        }
+      ]
+    },
+    {
+      "name": "DYN",
+      "fullname": "Dynamix",
+      "sysex": {
+        "template": "F0 00 20 3C 02 00 60 [param_id] [val] F7",
+        "block_byte": "60"
+      },
+      "params": [
+        {
+          "name": "ATCK",
+          "fullname": "Attack",
+          "param_id": 0,
+          "default_val": 127,
+          "field": "dyn_attack"
+        },
+        {
+          "name": "REL",
+          "fullname": "Release",
+          "param_id": 1,
+          "default_val": 127,
+          "field": "dyn_release"
+        },
+        {
+          "name": "TRHD",
+          "fullname": "Threshold",
+          "param_id": 2,
+          "default_val": 127,
+          "field": "dyn_threshold"
+        },
+        {
+          "name": "RTIO",
+          "fullname": "Ratio",
+          "param_id": 3,
+          "default_val": 127,
+          "field": "dyn_ratio"
+        },
+        {
+          "name": "KNEE",
+          "fullname": "Knee",
+          "param_id": 4,
+          "default_val": 127,
+          "field": "dyn_knee"
+        },
+        {
+          "name": "HP",
+          "fullname": "High Pass Filter",
+          "param_id": 5,
+          "default_val": 127,
+          "field": "dyn_high_pass"
+        },
+        {
+          "name": "OUTG",
+          "fullname": "Output Gain",
+          "param_id": 6,
+          "default_val": 0,
+          "field": "dyn_output_gain"
+        },
+        {
+          "name": "MIX",
+          "fullname": "Dry/Wet Mix",
+          "param_id": 7,
+          "default_val": 0,
+          "field": "dyn_dry_wet_mix"
+        }
+      ]
+    }
+  ],
+  "misc_pages": [
+    {
+      "name": "Track Groups",
+      "rows": [
+        [
+          {
+            "name": "Trig Group",
+            "widget": "track_combo",
+            "field": "trig_groups",
+            "cmd_path": "sysex_api.groups.trig_cmd"
+          },
+          {
+            "name": "Mute Group",
+            "widget": "track_combo",
+            "field": "mute_groups",
+            "cmd_path": "sysex_api.groups.mute_cmd"
+          }
+        ]
+      ]
+    }
+  ]
+}

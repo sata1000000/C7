@@ -1,0 +1,8 @@
+# Sets the max width of the code lines to 140 characters.
+max_width = 140
+
+# Would put each crate's imports on one line.
+#
+# Uncomment these once `imports_granularity` comes to the stable channel.
+# imports_granularity = "Crate"
+# group_imports = "StdExternalCrate"

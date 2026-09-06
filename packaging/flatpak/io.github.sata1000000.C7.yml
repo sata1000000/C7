@@ -1,0 +1,55 @@
+app-id: io.github.sata1000000.C7
+runtime: org.gnome.Platform
+runtime-version: '50'
+sdk: org.gnome.Sdk
+sdk-extensions:
+  - org.freedesktop.Sdk.Extension.rust-stable
+command: c7_app
+
+build-options:
+  append-path: /usr/lib/sdk/rust-stable/bin # Makes cargo and rustc available during the build.
+  env:
+    CARGO_HOME: /run/build/c7-app/cargo # `flatpak-cargo-generator.py` stages the offline crate registry here.
+    CARGO_NET_OFFLINE: "true"           # Tells cargo to use the vendored sources and NOT use crates.io.
+
+finish-args:
+  - --socket=wayland     # Strictly enforce Wayland display server.
+  - --device=all         # Needed for MIDI routing.
+  - --socket=pulseaudio  # Needed for sample playback.
+
+modules:
+  - name: c7-app
+    buildsystem: simple
+    build-commands:
+      # Build the C7 Bridge plugin.
+      - cargo build --release --package c7_bridge
+
+      # Build the C7 application binary.
+      - cargo build --release --package c7_app
+
+      # Install binary into the sandbox.
+      - install -Dm755 target/release/c7_app /app/bin/c7_app
+
+      # Install the CLAP plugin alongside the binary.
+      - install -Dm755 target/release/libc7_bridge.so /app/bin/bridge/C7-Bridge.clap
+
+      # Move the data directories alongside the binary so they live at `/app/bin/`.
+      - mv crates/c7_core/devices /app/bin/
+      - mv crates/c7_app/settings /app/bin/
+
+      # Install the app icon directly into the Linux standard XDG directory so the OS can display it.
+      - install -Dm644 crates/c7_app/icon.svg /app/share/icons/hicolor/scalable/apps/io.github.sata1000000.C7.svg
+
+      # Install the `.desktop` file so the app appears in the system.
+      - install -Dm644 packaging/flatpak/io.github.sata1000000.C7.desktop -t /app/share/applications/
+
+      # Install the appstream metainfo so GNOME shows the correct icon and description.
+      - install -Dm644 packaging/flatpak/io.github.sata1000000.C7.metainfo.xml -t /app/share/metainfo/
+
+    sources:
+      # Tells the compiler to look two directories up (the repository root) for the source files.
+      - type: dir
+        path: ../../
+
+      # Pre-generated crate tarballs that were produced by `flatpak-cargo-generator.py` in CI.
+      - cargo-sources.json

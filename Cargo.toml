@@ -1,0 +1,97 @@
+[workspace]
+
+members = ["crates/c7_app", "crates/c7_core", "crates/c7_bridge"]
+resolver = "2"
+
+[workspace.package]
+
+# The single source of C7's version. 
+#
+# Changing this is what triggers a CI release.
+version = "0.1.0"
+license = "GPL-3.0-or-later"
+publish = false
+edition = "2024"
+readme = "README.md"
+
+[workspace.dependencies]
+
+# Shared hardware-protocol and audio-utility layer.
+c7_core = { path = "crates/c7_core" }
+
+# GLib core runtime.
+#
+# Used all over the project for general functions (timers, async futures, DateTime).
+glib = "0.22"
+
+# Async channel for passing values between threads.
+#
+# Used to report from background work (MIDI, C7 Bridge TCP, firmware transfers) back to the GTK main loop.
+async-channel = "2"
+
+# JSON parsing and value manipulation.
+#
+# Need I explain what JSON is used for? It's the standard data reference format used across the project.
+serde_json = { version = "1", features = ["preserve_order"] }
+
+[workspace.lints.clippy]
+
+# Makes clippy never shut up about the tiniest things.
+# Suffixed with a bunch of `allow` statements to make clippy stop talking.
+pedantic = { level = "warn", priority = -1 }
+cast_possible_truncation = "allow"
+cast_possible_wrap = "allow"
+cast_sign_loss = "allow"
+cast_precision_loss = "allow"
+float_cmp = "allow"
+case_sensitive_file_extension_comparisons = "allow"
+similar_names = "allow"
+missing_errors_doc = "allow"
+missing_panics_doc = "allow"
+must_use_candidate = "allow"
+cast_lossless = "allow"
+struct_excessive_bools = "allow"
+fn_params_excessive_bools = "allow"
+doc_markdown = "allow"
+
+# GTK4 constructors and protocol functions routinely need more than clippy's default 7-parameter limit.
+too_many_arguments = "allow"
+too_many_lines = "allow"
+
+# Catches stray `unimplemented!()` left behind in committed code.
+unimplemented = "warn"
+
+# Catches statements whose value is computed and discarded with no side effect.
+no_effect = "warn"
+
+# Flags explicit `panic!()` calls.
+# panic = "deny"
+
+# Never use `#[allow()]` to get around a clippy/compiler warning. That's lazy writing.
+allow_attributes = "deny"
+
+# Catches stray `dbg!()` left behind in committed code.
+dbg_macro = "deny"
+
+# Catches stray `todo!()` left behind in code.
+todo = "deny"
+
+# Catches accidental `println!()` debugging left behind in committed code.
+print_stdout = "deny"
+
+# Catches accidental `eprintln!()` debugging left behind in committed code.
+print_stderr = "deny"
+
+# Flags functions whose branching logic has gotten too tangled.
+# cognitive_complexity  = "warn"
+
+[workspace.lints.rust]
+
+# Finds out if something is public for no good reason.
+unreachable_pub = "warn"
+
+[profile.release]
+
+lto = "fat"
+codegen-units = 1
+strip = "debuginfo"

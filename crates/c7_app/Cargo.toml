@@ -1,0 +1,48 @@
+[package]
+
+name = "c7_app"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+publish.workspace = true
+readme = "README.md"
+description = "Control legacy Elektron hardware"
+
+[dependencies]
+
+c7_core = { workspace = true }
+
+async-channel = { workspace = true }
+glib = { workspace = true }
+serde_json = { workspace = true }
+
+# GNOME I/O and application infrastructure.
+#
+# Used for `GtkFileDialog` (open/save dialogs), `GFile`, and `GApplication` lifecycle hooks.
+gio = "0.22"
+
+# GTK4 Rust bindings.
+#
+# Used for every visible UI element.
+#
+# MSYS2 is still required on Windows specifically because GTK4 is a C library.
+gtk4 = { version = "0.11", features = ["v4_22"] }
+
+# GNOME Adwaita widget library built on top of GTK4.
+#
+# Used for `AdwWindow`, `AdwHeaderBar`, and the system-integrated theme (dark mode, accent colors).
+libadwaita = { version = "0.9", features = ["v1_9"] }
+
+# Cairo 2D graphics bindings.
+#
+# Used for the custom `DrawingArea` widgets like the parameter knobs and the wavetable editor canvas.
+cairo-rs = "0.22"
+
+# Pango text layout bindings.
+#
+# Used when drawing labeled axes and tick marks inside Cairo `DrawingArea` widgets.
+pango = "0.22"
+
+[lints]
+
+workspace = true

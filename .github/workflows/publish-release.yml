@@ -1,0 +1,70 @@
+name: Build & Release
+
+# Single entry point for the build pipeline. A version bump triggers a new release.
+on:
+  push:
+    branches:
+      - 'main'
+    paths:
+      - 'Cargo.toml'
+  workflow_dispatch:
+
+jobs:
+  # Not every `Cargo.toml` edit is a release, so the builds only run when the version has no matching tag.
+  check-version:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.check.outputs.version }}
+      unreleased: ${{ steps.check.outputs.unreleased }}
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0 # Brings the tags along, which is how an already-released version is recognized.
+
+      - name: Check Version
+        id: check
+        run: |
+          version=$(cargo pkgid -p c7_app | cut -d'#' -f2)
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
+          if git rev-parse -q --verify "refs/tags/v$version" > /dev/null; then
+            echo "v$version is already released. Nothing to build."
+          else
+            echo "unreleased=true" >> "$GITHUB_OUTPUT"
+          fi
+
+  windows:
+    needs: check-version
+    if: needs.check-version.outputs.unreleased == 'true'
+    uses: ./.github/workflows/build-windows.yml
+  macos:
+    needs: check-version
+    if: needs.check-version.outputs.unreleased == 'true'
+    uses: ./.github/workflows/build-macos.yml
+  linux:
+    needs: check-version
+    if: needs.check-version.outputs.unreleased == 'true'
+    uses: ./.github/workflows/build-linux.yml
+
+  release:
+    # GitHub runs this only if all three builds complete successfully.
+    needs: [check-version, windows, macos, linux]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Download Build Assets
+        uses: actions/download-artifact@v7
+        with:
+          path: release-assets
+
+      - name: Create Unified Release
+        uses: softprops/action-gh-release@v3
+        with:
+          tag_name: v${{ needs.check-version.outputs.version }}
+          name: C7 v${{ needs.check-version.outputs.version }}
+          files: |
+            release-assets/**/*.dmg
+            release-assets/**/*.exe
+            release-assets/**/*.flatpak

@@ -1,0 +1,766 @@
+{
+  "brand": "Elektron",
+  "device": "SidStation",
+  "device_max": "SidStation",
+  "device_short": "SidStation",
+  "device_shorter": "SS",
+  "firmware": {
+    "upload_instructions": [
+      "Set the MIDI Inter-packet delay to 30 ms.",
+      "Put the SidStation into OS-receive mode.",
+      "Click 'Upload MIDI Upgrade File' below and pick the .syx file."
+    ]
+  },
+  "sysex_header": [
+    240,
+    0,
+    32,
+    60,
+    1
+  ],
+  "system": {
+    "panic_all_notes_off": {
+      "cc": 123,
+      "val": 0,
+      "description": "All Notes Off."
+    },
+    "bank_select_reset": {
+      "cc": 0,
+      "val": 0,
+      "description": "Sent alongside Panic to reset bank selects."
+    },
+    "piano_keyboard_input": true,
+    "piano_keyboard_output": true,
+    "pitch_bend_input": true
+  },
+  "sysex_api": {
+    "librarian": false,
+    "has_turbomidi": false,
+    "commands": {
+      "patch_all_clear": {
+        "block_byte": "01",
+        "description": "Wipes every patch slot."
+      },
+      "patch_dump": {
+        "block_byte": "02",
+        "description": "Carries one patch, in both directions. The size bytes hold the patch length in bytes, high bits first. Byte layout is in `sysex_layout.patch`."
+      },
+      "skip_patch": {
+        "block_byte": "03",
+        "description": "Steps the receiving patch position on by one without writing, leaving that slot as it was."
+      },
+      "direct_program": {
+        "block_byte": "04",
+        "description": "Writes one field of the patch currently being edited, addressed as a 10-bit memory position. The mask picks which bits of the target byte get replaced. The shift is how far up the data moves first."
+      }
+    },
+    "patch": {
+      "write_cmd": 2,
+      "clear_all_cmd": 1,
+      "skip_cmd": 3,
+      "slots": 100,
+      "first_slot": 0,
+      "display_offset": 0
+    },
+    "patch_structure": {
+      "table_max_steps": 32
+    }
+  },
+  "sysex_layout": {
+    "patch": {
+      "fields": {
+        "sysex_header": {"fullname": "SysEx Header", "offset": 0, "size": 5},
+        "sysex_channel": {"fullname": "Device Channel", "offset": 5, "size": 1},
+        "sysex_type": {"fullname": "Message Type", "offset": 6, "size": 1},
+        "sysex_version": {"fullname": "Dump Version", "offset": 7, "size": 1},
+        "sysex_size": {"fullname": "Patch Size In Bytes", "offset": 8, "size": 2},
+        "sysex_pad": {"fullname": "Pad", "offset": 10, "size": 24, "kind": "unused"},
+        "sysex_magic": {"fullname": "Start Of Patch Data", "offset": 34, "size": 1},
+        "payload": {"fullname": "Patch Data", "offset": 35, "encoding": "nibble", "dynamic_length": true},
+        "payload_structure": {
+          "name": {"fullname": "Patch Name", "offset": 0, "encoding": "raw", "size": 10, "kind": "ascii"},
+          "direct_controller_1": {"fullname": "Direct Controller 1 Target", "offset": 10, "min": 0, "max": 96},
+          "direct_controller_1_limit_down": {"fullname": "Direct Controller 1 Lower Limit", "offset": 11, "min": 0, "max": 127},
+          "direct_controller_1_limit_up": {"fullname": "Direct Controller 1 Upper Limit", "offset": 12, "min": 0, "max": 127},
+          "direct_controller_2": {"fullname": "Direct Controller 2 Target", "offset": 13, "min": 0, "max": 96},
+          "direct_controller_2_limit_down": {"fullname": "Direct Controller 2 Lower Limit", "offset": 14, "min": 0, "max": 127},
+          "direct_controller_2_limit_up": {"fullname": "Direct Controller 2 Upper Limit", "offset": 15, "min": 0, "max": 127},
+          "direct_controller_3": {"fullname": "Direct Controller 3 Target", "offset": 16, "min": 0, "max": 96},
+          "direct_controller_3_limit_down": {"fullname": "Direct Controller 3 Lower Limit", "offset": 17, "min": 0, "max": 127},
+          "direct_controller_3_limit_up": {"fullname": "Direct Controller 3 Upper Limit", "offset": 18, "min": 0, "max": 127},
+          "direct_controller_4": {"fullname": "Direct Controller 4 Target", "offset": 19, "min": 0, "max": 96},
+          "direct_controller_4_limit_down": {"fullname": "Direct Controller 4 Lower Limit", "offset": 20, "min": 0, "max": 127},
+          "direct_controller_4_limit_up": {"fullname": "Direct Controller 4 Upper Limit", "offset": 21, "min": 0, "max": 127},
+          "osc1_active": {"fullname": "Oscillator 1 Active", "offset": 22, "kind": "bitmask", "mask": 1},
+          "osc2_active": {"fullname": "Oscillator 2 Active", "offset": 22, "kind": "bitmask", "mask": 2, "shift": 1},
+          "osc3_active": {"fullname": "Oscillator 3 Active", "offset": 22, "kind": "bitmask", "mask": 4, "shift": 2},
+          "poly_mode": {"fullname": "Poly Mode", "offset": 22, "kind": "bitmask", "mask": 8, "shift": 3},
+          "filter_sync_note_on": {"fullname": "Filter Sync To Note On", "offset": 22, "kind": "bitmask", "mask": 16, "shift": 4},
+          "portamento_legato": {"fullname": "Portamento Legato", "offset": 22, "kind": "bitmask", "mask": 32, "shift": 5},
+          "filter_wrap": {"fullname": "Filter Wrap", "offset": 22, "kind": "bitmask", "mask": 64, "shift": 6},
+          "filter_envelope_invert": {"fullname": "Filter Envelope Invert", "offset": 22, "kind": "bitmask", "mask": 128, "shift": 7},
+          "unused_1": {"fullname": "Reserved", "offset": 23, "size": 1, "kind": "unused"},
+          "filter_osc_routing": {"fullname": "Oscillators Routed Through Filter", "offset": 24, "kind": "bitmask", "mask": 7},
+          "filter_resonance": {"fullname": "Filter Resonance", "offset": 24, "kind": "bitmask", "mask": 240, "shift": 4, "min": 0, "max": 15},
+          "filter_type": {"fullname": "Filter Type", "offset": 25, "kind": "bitmask", "mask": 7, "min": 0, "max": 7, "values_ref": "filter_type"},
+          "filter_lfo": {"fullname": "Filter Cutoff LFO", "offset": 25, "kind": "bitmask", "mask": 48, "shift": 4, "min": 0, "max": 3},
+          "filter_note_on_reinit": {"fullname": "Force Note-On Reinit", "offset": 25, "kind": "bitmask", "mask": 64, "shift": 6},
+          "filter_cutoff": {"fullname": "Filter Cutoff", "offset": 26, "min": 0, "max": 127},
+          "filter_envelope_depth": {"fullname": "Filter Envelope Depth", "offset": 27, "min": 0, "max": 127},
+          "filter_envelope_attack": {"fullname": "Filter Envelope Attack", "offset": 28, "min": 0, "max": 127},
+          "filter_envelope_decay": {"fullname": "Filter Envelope Decay", "offset": 29, "min": 0, "max": 127},
+          "filter_envelope_sustain": {"fullname": "Filter Envelope Sustain", "offset": 30, "min": 0, "max": 127},
+          "filter_envelope_release": {"fullname": "Filter Envelope Release", "offset": 31, "min": 0, "max": 127},
+          "filter_lfo_depth": {"fullname": "Filter LFO Depth", "offset": 32, "min": 0, "max": 127},
+          "filter_lfo_wheel_depth": {"fullname": "Filter LFO Wheel Depth", "offset": 33, "min": 0, "max": 127},
+          "sync_speed": {"fullname": "Local Update Speed", "offset": 34, "min": 50, "max": 200},
+          "sync_hardcut": {"fullname": "Local Hardcut", "offset": 35, "min": 0, "max": 15},
+          "oscillators": {"fullname": "Oscillator Settings", "offset": 36, "count": 3, "item_size": 21},
+          "lfos": {"fullname": "LFO Settings", "offset": 99, "count": 4, "item_size": 11},
+          "tables": {"fullname": "Table Data", "offset": 143, "count": 3, "item_size": 2, "dynamic_length": true},
+          "oscillators_structure": {
+            "sync_pwm": {"fullname": "Restart Pulsewidth On Note On", "offset": 0, "kind": "bitmask", "mask": 1},
+            "gate": {"fullname": "Use Gate Instead Of SID Envelope", "offset": 0, "kind": "bitmask", "mask": 2, "shift": 1},
+            "track": {"fullname": "Pitch Track", "offset": 1, "min": 0, "max": 99},
+            "arpeggiator_speed": {"fullname": "Arpeggiator Speed", "offset": 2, "min": 0, "max": 127},
+            "transpose": {"fullname": "Transpose", "offset": 3, "min": -24, "max": 24},
+            "detune": {"fullname": "Detune", "offset": 4, "min": -64, "max": 63},
+            "pitch_bend_range": {"fullname": "Pitch Bend Range", "offset": 5, "min": 0, "max": 24},
+            "attack": {"fullname": "SID Envelope Attack", "offset": 6, "min": 0, "max": 15},
+            "decay": {"fullname": "SID Envelope Decay", "offset": 7, "min": 0, "max": 15},
+            "sustain": {"fullname": "SID Envelope Sustain", "offset": 8, "min": 0, "max": 15},
+            "release": {"fullname": "SID Envelope Release", "offset": 9, "min": 0, "max": 15},
+            "delay": {"fullname": "Oscillator Delay", "offset": 10, "min": 0, "max": 127},
+            "pwm_start": {"fullname": "Pulsewidth Start", "offset": 11, "min": 0, "max": 127},
+            "pwm_add": {"fullname": "Pulsewidth Sweep", "offset": 12, "min": 0, "max": 127},
+            "pwm_lfo": {"fullname": "Pulsewidth LFO", "offset": 13, "min": 0, "max": 3},
+            "pwm_lfo_depth": {"fullname": "Pulsewidth LFO Depth", "offset": 14, "min": 0, "max": 127},
+            "sync": {"fullname": "Synchronize", "offset": 15, "kind": "bitmask", "mask": 2, "shift": 1},
+            "ring_mod": {"fullname": "Ring Modulation", "offset": 15, "kind": "bitmask", "mask": 4, "shift": 2},
+            "waveform": {"fullname": "Waveform", "offset": 15, "kind": "bitmask", "mask": 240, "shift": 4, "values_ref": "waveform"},
+            "portamento_speed": {"fullname": "Portamento Speed", "offset": 16, "min": 0, "max": 99},
+            "vibrato_lfo": {"fullname": "Vibrato LFO", "offset": 17, "min": 0, "max": 3},
+            "vibrato_depth": {"fullname": "Vibrato Depth", "offset": 18, "min": 0, "max": 127},
+            "vibrato_wheel_depth": {"fullname": "Vibrato Wheel Depth", "offset": 19, "min": 0, "max": 127},
+            "table_speed": {"fullname": "Table Speed", "offset": 20, "min": 0, "max": 127}
+          },
+          "lfos_structure": {
+            "type": {"fullname": "LFO Shape", "offset": 0, "kind": "bitmask", "mask": 7, "values_ref": "lfo_shape"},
+            "ctrl_source": {"fullname": "CTRL Source", "offset": 0, "kind": "bitmask", "mask": 240, "shift": 4, "min": 0, "max": 11, "values_ref": "lfo_ctrl_source"},
+            "sync_note_on": {"fullname": "Sync To Note On", "offset": 1, "kind": "bitmask", "mask": 1},
+            "invert": {"fullname": "Invert", "offset": 1, "kind": "bitmask", "mask": 2, "shift": 1},
+            "above_zero": {"fullname": "Above Zero", "offset": 1, "kind": "bitmask", "mask": 4, "shift": 2},
+            "sync_note_off": {"fullname": "Sync To Note Off", "offset": 1, "kind": "bitmask", "mask": 8, "shift": 3},
+            "ctrl_destination": {"fullname": "CTRL Destination", "offset": 1, "kind": "bitmask", "mask": 112, "shift": 4, "min": 0, "max": 4, "values_ref": "lfo_ctrl_destination"},
+            "speed": {"fullname": "Speed", "offset": 2, "min": 0, "max": 127},
+            "sample_hold": {"fullname": "Sample And Hold", "offset": 3, "min": 0, "max": 127},
+            "depth": {"fullname": "Depth", "offset": 4, "min": 0, "max": 127},
+            "add_lfo": {"fullname": "Added LFO", "offset": 5, "min": 0, "max": 3},
+            "lace_speed": {"fullname": "Interlace Speed", "offset": 6, "min": 0, "max": 127},
+            "lace_with": {"fullname": "Interlace Partner", "offset": 7, "min": 0, "max": 4, "values_ref": "lfo_lace_with"},
+            "add_depth": {"fullname": "Added LFO Depth", "offset": 8, "min": 0, "max": 127},
+            "ctrl_value": {"fullname": "CTRL Depth Amount", "offset": 9, "min": 0, "max": 127},
+            "fade_in": {"fullname": "Fade In Speed", "offset": 10, "min": 0, "max": 127}
+          },
+          "tables_structure": {
+            "waveform": {"fullname": "Step Waveform", "offset": 0, "values_ref": "waveform", "end_sentinel": 255, "loop_sentinel": 254},
+            "note": {"fullname": "Step Note", "offset": 1, "min": 0, "max": 255}
+          }
+        }
+      },
+      "constants": {
+        "waveform": [
+          {"value": 0, "label": "OFF", "fullname": "Off"},
+          {"value": 1, "label": "TRI", "fullname": "Triangle"},
+          {"value": 2, "label": "SAW", "fullname": "Sawtooth"},
+          {"value": 4, "label": "PULS", "fullname": "Pulse"},
+          {"value": 5, "label": "MIX", "fullname": "Mixed"},
+          {"value": 8, "label": "NOIS", "fullname": "Noise"}
+        ],
+        "lfo_shape": [
+          {"value": 0, "label": "TRI", "fullname": "Triangle"},
+          {"value": 1, "label": "SAW", "fullname": "Sawtooth"},
+          {"value": 2, "label": "RMP", "fullname": "Ramp"},
+          {"value": 3, "label": "PULS", "fullname": "Pulse"},
+          {"value": 4, "label": "RND", "fullname": "Random"},
+          {"value": 7, "label": "FLAT", "fullname": "Flat / DC"}
+        ],
+        "filter_type": ["OFF", "LP", "BP", "LP+BP", "HP", "LP+HP", "BP+HP", "LP+BP+HP"],
+        "lfo_ctrl_source": [
+          {"value": 0, "label": "MW", "fullname": "ModWheel"},
+          {"value": 1, "label": "PB", "fullname": "PitchBend"},
+          {"value": 2, "label": "VEL", "fullname": "Velocity"},
+          {"value": 3, "label": "AT", "fullname": "Aftertouch"},
+          {"value": 4, "label": "CTRL1", "fullname": "LFO CTRL1"},
+          {"value": 5, "label": "CTRL2", "fullname": "LFO CTRL2"},
+          {"value": 6, "label": "CTRL3", "fullname": "LFO CTRL3"},
+          {"value": 7, "label": "CTRL4", "fullname": "LFO CTRL4"},
+          {"value": 8, "label": "LFO1", "fullname": "LFO 1"},
+          {"value": 9, "label": "LFO2", "fullname": "LFO 2"},
+          {"value": 10, "label": "LFO3", "fullname": "LFO 3"},
+          {"value": 11, "label": "LFO4", "fullname": "LFO 4"}
+        ],
+        "lfo_ctrl_destination": ["NONE", "DEPTH", "SPEED", "S&H", "LACE"],
+        "lfo_lace_with": ["ZERO", "LFO1", "LFO2", "LFO3", "LFO4"],
+        "dump_version_byte": 0,
+        "dump_size_bytes": 2,
+        "pad_byte": 45,
+        "pad_length": 24,
+        "magic_byte": 69,
+        "table_note_add_base": 192,
+        "table_note_subtract_base": 128
+      }
+    }
+  },
+  "tracks": [
+    {
+      "id": 0,
+      "name": "T1",
+      "trackname": "Track 1",
+      "fullname": "Track 1",
+      "channel": 0,
+      "offset": 0
+    }
+  ],
+  "pages": {
+    "standalone": [
+      {
+        "name": "Modulation",
+        "fullname": "Modulation",
+        "params": [
+          {
+            "name": "MW",
+            "fullname": "Modulation Wheel",
+            "cc_id": 1
+          }
+        ]
+      }
+    ],
+    "synth": [
+      {
+        "name": "Osc1",
+        "fullname": "Oscillator 1",
+        "params": [
+          {
+            "name": "ACT",
+            "fullname": "Osc1 Active",
+            "cc_id": 24,
+            "widget": "combo",
+            "options": ["Off", "On"]
+          },
+          {
+            "name": "ARP",
+            "fullname": "Arpeggiator Speed",
+            "cc_id": 34
+          },
+          {
+            "name": "PTCH",
+            "fullname": "Pitch/Track",
+            "cc_id": 35
+          },
+          {
+            "name": "TRNS",
+            "fullname": "Transpose",
+            "cc_id": 36
+          },
+          {
+            "name": "VDEP",
+            "fullname": "Vibrato Depth",
+            "cc_id": 37
+          },
+          {
+            "name": "DET",
+            "fullname": "Detune",
+            "cc_id": 38
+          },
+          {
+            "name": "PORT",
+            "fullname": "Portamento Speed",
+            "cc_id": 39
+          },
+          {
+            "name": "SYNC",
+            "fullname": "Synchronize",
+            "cc_id": 40,
+            "widget": "combo",
+            "options": ["Off", "On"]
+          },
+          {
+            "name": "RING",
+            "fullname": "Ring Modulation",
+            "cc_id": 41,
+            "widget": "combo",
+            "options": ["Off", "On"]
+          },
+          {
+            "name": "PWST",
+            "fullname": "PWM Start Value",
+            "cc_id": 42
+          },
+          {
+            "name": "PWAD",
+            "fullname": "PWM Add Value",
+            "cc_id": 43
+          },
+          {
+            "name": "PWLD",
+            "fullname": "PWM LFO Depth",
+            "cc_id": 44
+          },
+          {
+            "name": "DLY",
+            "fullname": "Delay",
+            "cc_id": 45
+          },
+          {
+            "name": "ATK",
+            "fullname": "Attack",
+            "cc_id": 46
+          },
+          {
+            "name": "DEC",
+            "fullname": "Decay",
+            "cc_id": 47
+          },
+          {
+            "name": "SUS",
+            "fullname": "Sustain",
+            "cc_id": 48
+          },
+          {
+            "name": "REL",
+            "fullname": "Release",
+            "cc_id": 49
+          }
+        ]
+      },
+      {
+        "name": "Osc2",
+        "fullname": "Oscillator 2",
+        "params": [
+          {
+            "name": "ACT",
+            "fullname": "Osc2 Active",
+            "cc_id": 25,
+            "widget": "combo",
+            "options": ["Off", "On"]
+          },
+          {
+            "name": "ARP",
+            "fullname": "Arpeggiator Speed",
+            "cc_id": 50
+          },
+          {
+            "name": "PTCH",
+            "fullname": "Pitch/Track",
+            "cc_id": 51
+          },
+          {
+            "name": "TRNS",
+            "fullname": "Transpose",
+            "cc_id": 52
+          },
+          {
+            "name": "VDEP",
+            "fullname": "Vibrato Depth",
+            "cc_id": 53
+          },
+          {
+            "name": "DET",
+            "fullname": "Detune",
+            "cc_id": 54
+          },
+          {
+            "name": "PORT",
+            "fullname": "Portamento Speed",
+            "cc_id": 55
+          },
+          {
+            "name": "SYNC",
+            "fullname": "Synchronize",
+            "cc_id": 56,
+            "widget": "combo",
+            "options": ["Off", "On"]
+          },
+          {
+            "name": "RING",
+            "fullname": "Ring Modulation",
+            "cc_id": 57,
+            "widget": "combo",
+            "options": ["Off", "On"]
+          },
+          {
+            "name": "PWST",
+            "fullname": "PWM Start Value",
+            "cc_id": 58
+          },
+          {
+            "name": "PWAD",
+            "fullname": "PWM Add Value",
+            "cc_id": 59
+          },
+          {
+            "name": "PWLD",
+            "fullname": "PWM LFO Depth",
+            "cc_id": 60
+          },
+          {
+            "name": "DLY",
+            "fullname": "Delay",
+            "cc_id": 61
+          },
+          {
+            "name": "ATK",
+            "fullname": "Attack",
+            "cc_id": 62
+          },
+          {
+            "name": "DEC",
+            "fullname": "Decay",
+            "cc_id": 63
+          },
+          {
+            "name": "SUS",
+            "fullname": "Sustain",
+            "cc_id": 70
+          },
+          {
+            "name": "REL",
+            "fullname": "Release",
+            "cc_id": 71
+          }
+        ]
+      },
+      {
+        "name": "Osc3",
+        "fullname": "Oscillator 3",
+        "params": [
+          {
+            "name": "ACT",
+            "fullname": "Osc3 Active",
+            "cc_id": 26,
+            "widget": "combo",
+            "options": ["Off", "On"]
+          },
+          {
+            "name": "ARP",
+            "fullname": "Arpeggiator Speed",
+            "cc_id": 72
+          },
+          {
+            "name": "PTCH",
+            "fullname": "Pitch/Track",
+            "cc_id": 73
+          },
+          {
+            "name": "TRNS",
+            "fullname": "Transpose",
+            "cc_id": 74
+          },
+          {
+            "name": "VDEP",
+            "fullname": "Vibrato Depth",
+            "cc_id": 75
+          },
+          {
+            "name": "DET",
+            "fullname": "Detune",
+            "cc_id": 76
+          },
+          {
+            "name": "PORT",
+            "fullname": "Portamento Speed",
+            "cc_id": 77
+          },
+          {
+            "name": "SYNC",
+            "fullname": "Synchronize",
+            "cc_id": 78,
+            "widget": "combo",
+            "options": ["Off", "On"]
+          },
+          {
+            "name": "RING",
+            "fullname": "Ring Modulation",
+            "cc_id": 79,
+            "widget": "combo",
+            "options": ["Off", "On"]
+          },
+          {
+            "name": "PWST",
+            "fullname": "PWM Start Value",
+            "cc_id": 80
+          },
+          {
+            "name": "PWAD",
+            "fullname": "PWM Add Value",
+            "cc_id": 81
+          },
+          {
+            "name": "PWLD",
+            "fullname": "PWM LFO Depth",
+            "cc_id": 82
+          },
+          {
+            "name": "DLY",
+            "fullname": "Delay",
+            "cc_id": 83
+          },
+          {
+            "name": "ATK",
+            "fullname": "Attack",
+            "cc_id": 84
+          },
+          {
+            "name": "DEC",
+            "fullname": "Decay",
+            "cc_id": 85
+          },
+          {
+            "name": "SUS",
+            "fullname": "Sustain",
+            "cc_id": 86
+          },
+          {
+            "name": "REL",
+            "fullname": "Release",
+            "cc_id": 87
+          }
+        ]
+      },
+      {
+        "name": "Filter",
+        "fullname": "Filter",
+        "params": [
+          {
+            "name": "CUT",
+            "fullname": "Filter Cutoff",
+            "cc_id": 27
+          },
+          {
+            "name": "EDEP",
+            "fullname": "Filter Envelope Depth",
+            "cc_id": 28
+          },
+          {
+            "name": "LDEP",
+            "fullname": "Filter LFO Depth",
+            "cc_id": 29
+          },
+          {
+            "name": "ATK",
+            "fullname": "Filter Envelope Attack",
+            "cc_id": 30
+          },
+          {
+            "name": "DEC",
+            "fullname": "Filter Envelope Decay",
+            "cc_id": 31
+          },
+          {
+            "name": "SUS",
+            "fullname": "Filter Envelope Sustain",
+            "cc_id": 32
+          },
+          {
+            "name": "REL",
+            "fullname": "Filter Envelope Release",
+            "cc_id": 33
+          }
+        ]
+      },
+      {
+        "name": "DCTRL",
+        "fullname": "Direct Controllers",
+        "params": [
+          {
+            "name": "DCTRL1",
+            "fullname": "Direct Controller 1",
+            "cc_id": 16
+          },
+          {
+            "name": "DCTRL2",
+            "fullname": "Direct Controller 2",
+            "cc_id": 17
+          },
+          {
+            "name": "DCTRL3",
+            "fullname": "Direct Controller 3",
+            "cc_id": 18
+          },
+          {
+            "name": "DCTRL4",
+            "fullname": "Direct Controller 4",
+            "cc_id": 19
+          }
+        ]
+      }
+    ],
+    "lfo": [
+      {
+        "name": "LFO1",
+        "fullname": "LFO 1",
+        "params": [
+          {
+            "name": "CTRL",
+            "fullname": "LFO CTRL1 Value",
+            "cc_id": 20
+          },
+          {
+            "name": "SPD",
+            "fullname": "LFO1 Speed",
+            "cc_id": 88
+          },
+          {
+            "name": "DPTH",
+            "fullname": "LFO1 Depth",
+            "cc_id": 89
+          },
+          {
+            "name": "ADPT",
+            "fullname": "LFO1 Add Depth",
+            "cc_id": 90
+          },
+          {
+            "name": "FADE",
+            "fullname": "LFO1 Fade In",
+            "cc_id": 91
+          },
+          {
+            "name": "S&H",
+            "fullname": "LFO1 Sample And Hold",
+            "cc_id": 92
+          },
+          {
+            "name": "LACE",
+            "fullname": "LFO1 Lace Speed",
+            "cc_id": 93
+          }
+        ]
+      },
+      {
+        "name": "LFO2",
+        "fullname": "LFO 2",
+        "params": [
+          {
+            "name": "CTRL",
+            "fullname": "LFO CTRL2 Value",
+            "cc_id": 21
+          },
+          {
+            "name": "SPD",
+            "fullname": "LFO2 Speed",
+            "cc_id": 94
+          },
+          {
+            "name": "DPTH",
+            "fullname": "LFO2 Depth",
+            "cc_id": 95
+          },
+          {
+            "name": "ADPT",
+            "fullname": "LFO2 Add Depth",
+            "cc_id": 102
+          },
+          {
+            "name": "FADE",
+            "fullname": "LFO2 Fade In",
+            "cc_id": 103
+          },
+          {
+            "name": "S&H",
+            "fullname": "LFO2 Sample And Hold",
+            "cc_id": 104
+          },
+          {
+            "name": "LACE",
+            "fullname": "LFO2 Lace Speed",
+            "cc_id": 105
+          }
+        ]
+      },
+      {
+        "name": "LFO3",
+        "fullname": "LFO 3",
+        "params": [
+          {
+            "name": "CTRL",
+            "fullname": "LFO CTRL3 Value",
+            "cc_id": 22
+          },
+          {
+            "name": "SPD",
+            "fullname": "LFO3 Speed",
+            "cc_id": 106
+          },
+          {
+            "name": "DPTH",
+            "fullname": "LFO3 Depth",
+            "cc_id": 107
+          },
+          {
+            "name": "ADPT",
+            "fullname": "LFO3 Add Depth",
+            "cc_id": 108
+          },
+          {
+            "name": "FADE",
+            "fullname": "LFO3 Fade In",
+            "cc_id": 109
+          },
+          {
+            "name": "S&H",
+            "fullname": "LFO3 Sample And Hold",
+            "cc_id": 110
+          },
+          {
+            "name": "LACE",
+            "fullname": "LFO3 Lace Speed",
+            "cc_id": 111
+          }
+        ]
+      },
+      {
+        "name": "LFO4",
+        "fullname": "LFO 4",
+        "params": [
+          {
+            "name": "CTRL",
+            "fullname": "LFO CTRL4 Value",
+            "cc_id": 23
+          },
+          {
+            "name": "SPD",
+            "fullname": "LFO4 Speed",
+            "cc_id": 112
+          },
+          {
+            "name": "DPTH",
+            "fullname": "LFO4 Depth",
+            "cc_id": 113
+          },
+          {
+            "name": "ADPT",
+            "fullname": "LFO4 Add Depth",
+            "cc_id": 114
+          },
+          {
+            "name": "FADE",
+            "fullname": "LFO4 Fade In",
+            "cc_id": 115
+          },
+          {
+            "name": "S&H",
+            "fullname": "LFO4 Sample And Hold",
+            "cc_id": 116
+          },
+          {
+            "name": "LACE",
+            "fullname": "LFO4 Lace Speed",
+            "cc_id": 117
+          }
+        ]
+      }
+    ]
+  }
+}

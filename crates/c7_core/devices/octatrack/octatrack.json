@@ -1,0 +1,872 @@
+{
+  "brand": "Elektron",
+  "device": "Octatrack DPS-1",
+  "device_max": "Octatrack DPS-1 MKII",
+  "device_short": "Octatrack",
+  "device_shorter": "OT",
+  "firmware": {
+    "links": [
+      {
+        "label": "Elektron Firmware",
+        "url": "https://www.elektron.se/support-downloads/octatrack#resources",
+        "official": true
+      }
+    ],
+    "upload_instructions": [
+      "Set the MIDI Inter-packet delay to 30 ms.",
+      "Hold FUNCTION during power-on and select TRIG 3 (MIDI UPGRADE).",
+      "Click 'Upload MIDI Upgrade File' below and pick the .syx file."
+    ],
+    "receive_instructions": [
+      "Click 'Start Firmware Listener' below.",
+      "Hold FUNCTION during power-on and select TRIG 4 (SEND UPGRADE)."
+    ]
+  },
+  "sysex_header": [
+    240,
+    0,
+    32,
+    60,
+    5
+  ],
+  "system": {
+    "panic_all_notes_off": {
+      "cc": 123,
+      "val": 0,
+      "description": "All Notes Off. The device claims CC 120-127 for its MIDI track solos, so this solos MIDI track 4."
+    },
+    "bank_select_reset": {
+      "cc": 0,
+      "val": 0,
+      "description": "Sent alongside Panic to reset bank selects."
+    },
+    "piano_keyboard_input": true,
+    "piano_keyboard_output": false,
+    "pitch_bend_input": false
+  },
+  "sysex_api": {
+    "librarian": false,
+    "has_turbomidi": true,
+    "os_upgrade": {
+      "data_cmd": 126,
+      "end_cmd": 127
+    }
+  },
+  "sysex_layout": {
+    "firmware": {
+      "wire_size": 88,
+      "fields": {
+        "sysex_header": {"fullname": "SysEx Header", "offset": 0, "size": 5},
+        "sysex_channel": {"fullname": "Device Channel", "offset": 5, "size": 1},
+        "sysex_type": {"fullname": "Message Type", "offset": 6, "size": 1},
+        "payload": {"fullname": "Firmware Packet Data", "offset": 7, "encoding": "7bit", "wire_len": 80, "decoded_size": 70, "kind": "unknown"},
+        "sysex_end": {"fullname": "SysEx End", "offset": 87, "size": 1}
+      }
+    }
+  },
+  "note_mapping": {
+    "default_mode": "standard",
+    "note": "Six mutually exclusive maps for reading incoming notes, selected by the TRIG mode and MIDI MAP setting, or by AUDIO NOTE IN when it is not FOLLOW FW. An entry marked `per_track` walks the eight tracks upward from the note it lists, and `min`/`max` give the values the key span produces.",
+    "modes": {
+      "standard": {
+        "fullname": "Standard",
+        "note": "The factory default. Notes fire transport, recorders and track triggers rather than pitches.",
+        "entries": [
+          {"note": 24, "fullname": "Audio Track Play", "per_track": true, "stride": 1},
+          {"note": 32, "fullname": "Unassigned", "kind": "unused"},
+          {"note": 33, "fullname": "Sequencer Stop"},
+          {"note": 34, "fullname": "Sequencer Start"},
+          {"note": 35, "fullname": "Sequencer Restart"},
+          {"note": 36, "fullname": "Audio Track Sample Trigger", "per_track": true, "stride": 1},
+          {"note": 44, "fullname": "Unassigned", "size": 4, "kind": "unused"},
+          {"note": 48, "fullname": "MIDI Track Play", "per_track": true, "stride": 1},
+          {"note": 56, "fullname": "Unassigned", "size": 4, "kind": "unused"},
+          {"note": 60, "fullname": "Combo Record"},
+          {"note": 61, "fullname": "INAB Record"},
+          {"note": 62, "fullname": "INCD Record"},
+          {"note": 63, "fullname": "SRC3 Record"},
+          {"note": 64, "fullname": "Pickup Play/Stop"},
+          {"note": 65, "fullname": "Multiply"},
+          {"note": 66, "fullname": "Mute Active Track"},
+          {"note": 67, "fullname": "Cue Active Track"},
+          {"note": 68, "fullname": "Active Track Up (Auto Channel Only)"},
+          {"note": 69, "fullname": "Active Track Down (Auto Channel Only)"},
+          {"note": 70, "fullname": "Toggle Sequencer Sync"},
+          {"note": 71, "fullname": "Toggle Sequencer Sync And Start"},
+          {"note": 72, "fullname": "Track Sample Pitch", "size": 25, "min": -12, "max": 12}
+        ]
+      },
+      "chromatic": {
+        "fullname": "Chromatic",
+        "note": "Drives the track's SRC PTCH parameter across a two-octave span, one voice at a time. MIDI tracks ignore the limit and play the full 0-127 note range.",
+        "entries": [
+          {"note": 72, "fullname": "Track Sample Pitch", "size": 25, "min": -12, "max": 12}
+        ]
+      },
+      "slots": {
+        "fullname": "Slots",
+        "note": "The first filled slot sounds on note 0 and the rest follow upward, so the usable range stops wherever the filled slots do.",
+        "entries": [
+          {"note": 0, "fullname": "Sample Slot", "size": 128, "min": 1, "max": 128}
+        ]
+      },
+      "slices": {
+        "fullname": "Slices",
+        "note": "Plays the track sample's slices one per key, counting up from note 12. Silent unless that sample has actually been sliced.",
+        "entries": [
+          {"note": 12, "fullname": "Slice", "size": 64, "min": 1, "max": 64}
+        ]
+      },
+      "quick_mute": {
+        "fullname": "Quick Mute",
+        "note": "Each key toggles one track's mute rather than triggering it.",
+        "entries": [
+          {"note": 12, "fullname": "Audio Track Mute Toggle", "per_track": true, "stride": 1},
+          {"note": 20, "fullname": "MIDI Track Mute Toggle", "per_track": true, "stride": 1}
+        ]
+      },
+      "delay_control": {
+        "fullname": "Delay Control",
+        "note": "Sets the delay TIME on a track using the Echo Freeze Delay effect. Takes two notes at once: hold the track-select key down, then send the time key. The two banks below are the same control offered with two different sets of time divisions.",
+        "entries": [
+          {"note": 12, "fullname": "Delay Time", "size": 8, "values_ref": "delay_time_binary"},
+          {"note": 20, "fullname": "Delay Track Select", "per_track": true, "stride": 1},
+          {"note": 36, "fullname": "Delay Time", "size": 8, "values_ref": "delay_time_triplet"},
+          {"note": 44, "fullname": "Delay Track Select", "per_track": true, "stride": 1}
+        ]
+      }
+    },
+    "constants": {
+      "delay_time_binary": [1, 2, 4, 8, 16, 32, 64, 128],
+      "delay_time_triplet": [1, 3, 6, 12, 24, 48, 96, 128]
+    }
+  },
+  "tracks": [
+    {
+      "id": 0,
+      "name": "T1",
+      "trackname": "Track 1",
+      "fullname": "Audio Track 1",
+      "channel": 0,
+      "offset": 0,
+      "mute": { "cc": 49, "muted_value": 127, "unmuted_value": 0 },
+      "solo": { "cc": 50, "soloed_value": 127, "unsoloed_value": 0 }
+    },
+    {
+      "id": 1,
+      "name": "T2",
+      "trackname": "Track 2",
+      "fullname": "Audio Track 2",
+      "channel": 1,
+      "offset": 0,
+      "mute": { "cc": 49, "muted_value": 127, "unmuted_value": 0 },
+      "solo": { "cc": 50, "soloed_value": 127, "unsoloed_value": 0 }
+    },
+    {
+      "id": 2,
+      "name": "T3",
+      "trackname": "Track 3",
+      "fullname": "Audio Track 3",
+      "channel": 2,
+      "offset": 0,
+      "mute": { "cc": 49, "muted_value": 127, "unmuted_value": 0 },
+      "solo": { "cc": 50, "soloed_value": 127, "unsoloed_value": 0 }
+    },
+    {
+      "id": 3,
+      "name": "T4",
+      "trackname": "Track 4",
+      "fullname": "Audio Track 4",
+      "channel": 3,
+      "offset": 0,
+      "mute": { "cc": 49, "muted_value": 127, "unmuted_value": 0 },
+      "solo": { "cc": 50, "soloed_value": 127, "unsoloed_value": 0 }
+    },
+    {
+      "id": 4,
+      "name": "T5",
+      "trackname": "Track 5",
+      "fullname": "Audio Track 5",
+      "channel": 4,
+      "offset": 0,
+      "mute": { "cc": 49, "muted_value": 127, "unmuted_value": 0 },
+      "solo": { "cc": 50, "soloed_value": 127, "unsoloed_value": 0 }
+    },
+    {
+      "id": 5,
+      "name": "T6",
+      "trackname": "Track 6",
+      "fullname": "Audio Track 6",
+      "channel": 5,
+      "offset": 0,
+      "mute": { "cc": 49, "muted_value": 127, "unmuted_value": 0 },
+      "solo": { "cc": 50, "soloed_value": 127, "unsoloed_value": 0 }
+    },
+    {
+      "id": 6,
+      "name": "T7",
+      "trackname": "Track 7",
+      "fullname": "Audio Track 7",
+      "channel": 6,
+      "offset": 0,
+      "mute": { "cc": 49, "muted_value": 127, "unmuted_value": 0 },
+      "solo": { "cc": 50, "soloed_value": 127, "unsoloed_value": 0 }
+    },
+    {
+      "id": 7,
+      "name": "T8",
+      "trackname": "Track 8",
+      "fullname": "Audio Track 8",
+      "channel": 7,
+      "offset": 0,
+      "mute": { "cc": 49, "muted_value": 127, "unmuted_value": 0 },
+      "solo": { "cc": 50, "soloed_value": 127, "unsoloed_value": 0 }
+    }
+  ],
+  "pages": {
+    "standalone": [
+      {
+        "name": "Level",
+        "fullname": "Level",
+        "params": [
+          {
+            "name": "LEV",
+            "fullname": "Track Level",
+            "cc_id": 46
+          },
+          {
+            "name": "CUE",
+            "fullname": "Cue Level",
+            "cc_id": 47
+          },
+          {
+            "name": "VOL",
+            "fullname": "Track Level (Alternate CC)",
+            "cc_id": 7,
+            "is_receive_only": true
+          },
+          {
+            "name": "BAL",
+            "fullname": "Track Balance (Alternate CC)",
+            "cc_id": 8,
+            "is_receive_only": true
+          }
+        ]
+      }
+    ],
+    "synth": [
+      {
+        "name": "Playback",
+        "fullname": "Playback",
+        "params": [
+          {
+            "name": "CC 1",
+            "fullname": "Playback Param 1",
+            "cc_id": 16
+          },
+          {
+            "name": "CC 2",
+            "fullname": "Playback Param 2",
+            "cc_id": 17
+          },
+          {
+            "name": "CC 3",
+            "fullname": "Playback Param 3",
+            "cc_id": 18
+          },
+          {
+            "name": "CC 4",
+            "fullname": "Playback Param 4",
+            "cc_id": 19
+          },
+          {
+            "name": "CC 5",
+            "fullname": "Playback Param 5",
+            "cc_id": 20
+          },
+          {
+            "name": "CC 6",
+            "fullname": "Playback Param 6",
+            "cc_id": 21
+          }
+        ]
+      },
+      {
+        "name": "Amp",
+        "fullname": "Amplification",
+        "params": [
+          {
+            "name": "ATK",
+            "fullname": "Amp Attack",
+            "cc_id": 22
+          },
+          {
+            "name": "HOLD",
+            "fullname": "Amp Hold",
+            "cc_id": 23
+          },
+          {
+            "name": "REL",
+            "fullname": "Amp Release",
+            "cc_id": 24
+          },
+          {
+            "name": "VOL",
+            "fullname": "Volume",
+            "cc_id": 25
+          },
+          {
+            "name": "BAL",
+            "fullname": "Balance",
+            "cc_id": 26
+          },
+          {
+            "name": "AMP6",
+            "fullname": "Amp Param 6 (Unassigned)",
+            "cc_id": 27
+          }
+        ]
+      },
+      {
+        "name": "FX1",
+        "fullname": "Effect 1",
+        "params": [
+          {
+            "name": "CC 1",
+            "fullname": "FX1 Param 1",
+            "cc_id": 34
+          },
+          {
+            "name": "CC 2",
+            "fullname": "FX1 Param 2",
+            "cc_id": 35
+          },
+          {
+            "name": "CC 3",
+            "fullname": "FX1 Param 3",
+            "cc_id": 36
+          },
+          {
+            "name": "CC 4",
+            "fullname": "FX1 Param 4",
+            "cc_id": 37
+          },
+          {
+            "name": "CC 5",
+            "fullname": "FX1 Param 5",
+            "cc_id": 38
+          },
+          {
+            "name": "CC 6",
+            "fullname": "FX1 Param 6",
+            "cc_id": 39
+          }
+        ]
+      },
+      {
+        "name": "FX2",
+        "fullname": "Effect 2",
+        "params": [
+          {
+            "name": "CC 1",
+            "fullname": "FX2 Param 1",
+            "cc_id": 40
+          },
+          {
+            "name": "CC 2",
+            "fullname": "FX2 Param 2",
+            "cc_id": 41
+          },
+          {
+            "name": "CC 3",
+            "fullname": "FX2 Param 3",
+            "cc_id": 42
+          },
+          {
+            "name": "CC 4",
+            "fullname": "FX2 Param 4",
+            "cc_id": 43
+          },
+          {
+            "name": "CC 5",
+            "fullname": "FX2 Param 5",
+            "cc_id": 44
+          },
+          {
+            "name": "CC 6",
+            "fullname": "FX2 Param 6",
+            "cc_id": 45
+          }
+        ]
+      },
+      {
+        "name": "Track",
+        "fullname": "Track State",
+        "params": [
+          {
+            "name": "SOLO",
+            "fullname": "Track Solo",
+            "cc_id": 50,
+            "widget": "combo",
+            "options": ["Off", "On"]
+          },
+          {
+            "name": "CUE",
+            "fullname": "Track Cue",
+            "cc_id": 51,
+            "widget": "combo",
+            "options": ["Off", "On"]
+          },
+          {
+            "name": "TARM",
+            "fullname": "Track Arm",
+            "cc_id": 52,
+            "widget": "combo",
+            "options": ["Off", "On"]
+          },
+          {
+            "name": "RARM",
+            "fullname": "Recorder Arm",
+            "cc_id": 53,
+            "widget": "combo",
+            "options": ["Off", "On"]
+          }
+        ]
+      }
+    ],
+    "lfo": [
+      {
+        "name": "LFO 1",
+        "fullname": "LFO 1",
+        "transport": "cc",
+        "params": [
+          {
+            "name": "SPD",
+            "fullname": "LFO1 Speed",
+            "cc_id": 28
+          },
+          {
+            "name": "DPTH",
+            "fullname": "LFO1 Depth",
+            "cc_id": 31
+          }
+        ]
+      },
+      {
+        "name": "LFO 2",
+        "fullname": "LFO 2",
+        "transport": "cc",
+        "params": [
+          {
+            "name": "SPD",
+            "fullname": "LFO2 Speed",
+            "cc_id": 29
+          },
+          {
+            "name": "DPTH",
+            "fullname": "LFO2 Depth",
+            "cc_id": 32
+          }
+        ]
+      },
+      {
+        "name": "LFO 3",
+        "fullname": "LFO 3",
+        "transport": "cc",
+        "params": [
+          {
+            "name": "SPD",
+            "fullname": "LFO3 Speed",
+            "cc_id": 30
+          },
+          {
+            "name": "DPTH",
+            "fullname": "LFO3 Depth",
+            "cc_id": 33
+          }
+        ]
+      }
+    ]
+  },
+  "ccs": {
+    "global": {
+      "name": "GLOBAL",
+      "fullname": "Global Controls",
+      "params": [
+        {
+          "name": "XFAD",
+          "fullname": "Crossfader",
+          "cc_id": 48
+        },
+        {
+          "name": "AARM",
+          "fullname": "All Arm",
+          "cc_id": 54,
+          "widget": "combo",
+          "options": ["Off", "On"]
+        },
+        {
+          "name": "SCNA",
+          "fullname": "Scene A Select",
+          "cc_id": 55
+        },
+        {
+          "name": "SCNB",
+          "fullname": "Scene B Select",
+          "cc_id": 56
+        },
+        {
+          "name": "PUAB",
+          "fullname": "Pickup SRC AB Level",
+          "cc_id": 57,
+          "is_receive_only": true
+        },
+        {
+          "name": "PUCD",
+          "fullname": "Pickup SRC CD Level",
+          "cc_id": 58,
+          "is_receive_only": true
+        },
+        {
+          "name": "NTON",
+          "fullname": "Note On",
+          "cc_id": 59,
+          "is_receive_only": true
+        },
+        {
+          "name": "NTOF",
+          "fullname": "Note Off",
+          "cc_id": 60,
+          "is_receive_only": true
+        },
+        {
+          "name": "REQ",
+          "fullname": "Send Request",
+          "cc_id": 61,
+          "is_receive_only": true
+        }
+      ]
+    },
+    "midi_mode": {
+      "name": "MIDI",
+      "fullname": "MIDI Mode",
+      "note": "Answered only while CC DIRECT CONNECT is off. These numbers overlap the audio-track map in `pages.synth`, and the channel a message arrives on decides which applies. They address whichever MIDI track is active, not a fixed one.",
+      "pages": [
+        {
+          "name": "Note",
+          "fullname": "Note",
+          "params": [
+            {
+              "name": "NOTE",
+              "fullname": "Note",
+              "cc_id": 16,
+              "is_receive_only": true
+            },
+            {
+              "name": "VEL",
+              "fullname": "Velocity",
+              "cc_id": 17,
+              "is_receive_only": true
+            },
+            {
+              "name": "LEN",
+              "fullname": "Note Length",
+              "cc_id": 18,
+              "is_receive_only": true
+            },
+            {
+              "name": "NOT2",
+              "fullname": "Note 2",
+              "cc_id": 19,
+              "is_receive_only": true
+            },
+            {
+              "name": "NOT3",
+              "fullname": "Note 3",
+              "cc_id": 20,
+              "is_receive_only": true
+            },
+            {
+              "name": "NOT4",
+              "fullname": "Note 4",
+              "cc_id": 21,
+              "is_receive_only": true
+            }
+          ]
+        },
+        {
+          "name": "Arp",
+          "fullname": "Arpeggiator",
+          "note": "The MIDI spec files these under its Amp heading because they reuse the six CC numbers an audio track spends on amplitude.",
+          "params": [
+            {
+              "name": "TRNS",
+              "fullname": "Transpose",
+              "cc_id": 22,
+              "is_receive_only": true
+            },
+            {
+              "name": "LEG",
+              "fullname": "Legato",
+              "cc_id": 23,
+              "is_receive_only": true
+            },
+            {
+              "name": "MODE",
+              "fullname": "Arpeggiator Mode",
+              "cc_id": 24,
+              "is_receive_only": true
+            },
+            {
+              "name": "SPD",
+              "fullname": "Arpeggiator Speed",
+              "cc_id": 25,
+              "is_receive_only": true
+            },
+            {
+              "name": "RNGE",
+              "fullname": "Octave Range",
+              "cc_id": 26,
+              "is_receive_only": true
+            },
+            {
+              "name": "NLEN",
+              "fullname": "Arpeggiator Note Length",
+              "cc_id": 27,
+              "is_receive_only": true
+            }
+          ]
+        },
+        {
+          "name": "LFO",
+          "fullname": "MIDI LFO",
+          "params": [
+            {
+              "name": "SPD1",
+              "fullname": "MIDI LFO 1 Speed",
+              "cc_id": 28,
+              "is_receive_only": true
+            },
+            {
+              "name": "SPD2",
+              "fullname": "MIDI LFO 2 Speed",
+              "cc_id": 29,
+              "is_receive_only": true
+            },
+            {
+              "name": "SPD3",
+              "fullname": "MIDI LFO 3 Speed",
+              "cc_id": 30,
+              "is_receive_only": true
+            },
+            {
+              "name": "DEP1",
+              "fullname": "MIDI LFO 1 Depth",
+              "cc_id": 31,
+              "is_receive_only": true
+            },
+            {
+              "name": "DEP2",
+              "fullname": "MIDI LFO 2 Depth",
+              "cc_id": 32,
+              "is_receive_only": true
+            },
+            {
+              "name": "DEP3",
+              "fullname": "MIDI LFO 3 Depth",
+              "cc_id": 33,
+              "is_receive_only": true
+            }
+          ]
+        },
+        {
+          "name": "CTRL",
+          "fullname": "Control",
+          "note": "PB and AT set the values the MIDI track sends out, rather than responding to real pitch bend or aftertouch messages. CC 1 through CC 10 are the track's ten assignable controller slots.",
+          "params": [
+            {
+              "name": "PB",
+              "fullname": "Pitch Bend",
+              "cc_id": 34,
+              "is_receive_only": true
+            },
+            {
+              "name": "AT",
+              "fullname": "Aftertouch",
+              "cc_id": 35,
+              "is_receive_only": true
+            },
+            {
+              "name": "CC 1",
+              "fullname": "CC 1 Value",
+              "cc_id": 36,
+              "is_receive_only": true
+            },
+            {
+              "name": "CC 2",
+              "fullname": "CC 2 Value",
+              "cc_id": 37,
+              "is_receive_only": true
+            },
+            {
+              "name": "CC 3",
+              "fullname": "CC 3 Value",
+              "cc_id": 38,
+              "is_receive_only": true
+            },
+            {
+              "name": "CC 4",
+              "fullname": "CC 4 Value",
+              "cc_id": 39,
+              "is_receive_only": true
+            },
+            {
+              "name": "CC 5",
+              "fullname": "CC 5 Value",
+              "cc_id": 40,
+              "is_receive_only": true
+            },
+            {
+              "name": "CC 6",
+              "fullname": "CC 6 Value",
+              "cc_id": 41,
+              "is_receive_only": true
+            },
+            {
+              "name": "CC 7",
+              "fullname": "CC 7 Value",
+              "cc_id": 42,
+              "is_receive_only": true
+            },
+            {
+              "name": "CC 8",
+              "fullname": "CC 8 Value",
+              "cc_id": 43,
+              "is_receive_only": true
+            },
+            {
+              "name": "CC 9",
+              "fullname": "CC 9 Value",
+              "cc_id": 44,
+              "is_receive_only": true
+            },
+            {
+              "name": "CC 10",
+              "fullname": "CC 10 Value",
+              "cc_id": 45,
+              "is_receive_only": true
+            }
+          ]
+        },
+        {
+          "name": "Track",
+          "fullname": "Track State",
+          "params": [
+            {
+              "name": "MUTE",
+              "fullname": "MIDI Track Mute",
+              "cc_id": 49,
+              "is_receive_only": true,
+              "widget": "combo",
+              "options": ["Off", "On"]
+            },
+            {
+              "name": "SOLO",
+              "fullname": "MIDI Track Solo",
+              "cc_id": 50,
+              "is_receive_only": true,
+              "widget": "combo",
+              "options": ["Off", "On"]
+            },
+            {
+              "name": "AARM",
+              "fullname": "All Arm",
+              "cc_id": 54,
+              "is_receive_only": true,
+              "widget": "combo",
+              "options": ["Off", "On"]
+            },
+            {
+              "name": "SCNA",
+              "fullname": "Scene A Select",
+              "cc_id": 55,
+              "is_receive_only": true
+            },
+            {
+              "name": "SCNB",
+              "fullname": "Scene B Select",
+              "cc_id": 56,
+              "is_receive_only": true
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "midi_tracks": [
+    {
+      "id": 0,
+      "name": "M1",
+      "trackname": "MIDI Track 1",
+      "fullname": "MIDI Track 1",
+      "mute": { "cc": 112, "muted_value": 127, "unmuted_value": 0 },
+      "solo": { "cc": 120, "soloed_value": 127, "unsoloed_value": 0 }
+    },
+    {
+      "id": 1,
+      "name": "M2",
+      "trackname": "MIDI Track 2",
+      "fullname": "MIDI Track 2",
+      "mute": { "cc": 113, "muted_value": 127, "unmuted_value": 0 },
+      "solo": { "cc": 121, "soloed_value": 127, "unsoloed_value": 0 }
+    },
+    {
+      "id": 2,
+      "name": "M3",
+      "trackname": "MIDI Track 3",
+      "fullname": "MIDI Track 3",
+      "mute": { "cc": 114, "muted_value": 127, "unmuted_value": 0 },
+      "solo": { "cc": 122, "soloed_value": 127, "unsoloed_value": 0 }
+    },
+    {
+      "id": 3,
+      "name": "M4",
+      "trackname": "MIDI Track 4",
+      "fullname": "MIDI Track 4",
+      "mute": { "cc": 115, "muted_value": 127, "unmuted_value": 0 },
+      "solo": { "cc": 123, "soloed_value": 127, "unsoloed_value": 0 }
+    },
+    {
+      "id": 4,
+      "name": "M5",
+      "trackname": "MIDI Track 5",
+      "fullname": "MIDI Track 5",
+      "mute": { "cc": 116, "muted_value": 127, "unmuted_value": 0 },
+      "solo": { "cc": 124, "soloed_value": 127, "unsoloed_value": 0 }
+    },
+    {
+      "id": 5,
+      "name": "M6",
+      "trackname": "MIDI Track 6",
+      "fullname": "MIDI Track 6",
+      "mute": { "cc": 117, "muted_value": 127, "unmuted_value": 0 },
+      "solo": { "cc": 125, "soloed_value": 127, "unsoloed_value": 0 }
+    },
+    {
+      "id": 6,
+      "name": "M7",
+      "trackname": "MIDI Track 7",
+      "fullname": "MIDI Track 7",
+      "mute": { "cc": 118, "muted_value": 127, "unmuted_value": 0 },
+      "solo": { "cc": 126, "soloed_value": 127, "unsoloed_value": 0 }
+    },
+    {
+      "id": 7,
+      "name": "M8",
+      "trackname": "MIDI Track 8",
+      "fullname": "MIDI Track 8",
+      "mute": { "cc": 119, "muted_value": 127, "unmuted_value": 0 },
+      "solo": { "cc": 127, "soloed_value": 127, "unsoloed_value": 0 }
+    }
+  ]
+}

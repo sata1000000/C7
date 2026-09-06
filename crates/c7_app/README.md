@@ -1,0 +1,1 @@
+This crate contains all the [GTK4](https://en.wikipedia.org/wiki/GTK) UI logic that C7 uses.

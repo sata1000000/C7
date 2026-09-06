@@ -1,0 +1,1965 @@
+{
+  "brand": "Elektron",
+  "device": "Monomachine SFX-60",
+  "device_max": "Monomachine SFX-60+ MKII",
+  "device_short": "Monomachine",
+  "device_shorter": "MnM",
+  "firmware": {
+    "links": [
+      {
+        "label": "Elektron Firmware",
+        "url": "https://www.elektron.se/support-downloads/monomachine#resources",
+        "official": true
+      },
+      {
+        "label": "MCL Firmware",
+        "url": "https://github.com/jmamma/MCL/releases/",
+        "official": false
+      },
+      {
+        "label": "Ems Firmware",
+        "url": "https://github.com/emuyia/ems-monomachine-firmware",
+        "official": false
+      }
+    ],
+    "upload_instructions": [
+      "Set the MIDI Inter-packet delay to 30 ms.",
+      "Hold FUNCTION during power-on and select TRIG 5 (MIDI UPGRADE).",
+      "Click 'Upload MIDI Upgrade File' below and pick the .syx file."
+    ],
+    "receive_instructions": [
+      "Click 'Start Firmware Listener' below.",
+      "Hold FUNCTION during power-on and select TRIG 6 (SEND UPGRADE)."
+    ]
+  },
+  "sysex_header": [
+    240,
+    0,
+    32,
+    60,
+    3
+  ],
+  "system": {
+    "panic_all_notes_off": {
+      "cc": 123,
+      "val": 0,
+      "description": "All Notes Off."
+    },
+    "bank_select_reset": {
+      "cc": 0,
+      "val": 0,
+      "description": "Sent alongside Panic to reset bank selects."
+    },
+    "piano_keyboard_input": true,
+    "piano_keyboard_output": true,
+    "pitch_bend_input": true,
+    "machine_model_byte": 73,
+    "auto_channel": 8,
+    "joystick": {
+      "x": {"type": "pitch_bend"},
+      "y_up": {"type": "cc", "cc": 1},
+      "y_down": {"type": "cc", "cc": 2},
+      "description": "`y_up`/`y_down` are unipolar axes measured from the stick's center. Moving through center sends the resting value on the opposite axis."
+    }
+  },
+  "digipro": {
+    "wave_length": 1024,
+    "bit_depth": 16
+  },
+  "sysex_api": {
+    "librarian": true,
+    "has_turbomidi": true,
+    "global": {
+      "request_cmd": 81,
+      "write_cmd": 80,
+      "slots": 8,
+      "first_slot": 0,
+      "display_offset": 1,
+      "bpm_multiplier": 24,
+      "bpm_min": 30,
+      "bpm_max": 300,
+      "sequencer_modes": {
+        "description": "Sets the sequencer to Pattern mode (one loop) or Song mode (a chain of patterns).",
+        "options": [
+          {
+            "value": 0,
+            "label": "Pattern"
+          },
+          {
+            "value": 1,
+            "label": "Song"
+          }
+        ]
+      },
+      "sync_flags": [
+        {
+          "key": "tempo_in",
+          "bit": 1,
+          "inverted": false,
+          "label": "Tempo In",
+          "off_label": "Internal",
+          "on_label": "External"
+        },
+        {
+          "key": "tempo_out",
+          "bit": 32,
+          "inverted": false,
+          "label": "Tempo Out",
+          "off_label": "Off",
+          "on_label": "On"
+        },
+        {
+          "key": "ctrl_in",
+          "bit": 16,
+          "inverted": true,
+          "label": "CTRL In",
+          "off_label": "Off",
+          "on_label": "On"
+        },
+        {
+          "key": "ctrl_out",
+          "bit": 64,
+          "inverted": false,
+          "label": "CTRL Out",
+          "off_label": "Off",
+          "on_label": "On"
+        }
+      ],
+      "local_control_toggle": {
+        "description": "Enables or disables the physical controls. When Off, the front panel does not trigger the internal sound engine, so an external sequencer cannot double-trigger it.",
+        "options": [
+          {
+            "value": 1,
+            "label": "On"
+          },
+          {
+            "value": 0,
+            "label": "Off"
+          }
+        ]
+      }
+    },
+    "pattern": {
+      "request_cmd": 104,
+      "write_cmd": 103,
+      "slots": 128,
+      "write_arm_type": 8,
+      "banks": 8,
+      "first_slot": 0
+    },
+    "kit": {
+      "request_cmd": 83,
+      "write_cmd": 82,
+      "slots": 128,
+      "write_arm_type": 4,
+      "workspace_slot": 64,
+      "workspace_extra": [ 1 ],
+      "note": "The workspace is selected by `workspace_extra` (the `$53` third byte = `0x01`), so the device ignores this slot value. 64 matches the MD. A workspace dump answers with version `$40` instead of `$02` and carries an extra flag byte, pushing its payload from offset 10 to 11. `sysex_layout` describes the `$02` form.",
+      "first_slot": 0,
+      "display_offset": 1
+    },
+    "song": {
+      "request_cmd": 106,
+      "write_cmd": 105,
+      "slots": 24,
+      "write_arm_type": 16,
+      "first_slot": 0,
+      "display_offset": 1
+    },
+    "bpm_live_cmd": 97,
+    "navigation": {
+      "load_pattern": {
+        "cmd": 87,
+        "min": 0,
+        "max": 127
+      },
+      "load_kit": {
+        "cmd": 88,
+        "min": 0,
+        "max": 127
+      },
+      "save_kit": {
+        "cmd": 89,
+        "min": 0,
+        "max": 127
+      },
+      "load_song": {
+        "cmd": 108,
+        "min": 0,
+        "max": 23
+      },
+      "save_song": {
+        "cmd": 109,
+        "min": 0,
+        "max": 23
+      }
+    },
+    "status": {
+      "query_cmd": 112,
+      "set_cmd": 113,
+      "reply_cmd": 114,
+      "note": "Sending `query_cmd` with no sub-byte is a bare presence ping. The device answers with `reply_cmd` and no parameter.",
+      "params": {
+        "global_slot": {"cmd": 1, "fullname": "Global Slot", "min": 0, "max": 7},
+        "kit_number": {"cmd": 2, "fullname": "Kit Number", "min": 0, "max": 127},
+        "pattern_number": {"cmd": 4, "fullname": "Pattern Number", "min": 0, "max": 127},
+        "song_number": {"cmd": 8, "fullname": "Song Number", "min": 0, "max": 23},
+        "sequencer_mode": {"cmd": 16, "fullname": "Sequencer Mode", "min": 0, "max": 1},
+        "audio_mode": {"cmd": 32, "fullname": "Audio Mode", "min": 0, "max": 1},
+        "sequencer_mode_mode": {"cmd": 33, "fullname": "Sequencer Mode Mode", "min": 0, "max": 1},
+        "selected_track": {"cmd": 34, "fullname": "Selected Track", "min": 0, "max": 5},
+        "midi_seq_track": {"cmd": 35, "fullname": "MIDI Seq Track", "min": 0, "max": 5}
+      }
+    },
+    "write_arm": {
+      "cmd": 107,
+      "description": "Arms the device to receive a kit/pattern/song dump. Payload: `[write_arm.cmd, write_arm_type, slot, 0x01]`. `write_arm_type` is per-kind, see `sysex_api.{kit,pattern,song}.write_arm_type`."
+    },
+    "assign_machine": {
+      "cmd": 91,
+      "default_init_flag": 0,
+      "init_scopes": [
+        "No init",
+        "Init all",
+        "Init synthesis"
+      ]
+    },
+    "track_routing": {
+      "cmd": 92,
+      "outputs": [
+        {
+          "value": 1,
+          "label": "EF"
+        },
+        {
+          "value": 2,
+          "label": "CD"
+        },
+        {
+          "value": 3,
+          "label": "CD+EF"
+        },
+        {
+          "value": 4,
+          "label": "AB"
+        },
+        {
+          "value": 5,
+          "label": "AB+EF"
+        },
+        {
+          "value": 6,
+          "label": "AB+CD"
+        },
+        {
+          "value": 7,
+          "label": "AB+CD+EF"
+        }
+      ],
+      "inputs": [
+        {
+          "value": 0,
+          "label": "NEIGHBOR"
+        },
+        {
+          "value": 1,
+          "label": "INPUT A"
+        },
+        {
+          "value": 2,
+          "label": "INPUT B"
+        },
+        {
+          "value": 3,
+          "label": "INPUT A+B"
+        },
+        {
+          "value": 4,
+          "label": "BUS AB"
+        },
+        {
+          "value": 5,
+          "label": "BUS CD"
+        },
+        {
+          "value": 6,
+          "label": "BUS EF"
+        }
+      ],
+      "default_output": 3,
+      "default_input": 0
+    },
+    "set_kit_name": {
+      "cmd": 85,
+      "name_length": 11
+    },
+    "master_tune": {
+      "multiplier": 10,
+      "default_val": 440.0
+    },
+    "kit_structure": {
+      "global_routing_bitfield": {
+        "AB": 1,
+        "CD": 2,
+        "EF": 4
+      }
+    },
+    "digipro": {
+      "write_cmd": 93,
+      "request_cmd": 94,
+      "slots": 64,
+      "first_slot": 0,
+      "display_offset": 1
+    },
+    "machines": {
+      "machine_order": {
+        "GND": [
+          "GND",
+          "SIN",
+          "NOIS"
+        ],
+        "SWAVE": [
+          "SAW",
+          "PULS",
+          "ENS"
+        ],
+        "SID": [
+          "6581"
+        ],
+        "DPRO": [
+          "WAVE",
+          "BBOX",
+          "DDRW",
+          "DENS"
+        ],
+        "FM+": [
+          "STAT",
+          "PAR",
+          "DYN"
+        ],
+        "VO": [
+          "VO6"
+        ],
+        "FX": [
+          "THRU",
+          "REVERB",
+          "CHORUS",
+          "DYNAMIX",
+          "RINGMOD",
+          "PHASER",
+          "FLANGER"
+        ]
+      },
+      "base": [
+        {
+          "id": 0,
+          "name": "GND-GND",
+          "params": [
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            ""
+          ]
+        },
+        {
+          "id": 1,
+          "name": "GND-SIN",
+          "params": [
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "TUNE"
+          ]
+        },
+        {
+          "id": 2,
+          "name": "GND-NOIS",
+          "params": [
+            "ST",
+            "RED",
+            "STON",
+            "",
+            "",
+            "",
+            "",
+            "TUNE"
+          ]
+        },
+        {
+          "id": 3,
+          "name": "SID-6581",
+          "params": [
+            "PW",
+            "PWAD",
+            "PWRS",
+            "WAVE",
+            "MOD",
+            "MSRC",
+            "MFRQ",
+            "TUNE"
+          ]
+        },
+        {
+          "id": 4,
+          "name": "SWAVE-SAW",
+          "params": [
+            "UNIL",
+            "UNIW",
+            "UNIX",
+            "",
+            "SUBX",
+            "SUB1",
+            "SUB2",
+            "TUNE"
+          ]
+        },
+        {
+          "id": 5,
+          "name": "SWAVE-PULS",
+          "params": [
+            "UNIL",
+            "UNIW",
+            "SUB1",
+            "SUB2",
+            "PW",
+            "PWAD",
+            "PWRS",
+            "TUNE"
+          ]
+        },
+        {
+          "id": 6,
+          "name": "DPRO-WAVE",
+          "params": [
+            "WAVE",
+            "WP",
+            "WPM",
+            "WPRS",
+            "SYNC",
+            "SFRQ",
+            "",
+            "TUNE"
+          ]
+        },
+        {
+          "id": 7,
+          "name": "DPRO-BBOX",
+          "params": [
+            "PTCH",
+            "STRT",
+            "",
+            "",
+            "RTRG",
+            "RTIM"
+          ]
+        },
+        {
+          "id": 8,
+          "name": "FM+-STAT",
+          "params": [
+            "1FRQ",
+            "1FIN",
+            "1ENV",
+            "1FB",
+            "2FRQ",
+            "2VOL",
+            "TONE",
+            "TUNE"
+          ]
+        },
+        {
+          "id": 9,
+          "name": "FM+-PAR",
+          "params": [
+            "1FRQ",
+            "1ENV",
+            "2FRQ",
+            "2ENV",
+            "3FRQ",
+            "3ENV",
+            "TONE",
+            "TUNE"
+          ]
+        },
+        {
+          "id": 10,
+          "name": "FM+-DYN",
+          "params": [
+            "1FRQ",
+            "1FEN",
+            "1VOL",
+            "1VEN",
+            "2FRQ",
+            "2ENV",
+            "2FB",
+            "TUNE"
+          ]
+        },
+        {
+          "id": 11,
+          "name": "VO-VO6",
+          "params": [
+            "VOC1",
+            "VOC2",
+            "V-SW",
+            "VOIC",
+            "CONS",
+            "CLEN",
+            "CVOL",
+            "TUNE"
+          ]
+        },
+        {
+          "id": 12,
+          "name": "FX-THRU",
+          "params": [
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "INP"
+          ]
+        },
+        {
+          "id": 13,
+          "name": "FX-REVERB",
+          "params": [
+            "DEC",
+            "DAMP",
+            "GATE",
+            "MIX",
+            "HP",
+            "LP",
+            "",
+            "INP"
+          ]
+        },
+        {
+          "id": 14,
+          "name": "SWAVE-ENS",
+          "params": [
+            "PCH2",
+            "PCH3",
+            "PCH4",
+            "WAVE",
+            "PW",
+            "CHRL",
+            "CHRW",
+            "TUNE"
+          ]
+        },
+        {
+          "id": 15,
+          "name": "FX-CHORUS",
+          "params": [
+            "DEL",
+            "DEP",
+            "SPD",
+            "MIX",
+            "FB",
+            "WID",
+            "LP",
+            "INP"
+          ]
+        },
+        {
+          "id": 16,
+          "name": "FX-DYNAMIX",
+          "params": [
+            "ATK",
+            "REL",
+            "THRS",
+            "MIX",
+            "RAT",
+            "GAIN",
+            "RMS",
+            "INP"
+          ]
+        },
+        {
+          "id": 17,
+          "name": "FX-RINGMOD",
+          "params": [
+            "WAVE",
+            "EXT",
+            "",
+            "MIX",
+            "",
+            "",
+            "",
+            "INP"
+          ]
+        },
+        {
+          "id": 18,
+          "name": "FX-PHASER",
+          "params": [
+            "CNTR",
+            "DEP",
+            "SPD",
+            "MIX",
+            "FB",
+            "WID",
+            "",
+            "INP"
+          ]
+        },
+        {
+          "id": 19,
+          "name": "FX-FLANGER",
+          "params": [
+            "DEL",
+            "DEP",
+            "SPD",
+            "MIX",
+            "FB",
+            "WID",
+            "",
+            "INP"
+          ]
+        },
+        {
+          "id": 32,
+          "name": "DPRO-DDRW",
+          "params": [
+            "WAV1",
+            "MIX",
+            "WAV2",
+            "TIME",
+            "BR1",
+            "WID",
+            "BR2",
+            "TUNE"
+          ]
+        },
+        {
+          "id": 33,
+          "name": "DPRO-DENS",
+          "params": [
+            "PCH2",
+            "PCH3",
+            "PCH4",
+            "WAVE",
+            "",
+            "CHRL",
+            "CHRW",
+            "TUNE"
+          ]
+        }
+      ]
+    }
+  },
+  "sysex_layout": {
+    "global": {
+      "fields": {
+        "sysex_header": {"fullname": "SysEx Header", "offset": 0, "size": 5},
+        "sysex_channel": {"fullname": "Device Channel", "offset": 5, "size": 1},
+        "sysex_type": {"fullname": "Message Type", "offset": 6, "size": 1},
+        "sysex_version": {"fullname": "Dump Version", "offset": 7, "size": 1},
+        "sysex_revision": {"fullname": "Dump Revision", "offset": 8, "size": 1},
+        "slot": {"fullname": "Original Position", "offset": 9, "size": 1},
+        "payload": {"fullname": "Global Data", "offset": 10, "encoding": "rle7", "decoded_size": 264, "dynamic_length": true},
+        "payload_structure": {
+          "auto_track_channel": {"fullname": "Auto Track Channel", "offset": 0, "min": 0, "max": 15, "display_offset": 1},
+          "base_channel": {"fullname": "Base Channel", "offset": 1, "min": 0, "max": 15, "display_offset": 1},
+          "channel_span": {"fullname": "Channel Span", "offset": 2, "min": 0, "max": 6},
+          "multi_trig_channel": {"fullname": "Multi-Trig Channel", "offset": 3, "min": 0, "max": 15, "display_offset": 1},
+          "multi_map_channel": {"fullname": "Multi-Map Channel", "offset": 4, "min": 0, "max": 15, "display_offset": 1},
+          "external_sync_flags": {"fullname": "External Sync Flags", "offset": 5, "min": 0, "max": 127},
+          "transport_in": {"fullname": "Transport In", "offset": 6, "min": 0, "max": 1},
+          "sequencer_out": {"fullname": "Sequencer Out", "offset": 7, "min": 0, "max": 2, "values_ref": "tri_mode"},
+          "arpeggiator_out": {"fullname": "Arpeggiator Out", "offset": 8, "min": 0, "max": 2, "values_ref": "tri_mode"},
+          "keyboard_out": {"fullname": "Keyboard Out", "offset": 9, "min": 0, "max": 2, "values_ref": "tri_mode"},
+          "transport_out": {"fullname": "Transport Out", "offset": 10, "min": 0, "max": 1},
+          "midi_clock_out": {"fullname": "MIDI Clock Out", "offset": 11, "min": 0, "max": 1},
+          "program_change_out": {"fullname": "Program Change Out", "offset": 12, "min": 0, "max": 17, "values_ref": "program_change"},
+          "unused_1": {"fullname": "Reserved", "offset": 13, "size": 5, "kind": "unused"},
+          "midi_machine_channels": {"fullname": "MIDI Machine Channels", "offset": 18, "per_track": true, "stride": 1, "min": 0, "max": 15, "display_offset": 1},
+          "cc_destinations": {"fullname": "CC Destinations", "offset": 24, "per_track": true, "stride": 4, "min": 0, "max": 127},
+          "midi_sequencer_legato": {"fullname": "MIDI Sequencer Legato", "offset": 48, "per_track": true, "stride": 1, "min": 0, "max": 1},
+          "legato": {"fullname": "Legato (Unused)", "offset": 54, "per_track": true, "stride": 1, "min": 0, "max": 127},
+          "multi_map_range": {"fullname": "Multi Map Range", "offset": 60, "size": 32, "min": 0, "max": 127},
+          "multi_map_pattern": {"fullname": "Multi Map Pattern", "offset": 92, "size": 32, "min": 0, "max": 127},
+          "multi_map_offset": {"fullname": "Multi Map Offset", "offset": 124, "size": 32, "min": 0, "max": 63},
+          "multi_map_length": {"fullname": "Multi Map Length", "offset": 156, "size": 32, "min": 0, "max": 63},
+          "multi_map_transpose": {"fullname": "Multi Map Transpose", "offset": 188, "size": 32, "min": -48, "max": 48},
+          "multi_map_timing": {"fullname": "Multi Map Timing", "offset": 220, "size": 32, "min": 0, "max": 7},
+          "global_routing": {"fullname": "Global Routing", "offset": 252, "min": 0, "max": 2},
+          "program_change_in": {"fullname": "Program Change In", "offset": 253, "min": 0, "max": 17, "values_ref": "program_change"},
+          "joystick_shape": {"fullname": "Joystick Shape", "offset": 254, "min": 0, "max": 1},
+          "velocity_curve": {"fullname": "Velocity Curve", "offset": 255, "min": 0, "max": 2},
+          "fixed_velocity": {"fullname": "Fixed Velocity", "offset": 256, "min": 0, "max": 127},
+          "knob_resolution": {"fullname": "Knob Resolution", "offset": 257, "min": 0, "max": 1},
+          "unused_2": {"fullname": "Reserved", "offset": 258, "size": 2, "kind": "unused"},
+          "base_frequency": {"fullname": "Master Tune", "offset": 260, "size": 4, "min": 4000, "max": 4999}
+        }
+      },
+      "constants": {
+        "tri_mode": ["INT", "OUT", "INT+OUT"],
+        "global_routing": ["3xSTEREO+AB_TO_MIX", "3xSTEREO", "6xMONO"],
+        "joystick_shape": ["TIGHT", "FULL"],
+        "velocity_curve": ["LINEAR", "SOFT", "FIXED"],
+        "knob_resolution": ["24-bit", "32-bit"],
+        "multi_map_timing": ["DIRECT", "1", "2", "4", "8", "16", "32", "64"],
+        "program_change": ["OFF", "BASE", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16"],
+        "off_sentinel": 255,
+        "base_channel": [
+          {"value": 127, "label": "None"},
+          {"value": 0, "label": "1-6"},
+          {"value": 1, "label": "2-7"},
+          {"value": 2, "label": "3-8"},
+          {"value": 3, "label": "4-9"},
+          {"value": 4, "label": "5-10"},
+          {"value": 5, "label": "6-11"},
+          {"value": 6, "label": "7-12"},
+          {"value": 7, "label": "8-13"},
+          {"value": 8, "label": "9-14"},
+          {"value": 9, "label": "10-15"},
+          {"value": 10, "label": "11-16"}
+        ]
+      }
+    },
+    "kit": {
+      "fields": {
+        "sysex_header": {"fullname": "SysEx Header", "offset": 0, "size": 5},
+        "sysex_channel": {"fullname": "Device Channel", "offset": 5, "size": 1},
+        "sysex_type": {"fullname": "Message Type", "offset": 6, "size": 1},
+        "sysex_version": {"fullname": "Dump Version", "offset": 7, "size": 1},
+        "sysex_revision": {"fullname": "Dump Revision", "offset": 8, "size": 1},
+        "slot": {"fullname": "Original Position", "offset": 9, "size": 1},
+        "payload": {"fullname": "Kit Data", "offset": 10, "encoding": "rle7", "decoded_size": 698, "dynamic_length": true},
+        "payload_structure": {
+          "name": {"fullname": "Kit Name", "offset": 0, "size": 11, "kind": "ascii"},
+          "levels": {"fullname": "Track Level", "offset": 11, "per_track": true, "stride": 1},
+          "params": {"fullname": "Track Parameters (72 bytes: synth+amp+filt+fx+3xLFO)", "offset": 17, "per_track": true, "stride": 72},
+          "synth_param_1": {"fullname": "Synth Param 1", "offset": 17, "per_track": true, "stride": 72, "min": 0, "max": 127},
+          "synth_param_2": {"fullname": "Synth Param 2", "offset": 18, "per_track": true, "stride": 72, "min": 0, "max": 127},
+          "synth_param_3": {"fullname": "Synth Param 3", "offset": 19, "per_track": true, "stride": 72, "min": 0, "max": 127},
+          "synth_param_4": {"fullname": "Synth Param 4", "offset": 20, "per_track": true, "stride": 72, "min": 0, "max": 127},
+          "synth_param_5": {"fullname": "Synth Param 5", "offset": 21, "per_track": true, "stride": 72, "min": 0, "max": 127},
+          "synth_param_6": {"fullname": "Synth Param 6", "offset": 22, "per_track": true, "stride": 72, "min": 0, "max": 127},
+          "synth_param_7": {"fullname": "Synth Param 7", "offset": 23, "per_track": true, "stride": 72, "min": 0, "max": 127},
+          "synth_param_8": {"fullname": "Synth Param 8", "offset": 24, "per_track": true, "stride": 72, "min": 0, "max": 127},
+          "amp_attack": {"fullname": "Amp Attack", "offset": 25, "per_track": true, "stride": 72, "min": 0, "max": 127},
+          "amp_hold": {"fullname": "Amp Hold", "offset": 26, "per_track": true, "stride": 72, "min": 0, "max": 127},
+          "amp_decay": {"fullname": "Amp Decay", "offset": 27, "per_track": true, "stride": 72, "min": 0, "max": 127},
+          "amp_release": {"fullname": "Amp Release", "offset": 28, "per_track": true, "stride": 72, "min": 0, "max": 127},
+          "amp_distortion": {"fullname": "Distortion", "offset": 29, "per_track": true, "stride": 72, "min": 0, "max": 127},
+          "amp_volume": {"fullname": "Volume", "offset": 30, "per_track": true, "stride": 72, "min": 0, "max": 127},
+          "amp_pan": {"fullname": "Pan", "offset": 31, "per_track": true, "stride": 72, "min": 0, "max": 127},
+          "amp_portamento": {"fullname": "Portamento", "offset": 32, "per_track": true, "stride": 72, "min": 0, "max": 127},
+          "filter_base": {"fullname": "Filter Base Frequency", "offset": 33, "per_track": true, "stride": 72, "min": 0, "max": 127},
+          "filter_width": {"fullname": "Filter Width", "offset": 34, "per_track": true, "stride": 72, "min": 0, "max": 127},
+          "filter_hp_q": {"fullname": "Highpass Resonance", "offset": 35, "per_track": true, "stride": 72, "min": 0, "max": 127},
+          "filter_lp_q": {"fullname": "Lowpass Resonance", "offset": 36, "per_track": true, "stride": 72, "min": 0, "max": 127},
+          "filter_attack": {"fullname": "Filter Env Attack", "offset": 37, "per_track": true, "stride": 72, "min": 0, "max": 127},
+          "filter_decay": {"fullname": "Filter Env Decay", "offset": 38, "per_track": true, "stride": 72, "min": 0, "max": 127},
+          "filter_base_offset": {"fullname": "Base Offset", "offset": 39, "per_track": true, "stride": 72, "min": 0, "max": 127},
+          "filter_width_offset": {"fullname": "Width Offset", "offset": 40, "per_track": true, "stride": 72, "min": 0, "max": 127},
+          "fx_eq_frequency": {"fullname": "EQ Frequency", "offset": 41, "per_track": true, "stride": 72, "min": 0, "max": 127},
+          "fx_eq_gain": {"fullname": "EQ Gain", "offset": 42, "per_track": true, "stride": 72, "min": 0, "max": 127},
+          "fx_sample_rate_reducer": {"fullname": "Sample Rate Reducer", "offset": 43, "per_track": true, "stride": 72, "min": 0, "max": 127},
+          "fx_delay_time": {"fullname": "Delay Time", "offset": 44, "per_track": true, "stride": 72, "min": 0, "max": 127},
+          "fx_delay_send": {"fullname": "Delay Send", "offset": 45, "per_track": true, "stride": 72, "min": 0, "max": 127},
+          "fx_delay_feedback": {"fullname": "Delay Feedback", "offset": 46, "per_track": true, "stride": 72, "min": 0, "max": 127},
+          "fx_delay_base": {"fullname": "Delay Base", "offset": 47, "per_track": true, "stride": 72, "min": 0, "max": 127},
+          "fx_delay_width": {"fullname": "Delay Width", "offset": 48, "per_track": true, "stride": 72, "min": 0, "max": 127},
+          "lfo1_target_page": {"fullname": "LFO1 Target Page", "offset": 49, "per_track": true, "stride": 72, "min": 0, "max": 127},
+          "lfo1_destination": {"fullname": "LFO1 Destination", "offset": 50, "per_track": true, "stride": 72, "min": 0, "max": 127},
+          "lfo1_trigger_mode": {"fullname": "LFO1 Trigger Mode", "offset": 51, "per_track": true, "stride": 72, "min": 0, "max": 127},
+          "lfo1_waveform": {"fullname": "LFO1 Waveform", "offset": 52, "per_track": true, "stride": 72, "min": 0, "max": 127},
+          "lfo1_multiplier": {"fullname": "LFO1 Multiplier", "offset": 53, "per_track": true, "stride": 72, "min": 0, "max": 127},
+          "lfo1_speed": {"fullname": "LFO1 Speed", "offset": 54, "per_track": true, "stride": 72, "min": 0, "max": 127},
+          "lfo1_interlace": {"fullname": "LFO1 Interlace", "offset": 55, "per_track": true, "stride": 72, "min": 0, "max": 127},
+          "lfo1_depth": {"fullname": "LFO1 Depth", "offset": 56, "per_track": true, "stride": 72, "min": 0, "max": 127},
+          "lfo2_target_page": {"fullname": "LFO2 Target Page", "offset": 57, "per_track": true, "stride": 72, "min": 0, "max": 127},
+          "lfo2_destination": {"fullname": "LFO2 Destination", "offset": 58, "per_track": true, "stride": 72, "min": 0, "max": 127},
+          "lfo2_trigger_mode": {"fullname": "LFO2 Trigger Mode", "offset": 59, "per_track": true, "stride": 72, "min": 0, "max": 127},
+          "lfo2_waveform": {"fullname": "LFO2 Waveform", "offset": 60, "per_track": true, "stride": 72, "min": 0, "max": 127},
+          "lfo2_multiplier": {"fullname": "LFO2 Multiplier", "offset": 61, "per_track": true, "stride": 72, "min": 0, "max": 127},
+          "lfo2_speed": {"fullname": "LFO2 Speed", "offset": 62, "per_track": true, "stride": 72, "min": 0, "max": 127},
+          "lfo2_interlace": {"fullname": "LFO2 Interlace", "offset": 63, "per_track": true, "stride": 72, "min": 0, "max": 127},
+          "lfo2_depth": {"fullname": "LFO2 Depth", "offset": 64, "per_track": true, "stride": 72, "min": 0, "max": 127},
+          "lfo3_target_page": {"fullname": "LFO3 Target Page", "offset": 65, "per_track": true, "stride": 72, "min": 0, "max": 127},
+          "lfo3_destination": {"fullname": "LFO3 Destination", "offset": 66, "per_track": true, "stride": 72, "min": 0, "max": 127},
+          "lfo3_trigger_mode": {"fullname": "LFO3 Trigger Mode", "offset": 67, "per_track": true, "stride": 72, "min": 0, "max": 127},
+          "lfo3_waveform": {"fullname": "LFO3 Waveform", "offset": 68, "per_track": true, "stride": 72, "min": 0, "max": 127},
+          "lfo3_multiplier": {"fullname": "LFO3 Multiplier", "offset": 69, "per_track": true, "stride": 72, "min": 0, "max": 127},
+          "lfo3_speed": {"fullname": "LFO3 Speed", "offset": 70, "per_track": true, "stride": 72, "min": 0, "max": 127},
+          "lfo3_interlace": {"fullname": "LFO3 Interlace", "offset": 71, "per_track": true, "stride": 72, "min": 0, "max": 127},
+          "lfo3_depth": {"fullname": "LFO3 Depth", "offset": 72, "per_track": true, "stride": 72, "min": 0, "max": 127},
+          "midi_note_length": {"fullname": "MIDI Note Length", "offset": 73, "per_track": true, "stride": 72, "min": 0, "max": 127},
+          "midi_velocity": {"fullname": "MIDI Velocity", "offset": 74, "per_track": true, "stride": 72, "min": 0, "max": 127},
+          "midi_pitch_bend": {"fullname": "MIDI Pitch Bend", "offset": 75, "per_track": true, "stride": 72, "min": 0, "max": 127},
+          "midi_program_change": {"fullname": "MIDI Program Change", "offset": 76, "per_track": true, "stride": 72, "min": 0, "max": 127},
+          "midi_cc1": {"fullname": "MIDI CC 1", "offset": 77, "per_track": true, "stride": 72, "min": 0, "max": 127},
+          "midi_cc2": {"fullname": "MIDI CC 2", "offset": 78, "per_track": true, "stride": 72, "min": 0, "max": 127},
+          "midi_cc3": {"fullname": "MIDI CC 3", "offset": 79, "per_track": true, "stride": 72, "min": 0, "max": 127},
+          "midi_cc4": {"fullname": "MIDI CC 4", "offset": 80, "per_track": true, "stride": 72, "min": 0, "max": 127},
+          "multi_envelope_attack": {"fullname": "Multi Mode Envelope Attack", "offset": 81, "per_track": true, "stride": 72, "min": 0, "max": 127},
+          "multi_envelope_decay": {"fullname": "Multi Mode Envelope Decay", "offset": 82, "per_track": true, "stride": 72, "min": 0, "max": 127},
+          "multi_envelope_sustain": {"fullname": "Multi Mode Envelope Sustain", "offset": 83, "per_track": true, "stride": 72, "min": 0, "max": 127},
+          "multi_envelope_release": {"fullname": "Multi Mode Envelope Release", "offset": 84, "per_track": true, "stride": 72, "min": 0, "max": 127},
+          "multi_envelope_portamento": {"fullname": "Multi Mode Envelope Portamento", "offset": 85, "per_track": true, "stride": 72, "min": 0, "max": 127},
+          "unknown_1": {"fullname": "Unexplained Track Parameter Bytes", "offset": 86, "per_track": true, "stride": 72, "size": 3, "kind": "unknown"},
+          "models": {"fullname": "Machine Model ID", "offset": 449, "per_track": true, "stride": 1},
+          "types": {"fullname": "Machine Type", "offset": 455, "per_track": true, "stride": 1},
+          "unknown_2": {"fullname": "Unexplained Byte", "offset": 461, "size": 1, "kind": "unknown"},
+          "patch_bus_in": {"fullname": "Patch Bus Input Routing", "offset": 462, "size": 2, "kind": "bits_per_track", "bits": 2},
+          "mirror_left_right": {"fullname": "Mirror Left/Right", "offset": 464, "kind": "bit_per_track"},
+          "mirror_up_down": {"fullname": "Mirror Up/Down", "offset": 465, "kind": "bit_per_track"},
+          "destination_pages": {"fullname": "Modifier Destination Page", "offset": 466, "per_track": true, "stride": 12},
+          "destination_params": {"fullname": "Modifier Destination Parameter", "offset": 538, "per_track": true, "stride": 12},
+          "destination_ranges": {"fullname": "Modifier Destination Range", "offset": 610, "per_track": true, "stride": 12},
+          "lp_key_track": {"fullname": "Low-Pass Key Track", "offset": 682, "kind": "bit_per_track"},
+          "hp_key_track": {"fullname": "High-Pass Key Track", "offset": 683, "kind": "bit_per_track"},
+          "trig_portamento": {"fullname": "Portamento", "offset": 684, "kind": "bit_per_track"},
+          "trig_tracks": {"fullname": "Trig Track", "offset": 685, "per_track": true, "stride": 1},
+          "trig_legato_amp": {"fullname": "Amp Legato", "offset": 691, "kind": "bit_per_track"},
+          "trig_legato_filter": {"fullname": "Filter Legato", "offset": 692, "kind": "bit_per_track"},
+          "trig_legato_lfo": {"fullname": "LFO Legato", "offset": 693, "kind": "bit_per_track"},
+          "common_multimode": {"fullname": "Polyphony Mode", "offset": 694, "min": 0, "max": 3},
+          "common_timing": {"fullname": "Common Timing", "offset": 695, "min": 0, "max": 127},
+          "split_key": {"fullname": "Split Key (Keyboard Split Point)", "offset": 696, "min": 0, "max": 127},
+          "split_track": {"fullname": "Split Track", "offset": 697, "min": 0, "max": 5}
+        }
+      },
+      "track_blob": [
+        "params", "levels", "models", "types", "destination_pages", "destination_params", "destination_ranges", "trig_tracks", "trig_portamento",
+        "lp_key_track", "hp_key_track", "trig_legato_amp", "trig_legato_filter", "trig_legato_lfo", "mirror_left_right", "mirror_up_down",
+        "patch_bus_in"
+      ],
+      "constants": {
+        "common_multimode": ["ALL", "SPLIT_KEY", "SEQ_START", "SEQ_TRANSPOSE"]
+      }
+    },
+    "pattern": {
+      "fields": {
+        "sysex_header": {"fullname": "SysEx Header", "offset": 0, "size": 5},
+        "sysex_channel": {"fullname": "Device Channel", "offset": 5, "size": 1},
+        "sysex_type": {"fullname": "Message Type", "offset": 6, "size": 1},
+        "sysex_version": {"fullname": "Dump Version", "offset": 7, "size": 1},
+        "sysex_revision": {"fullname": "Dump Revision", "offset": 8, "size": 1},
+        "slot": {"fullname": "Original Position", "offset": 9, "size": 1},
+        "payload": {"fullname": "Pattern Data", "offset": 10, "encoding": "rle7", "decoded_size": 6520, "dynamic_length": true},
+        "payload_structure": {
+          "trig_types": {"fullname": "Trigger Type Bitmask", "offset": 0, "size": 432},
+          "slide_trigs": {"fullname": "Slide Trig Bitmask", "offset": 432, "per_track": true, "stride": 8},
+          "swing_trigs": {"fullname": "Swing Trig Bitmask", "offset": 480, "per_track": true, "stride": 8},
+          "midi_slide_trigs": {"fullname": "MIDI Track Slide Trig Bitmask", "offset": 528, "per_track": true, "stride": 8},
+          "midi_swing_trigs": {"fullname": "MIDI Track Swing Trig Bitmask", "offset": 576, "per_track": true, "stride": 8},
+          "swing_amount": {"fullname": "Swing Amount", "offset": 624, "size": 4},
+          "lock_patterns": {"fullname": "Parameter Lock Step Bitmask", "offset": 628, "per_track": true, "stride": 8},
+          "synth_notes": {"fullname": "Track Note Sequence", "offset": 676, "per_track": true, "stride": 64},
+          "pattern_length": {"fullname": "Pattern Length (Steps)", "offset": 1060},
+          "double_tempo": {"fullname": "Double Tempo", "offset": 1061},
+          "kit": {"fullname": "Linked Kit Slot", "offset": 1062},
+          "pattern_transpose": {"fullname": "Pattern Transpose", "offset": 1063},
+          "track_transpose": {"fullname": "Track Transpose", "offset": 1064, "per_track": true, "stride": 1},
+          "track_scale": {"fullname": "Track Scale", "offset": 1070, "per_track": true, "stride": 1},
+          "track_key": {"fullname": "Track Key", "offset": 1076, "per_track": true, "stride": 1},
+          "midi_track_transpose": {"fullname": "MIDI Track Transpose", "offset": 1082, "per_track": true, "stride": 1},
+          "midi_track_scale": {"fullname": "MIDI Track Scale", "offset": 1088, "per_track": true, "stride": 1},
+          "midi_track_key": {"fullname": "MIDI Track Key", "offset": 1094, "per_track": true, "stride": 1},
+          "arpeggiator_play": {"fullname": "Arpeggiator Play Mode", "offset": 1100, "per_track": true, "stride": 1, "kind": "bitmask", "mask": 7},
+          "arpeggiator_octave_jump": {"fullname": "Arpeggiator Octave Jump", "offset": 1100, "per_track": true, "stride": 1, "kind": "bitmask", "mask": 120, "shift": 3},
+          "arpeggiator_mode": {"fullname": "Arpeggiator Mode", "offset": 1106, "per_track": true, "stride": 1},
+          "arpeggiator_range": {"fullname": "Arpeggiator Range", "offset": 1112, "per_track": true, "stride": 1},
+          "arpeggiator_speed": {"fullname": "Arpeggiator Speed", "offset": 1118, "per_track": true, "stride": 1},
+          "arpeggiator_trig_flags": {"fullname": "Arpeggiator Trig Flags", "offset": 1124, "per_track": true, "stride": 1},
+          "arpeggiator_length": {"fullname": "Arpeggiator Length", "offset": 1130, "per_track": true, "stride": 1},
+          "arpeggiator_sequence": {"fullname": "Arpeggiator Sequence", "offset": 1136, "per_track": true, "stride": 16},
+          "midi_arpeggiator_play": {"fullname": "MIDI Arpeggiator Play Mode", "offset": 1232, "per_track": true, "stride": 1, "kind": "bitmask", "mask": 7},
+          "midi_arpeggiator_octave_jump": {"fullname": "MIDI Arpeggiator Octave Jump", "offset": 1232, "per_track": true, "stride": 1, "kind": "bitmask", "mask": 120, "shift": 3},
+          "midi_arpeggiator_mode": {"fullname": "MIDI Arpeggiator Mode", "offset": 1238, "per_track": true, "stride": 1},
+          "midi_arpeggiator_range": {"fullname": "MIDI Arpeggiator Range", "offset": 1244, "per_track": true, "stride": 1},
+          "midi_arpeggiator_speed": {"fullname": "MIDI Arpeggiator Speed", "offset": 1250, "per_track": true, "stride": 1},
+          "midi_arpeggiator_length": {"fullname": "MIDI Arpeggiator Length", "offset": 1256, "per_track": true, "stride": 1},
+          "midi_arpeggiator_sequence": {"fullname": "MIDI Arpeggiator Sequence", "offset": 1262, "per_track": true, "stride": 16},
+          "unused_1": {"fullname": "Reserved", "offset": 1358, "size": 4, "kind": "unused"},
+          "midi_notes_used": {"fullname": "MIDI Notes Used Count", "offset": 1362, "size": 2},
+          "chord_notes_used": {"fullname": "Chord Notes Used Count", "offset": 1364},
+          "unused_2": {"fullname": "Reserved", "offset": 1365, "size": 1, "kind": "unused"},
+          "locks_used": {"fullname": "Active Lock Row Count", "offset": 1366},
+          "locks_data": {"fullname": "Parameter Lock Data", "offset": 1367, "item_size": 64},
+          "midi_notes": {"fullname": "MIDI Note Data", "offset": 5336},
+          "chord_notes": {"fullname": "Chord Note Data", "offset": 6136}
+        }
+      },
+      "constants": {
+        "speeds": ["1x", "2x", "3/2x", "3/4x", "1/2x", "1/4x", "1/8x"],
+        "scales": ["NONE", "FIX", "MAJ", "MIN"],
+        "keys": ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"],
+        "midi_note_base": 25,
+        "midi_note_scale": 2,
+        "midi_wire_offset": 12,
+        "chord_note_offset": 48
+      }
+    },
+    "song": {
+      "fields": {
+        "sysex_header": {"fullname": "SysEx Header", "offset": 0, "size": 5},
+        "sysex_channel": {"fullname": "Device Channel", "offset": 5, "size": 1},
+        "sysex_type": {"fullname": "Message Type", "offset": 6, "size": 1},
+        "sysex_version": {"fullname": "Dump Version", "offset": 7, "size": 1},
+        "sysex_revision": {"fullname": "Dump Revision", "offset": 8, "size": 1},
+        "slot": {"fullname": "Original Position", "offset": 9, "size": 1},
+        "payload": {"fullname": "Song Data", "offset": 10, "encoding": "rle7", "dynamic_length": true},
+        "payload_structure": {
+          "name": {"fullname": "Song Name", "offset": 0, "size": 16, "kind": "ascii"},
+          "rows": {"fullname": "Song Rows", "offset": 16, "item_size": 24, "max_items": 200, "dynamic_length": true},
+          "rows_structure": {
+            "pattern": {"fullname": "Pattern", "offset": 0, "min": 0, "max": 127},
+            "kit": {"fullname": "Kit", "offset": 1, "min": 0, "max": 63},
+            "loop_count": {"fullname": "Loop Count", "offset": 2, "min": 0, "max": 63},
+            "jump_target": {"fullname": "Jump-To Row", "offset": 3, "min": 0, "max": 199},
+            "mute_audio": {"fullname": "Audio Track Mutes", "offset": 4, "min": 0, "max": 63},
+            "mute_midi": {"fullname": "MIDI Track Mutes", "offset": 5, "min": 0, "max": 63},
+            "pattern_start": {"fullname": "Pattern Start Step", "offset": 6, "min": 0, "max": 63},
+            "pattern_end": {"fullname": "Pattern End Step", "offset": 7, "min": 0, "max": 64},
+            "transpose": {"fullname": "Row Transpose", "offset": 8, "min": -48, "max": 48},
+            "track_transpose": {"fullname": "Per-Track Transpose", "offset": 9, "per_track": true, "stride": 1, "min": -48, "max": 48},
+            "midi_track_transpose": {"fullname": "Per-MIDI-Track Transpose", "offset": 15, "per_track": true, "stride": 1, "min": -48, "max": 48},
+            "unused_1": {"fullname": "Reserved", "offset": 21, "size": 1, "kind": "unused"},
+            "tempo": {"fullname": "Row Tempo Override", "offset": 22, "size": 2, "min": 30, "max": 300}
+          }
+        }
+      },
+      "constants": {
+        "pattern_end_row_sentinel": 255,
+        "pattern_special_row_sentinel": 254,
+        "pattern_end_step_full_length": 64,
+        "tempo_off_sentinel": 65535
+      }
+    },
+    "digipro": {
+      "wire_size": 7027,
+      "fields": {
+        "sysex_header": {"fullname": "SysEx Header", "offset": 0, "size": 5},
+        "sysex_channel": {"fullname": "Device Channel", "offset": 5, "size": 1},
+        "sysex_type": {"fullname": "Message Type", "offset": 6, "size": 1},
+        "sysex_version": {"fullname": "Dump Version", "offset": 7, "size": 1},
+        "sysex_revision": {"fullname": "Dump Revision", "offset": 8, "size": 1},
+        "slot": {"fullname": "Waveform Slot", "offset": 9, "size": 1, "min": 0, "max": 63},
+        "name": {"fullname": "Waveform Name", "offset": 10, "size": 4, "kind": "ascii"},
+        "payload": {"fullname": "DigiPro Waveform Data", "offset": 14, "encoding": "7bit", "wire_len": 7008, "decoded_size": 6132},
+        "sysex_checksum": {"fullname": "Checksum", "offset": 7022, "size": 2},
+        "sysex_length": {"fullname": "Payload Length", "offset": 7024, "size": 2},
+        "sysex_end": {"fullname": "SysEx End", "offset": 7026, "size": 1}
+      }
+    }
+  },
+  "tracks": [
+    {
+      "id": 0,
+      "name": "T1",
+      "trackname": "Track 1",
+      "fullname": "Track 1",
+      "channel": 0,
+      "offset": 0,
+      "mute": { "cc": 3, "muted_value": 127, "unmuted_value": 0 }
+    },
+    {
+      "id": 1,
+      "name": "T2",
+      "trackname": "Track 2",
+      "fullname": "Track 2",
+      "channel": 1,
+      "offset": 0,
+      "mute": { "cc": 3, "muted_value": 127, "unmuted_value": 0 }
+    },
+    {
+      "id": 2,
+      "name": "T3",
+      "trackname": "Track 3",
+      "fullname": "Track 3",
+      "channel": 2,
+      "offset": 0,
+      "mute": { "cc": 3, "muted_value": 127, "unmuted_value": 0 }
+    },
+    {
+      "id": 3,
+      "name": "T4",
+      "trackname": "Track 4",
+      "fullname": "Track 4",
+      "channel": 3,
+      "offset": 0,
+      "mute": { "cc": 3, "muted_value": 127, "unmuted_value": 0 }
+    },
+    {
+      "id": 4,
+      "name": "T5",
+      "trackname": "Track 5",
+      "fullname": "Track 5",
+      "channel": 4,
+      "offset": 0,
+      "mute": { "cc": 3, "muted_value": 127, "unmuted_value": 0 }
+    },
+    {
+      "id": 5,
+      "name": "T6",
+      "trackname": "Track 6",
+      "fullname": "Track 6",
+      "channel": 5,
+      "offset": 0,
+      "mute": { "cc": 3, "muted_value": 127, "unmuted_value": 0 }
+    }
+  ],
+  "assign_targets": [
+    { "name": "PTCH", "options": ["1/12", "2/12", "7/12", "10CT", "20CT", "40CT", "80CT", "160CT"] },
+    { "name": "SYNT", "ref": "pages.synth", "index": 0, "dynamic_machine": true },
+    { "name": "AMP", "ref": "pages.synth", "index": 1 },
+    { "name": "FILT", "ref": "pages.synth", "index": 2 },
+    { "name": "EFFX", "ref": "pages.synth", "index": 3 },
+    { "name": "LFO1", "ref": "pages.lfo", "index": 0 },
+    { "name": "LFO2", "ref": "pages.lfo", "index": 1 },
+    { "name": "LFO3", "ref": "pages.lfo", "index": 2 },
+    { "name": "MIDI", "options": ["LEN", "VEL", "PB", "PCHG", "CC 1", "CC 2", "CC 3", "CC 4"] }
+  ],
+  "lfo_shapes": [
+    {
+      "name": "TRI",
+      "fullname": "Triangle"
+    },
+    {
+      "name": "ITRI",
+      "fullname": "Inverted Triangle"
+    },
+    {
+      "name": "SAW",
+      "fullname": "Sawtooth"
+    },
+    {
+      "name": "ISAW",
+      "fullname": "Inverted Sawtooth"
+    },
+    {
+      "name": "SQR",
+      "fullname": "Square"
+    },
+    {
+      "name": "ISQR",
+      "fullname": "Inverted Square"
+    },
+    {
+      "name": "EXP",
+      "fullname": "Exponential"
+    },
+    {
+      "name": "IEXP",
+      "fullname": "Inverted Exponential"
+    },
+    {
+      "name": "RMP",
+      "fullname": "Ramp"
+    },
+    {
+      "name": "IRMP",
+      "fullname": "Inverted Ramp"
+    },
+    {
+      "name": "RND",
+      "fullname": "Random"
+    }
+  ],
+  "pages": {
+    "standalone": [
+      {
+        "name": "Level",
+        "fullname": "Level",
+        "params": [
+          {
+            "name": "LEV",
+            "fullname": "Level",
+            "cc_id": 7,
+            "default_val": 100
+          }
+        ]
+      }
+    ],
+    "synth": [
+      {
+        "name": "Synth",
+        "fullname": "Synthesis",
+        "params": [
+          {
+            "name": "CC 1",
+            "fullname": "Synth Param 1",
+            "cc_id": 48
+          },
+          {
+            "name": "CC 2",
+            "fullname": "Synth Param 2",
+            "cc_id": 49
+          },
+          {
+            "name": "CC 3",
+            "fullname": "Synth Param 3",
+            "cc_id": 50
+          },
+          {
+            "name": "CC 4",
+            "fullname": "Synth Param 4",
+            "cc_id": 51
+          },
+          {
+            "name": "CC 5",
+            "fullname": "Synth Param 5",
+            "cc_id": 52
+          },
+          {
+            "name": "CC 6",
+            "fullname": "Synth Param 6",
+            "cc_id": 53
+          },
+          {
+            "name": "CC 7",
+            "fullname": "Synth Param 7",
+            "cc_id": 54
+          },
+          {
+            "name": "CC 8",
+            "fullname": "Synth Param 8",
+            "cc_id": 55
+          }
+        ]
+      },
+      {
+        "name": "Amp",
+        "fullname": "Amplification",
+        "params": [
+          {
+            "name": "ATK",
+            "fullname": "Amp Attack",
+            "cc_id": 56,
+            "default_val": 0
+          },
+          {
+            "name": "HOLD",
+            "fullname": "Amp Hold",
+            "cc_id": 57,
+            "default_val": 0
+          },
+          {
+            "name": "DEC",
+            "fullname": "Amp Decay",
+            "cc_id": 58,
+            "default_val": 64
+          },
+          {
+            "name": "REL",
+            "fullname": "Amp Release",
+            "cc_id": 59,
+            "default_val": 32
+          },
+          {
+            "name": "DIST",
+            "fullname": "Distortion",
+            "cc_id": 60,
+            "default_val": 64
+          },
+          {
+            "name": "VOL",
+            "fullname": "Volume",
+            "cc_id": 61,
+            "default_val": 64
+          },
+          {
+            "name": "PAN",
+            "fullname": "Pan",
+            "cc_id": 62,
+            "default_val": 64
+          },
+          {
+            "name": "PORT",
+            "fullname": "Portamento",
+            "cc_id": 63,
+            "default_val": 0
+          }
+        ]
+      },
+      {
+        "name": "Filter",
+        "fullname": "Filter",
+        "params": [
+          {
+            "name": "BASE",
+            "fullname": "Filter Base Frequency",
+            "cc_id": 72,
+            "default_val": 0
+          },
+          {
+            "name": "WDTH",
+            "fullname": "Filter Width",
+            "cc_id": 73,
+            "default_val": 127
+          },
+          {
+            "name": "HPQ",
+            "fullname": "Highpass Resonance",
+            "cc_id": 74,
+            "default_val": 0
+          },
+          {
+            "name": "LPQ",
+            "fullname": "Lowpass Resonance",
+            "cc_id": 75,
+            "default_val": 0
+          },
+          {
+            "name": "ATK",
+            "fullname": "Filter Env Attack",
+            "cc_id": 76,
+            "default_val": 0
+          },
+          {
+            "name": "DEC",
+            "fullname": "Filter Env Decay",
+            "cc_id": 77,
+            "default_val": 64
+          },
+          {
+            "name": "BOFS",
+            "fullname": "Base Offset",
+            "cc_id": 78,
+            "default_val": 64
+          },
+          {
+            "name": "WOFS",
+            "fullname": "Width Offset",
+            "cc_id": 79,
+            "default_val": 64,
+            "display_offset": -64
+          }
+        ]
+      },
+      {
+        "name": "FX",
+        "fullname": "Effects",
+        "params": [
+          {
+            "name": "EQF",
+            "fullname": "EQ Frequency",
+            "cc_id": 80,
+            "default_val": 64
+          },
+          {
+            "name": "EQG",
+            "fullname": "EQ Gain",
+            "cc_id": 81,
+            "default_val": 64
+          },
+          {
+            "name": "SRR",
+            "fullname": "Sample Rate Reducer",
+            "cc_id": 82,
+            "default_val": 0
+          },
+          {
+            "name": "DTIM",
+            "fullname": "Delay Time",
+            "cc_id": 83,
+            "default_val": 64
+          },
+          {
+            "name": "DSND",
+            "fullname": "Delay Send",
+            "cc_id": 84,
+            "default_val": 64
+          },
+          {
+            "name": "DFB",
+            "fullname": "Delay Feedback",
+            "cc_id": 85,
+            "default_val": 28
+          },
+          {
+            "name": "DBAS",
+            "fullname": "Delay Base",
+            "cc_id": 86,
+            "default_val": 0
+          },
+          {
+            "name": "DWID",
+            "fullname": "Delay Width",
+            "cc_id": 87,
+            "default_val": 127
+          }
+        ]
+      }
+    ],
+    "lfo": [
+      {
+        "name": "LFO 1",
+        "fullname": "LFO 1",
+        "transport": "cc",
+        "params": [
+          {
+            "name": "PAGE",
+            "fullname": "LFO Target Page",
+            "cc_id": 88,
+            "default_val": 0,
+            "widget": "combo",
+            "options": [
+              "PTCH",
+              "SYNT",
+              "AMP",
+              "FILT",
+              "EFFX",
+              "LFO1",
+              "LFO2",
+              "LFO3",
+              "MIDI"
+            ]
+          },
+          {
+            "name": "DEST",
+            "fullname": "LFO Destination",
+            "cc_id": 89,
+            "default_val": 0
+          },
+          {
+            "name": "TRIG",
+            "fullname": "LFO Trigger Mode",
+            "cc_id": 90,
+            "default_val": 0,
+            "widget": "combo",
+            "options": [
+              "FREE",
+              "TRIG",
+              "HOLD",
+              "ONE",
+              "HALF"
+            ]
+          },
+          {
+            "name": "WAVE",
+            "fullname": "LFO Waveform",
+            "cc_id": 91,
+            "default_val": 0,
+            "widget": "shape"
+          },
+          {
+            "name": "MULT",
+            "fullname": "LFO Multiplier",
+            "cc_id": 92,
+            "default_val": 0,
+            "widget": "combo",
+            "options": [
+              "1x",
+              "2x",
+              "4x",
+              "8x",
+              "16x",
+              "32x",
+              "64x"
+            ]
+          },
+          {
+            "name": "SPD",
+            "fullname": "LFO Speed",
+            "cc_id": 93,
+            "default_val": 0
+          },
+          {
+            "name": "INTL",
+            "fullname": "LFO Interlace",
+            "cc_id": 94,
+            "default_val": 0
+          },
+          {
+            "name": "DPTH",
+            "fullname": "LFO Depth",
+            "cc_id": 95,
+            "default_val": 0
+          }
+        ]
+      },
+      {
+        "name": "LFO 2",
+        "fullname": "LFO 2",
+        "transport": "cc",
+        "params": [
+          {
+            "name": "PAGE",
+            "fullname": "LFO Target Page",
+            "cc_id": 104,
+            "default_val": 0,
+            "widget": "combo",
+            "options": [
+              "PTCH",
+              "SYNT",
+              "AMP",
+              "FILT",
+              "EFFX",
+              "LFO1",
+              "LFO2",
+              "LFO3",
+              "MIDI"
+            ]
+          },
+          {
+            "name": "DEST",
+            "fullname": "LFO Destination",
+            "cc_id": 105,
+            "default_val": 0
+          },
+          {
+            "name": "TRIG",
+            "fullname": "LFO Trigger Mode",
+            "cc_id": 106,
+            "default_val": 0,
+            "widget": "combo",
+            "options": [
+              "FREE",
+              "TRIG",
+              "HOLD",
+              "ONE",
+              "HALF"
+            ]
+          },
+          {
+            "name": "WAVE",
+            "fullname": "LFO Waveform",
+            "cc_id": 107,
+            "default_val": 0,
+            "widget": "shape"
+          },
+          {
+            "name": "MULT",
+            "fullname": "LFO Multiplier",
+            "cc_id": 108,
+            "default_val": 0,
+            "widget": "combo",
+            "options": [
+              "1x",
+              "2x",
+              "4x",
+              "8x",
+              "16x",
+              "32x",
+              "64x"
+            ]
+          },
+          {
+            "name": "SPD",
+            "fullname": "LFO Speed",
+            "cc_id": 109,
+            "default_val": 0
+          },
+          {
+            "name": "INTL",
+            "fullname": "LFO Interlace",
+            "cc_id": 110,
+            "default_val": 0
+          },
+          {
+            "name": "DPTH",
+            "fullname": "LFO Depth",
+            "cc_id": 111,
+            "default_val": 0
+          }
+        ]
+      },
+      {
+        "name": "LFO 3",
+        "fullname": "LFO 3",
+        "transport": "cc",
+        "params": [
+          {
+            "name": "PAGE",
+            "fullname": "LFO Target Page",
+            "cc_id": 112,
+            "default_val": 0,
+            "widget": "combo",
+            "options": [
+              "PTCH",
+              "SYNT",
+              "AMP",
+              "FILT",
+              "EFFX",
+              "LFO1",
+              "LFO2",
+              "LFO3",
+              "MIDI"
+            ]
+          },
+          {
+            "name": "DEST",
+            "fullname": "LFO Destination",
+            "cc_id": 113,
+            "default_val": 0
+          },
+          {
+            "name": "TRIG",
+            "fullname": "LFO Trigger Mode",
+            "cc_id": 114,
+            "default_val": 0,
+            "widget": "combo",
+            "options": [
+              "FREE",
+              "TRIG",
+              "HOLD",
+              "ONE",
+              "HALF"
+            ]
+          },
+          {
+            "name": "WAVE",
+            "fullname": "LFO Waveform",
+            "cc_id": 115,
+            "default_val": 0,
+            "widget": "shape"
+          },
+          {
+            "name": "MULT",
+            "fullname": "LFO Multiplier",
+            "cc_id": 116,
+            "default_val": 0,
+            "widget": "combo",
+            "options": [
+              "1x",
+              "2x",
+              "4x",
+              "8x",
+              "16x",
+              "32x",
+              "64x"
+            ]
+          },
+          {
+            "name": "SPD",
+            "fullname": "LFO Speed",
+            "cc_id": 117,
+            "default_val": 0
+          },
+          {
+            "name": "INTL",
+            "fullname": "LFO Interlace",
+            "cc_id": 118,
+            "default_val": 0
+          },
+          {
+            "name": "DPTH",
+            "fullname": "LFO Depth",
+            "cc_id": 119,
+            "default_val": 0
+          }
+        ]
+      }
+    ]
+  },
+  "misc_pages": [
+    {
+      "name": "Joystick Left",
+      "rows": [
+        [
+          {
+            "widget": "assign_slot",
+            "slot": 2
+          }
+        ],
+        [
+          {
+            "widget": "assign_slot",
+            "slot": 3
+          }
+        ]
+      ]
+    },
+    {
+      "name": "Joystick Right",
+      "rows": [
+        [
+          {
+            "widget": "assign_slot",
+            "slot": 0
+          }
+        ],
+        [
+          {
+            "widget": "assign_slot",
+            "slot": 1
+          }
+        ],
+        [
+          {
+            "name": "MIRR",
+            "widget": "toggle",
+            "field": "mirror_left_right"
+          }
+        ]
+      ]
+    },
+    {
+      "name": "Joystick Up",
+      "rows": [
+        [
+          {
+            "widget": "assign_slot",
+            "slot": 4
+          }
+        ],
+        [
+          {
+            "widget": "assign_slot",
+            "slot": 5
+          }
+        ],
+        [
+          {
+            "name": "MIRR",
+            "widget": "toggle",
+            "field": "mirror_up_down"
+          }
+        ]
+      ]
+    },
+    {
+      "name": "Joystick Down",
+      "rows": [
+        [
+          {
+            "widget": "assign_slot",
+            "slot": 6
+          }
+        ],
+        [
+          {
+            "widget": "assign_slot",
+            "slot": 7
+          }
+        ]
+      ]
+    },
+    {
+      "name": "Velocity",
+      "rows": [
+        [
+          {
+            "widget": "assign_slot",
+            "slot": 8
+          }
+        ],
+        [
+          {
+            "widget": "assign_slot",
+            "slot": 9
+          }
+        ]
+      ]
+    },
+    {
+      "name": "Trig Track",
+      "rows": [
+        [
+          {
+            "name": "Track",
+            "widget": "track_combo",
+            "field": "trig_tracks"
+          }
+        ],
+        [
+          {
+            "name": "PORT",
+            "widget": "toggle",
+            "field": "trig_portamento"
+          },
+          {
+            "name": "LEG A",
+            "widget": "toggle",
+            "field": "trig_legato_amp"
+          },
+          {
+            "name": "LEG F",
+            "widget": "toggle",
+            "field": "trig_legato_filter"
+          },
+          {
+            "name": "LEG L",
+            "widget": "toggle",
+            "field": "trig_legato_lfo"
+          }
+        ]
+      ]
+    },
+    {
+      "name": "Key Track",
+      "rows": [
+        [
+          {
+            "widget": "assign_slot",
+            "slot": 10
+          }
+        ],
+        [
+          {
+            "widget": "assign_slot",
+            "slot": 11
+          }
+        ],
+        [
+          {
+            "name": "LPF",
+            "widget": "toggle",
+            "field": "lp_key_track"
+          },
+          {
+            "name": "HPF",
+            "widget": "toggle",
+            "field": "hp_key_track"
+          }
+        ]
+      ]
+    },
+    {
+      "name": "Routing",
+      "rows": [
+        [
+          {
+            "name": "Output",
+            "widget": "masked_combo",
+            "field": "types",
+            "mask": 7,
+            "options": [
+              {
+                "label": "NONE",
+                "value": 0
+              },
+              {
+                "label": "AB",
+                "value": 1
+              },
+              {
+                "label": "CD",
+                "value": 2
+              },
+              {
+                "label": "AB+CD",
+                "value": 3
+              },
+              {
+                "label": "EF",
+                "value": 4
+              },
+              {
+                "label": "AB+EF",
+                "value": 5
+              },
+              {
+                "label": "CD+EF",
+                "value": 6
+              },
+              {
+                "label": "AB+CD+EF",
+                "value": 7
+              }
+            ]
+          },
+          {
+            "name": "Input",
+            "widget": "masked_combo",
+            "field": "types",
+            "mask": 248,
+            "options": [
+              {
+                "label": "NONE",
+                "value": 0
+              },
+              {
+                "label": "NEIGHBOR",
+                "value": 16
+              },
+              {
+                "label": "INP A",
+                "value": 80
+              },
+              {
+                "label": "INP B",
+                "value": 144
+              },
+              {
+                "label": "INP A+B",
+                "value": 208
+              },
+              {
+                "label": "BUS",
+                "value": 8
+              }
+            ]
+          },
+          {
+            "name": "Bus",
+            "widget": "masked_combo",
+            "field": "patch_bus_in",
+            "mask": 3,
+            "options": [
+              {
+                "label": "NONE",
+                "value": 0
+              },
+              {
+                "label": "AB",
+                "value": 1
+              },
+              {
+                "label": "CD",
+                "value": 2
+              },
+              {
+                "label": "EF",
+                "value": 3
+              }
+            ]
+          }
+        ]
+      ]
+    },
+    {
+      "name": "MIDI",
+      "rows": [
+        [
+          {
+            "name": "LEN",
+            "widget": "spinner",
+            "field": "params",
+            "index": 56
+          },
+          {
+            "name": "VEL",
+            "widget": "spinner",
+            "field": "params",
+            "index": 57
+          },
+          {
+            "name": "PB",
+            "widget": "spinner",
+            "field": "params",
+            "index": 58,
+            "display_offset": -64
+          },
+          {
+            "name": "PCHG",
+            "widget": "spinner",
+            "field": "params",
+            "index": 59
+          }
+        ],
+        [
+          {
+            "name": "CC 1",
+            "widget": "spinner",
+            "field": "params",
+            "index": 60
+          },
+          {
+            "name": "CC 2",
+            "widget": "spinner",
+            "field": "params",
+            "index": 61
+          },
+          {
+            "name": "CC 3",
+            "widget": "spinner",
+            "field": "params",
+            "index": 62
+          },
+          {
+            "name": "CC 4",
+            "widget": "spinner",
+            "field": "params",
+            "index": 63
+          }
+        ]
+      ]
+    },
+    {
+      "name": "Multi Mode",
+      "rows": [
+        [
+          {
+            "name": "Mode",
+            "widget": "global_combo",
+            "idx": 0,
+            "options": [
+              "ALL TRK",
+              "SPLIT KEY",
+              "SEQ STRT",
+              "SEQ TRANSP"
+            ]
+          },
+          {
+            "name": "Timing",
+            "widget": "global_combo",
+            "idx": 1,
+            "options": [
+              "DIRECT",
+              "1/16",
+              "2/16",
+              "4/16",
+              "8/16",
+              "16/16",
+              "32/16",
+              "64/16"
+            ]
+          },
+          {
+            "name": "Split Key",
+            "widget": "global_spinner",
+            "idx": 2
+          },
+          {
+            "name": "Split Track",
+            "widget": "global_spinner",
+            "idx": 3,
+            "display_offset": 1,
+            "max": 6
+          }
+        ],
+        [
+          {
+            "name": "ATK",
+            "widget": "shared_spinner",
+            "field": "params",
+            "index": 64
+          },
+          {
+            "name": "DEC",
+            "widget": "shared_spinner",
+            "field": "params",
+            "index": 65
+          },
+          {
+            "name": "SUS",
+            "widget": "shared_spinner",
+            "field": "params",
+            "index": 66
+          },
+          {
+            "name": "REL",
+            "widget": "shared_spinner",
+            "field": "params",
+            "index": 67
+          },
+          {
+            "name": "PORT",
+            "widget": "shared_spinner",
+            "field": "params",
+            "index": 68
+          }
+        ]
+      ]
+    }
+  ]
+}

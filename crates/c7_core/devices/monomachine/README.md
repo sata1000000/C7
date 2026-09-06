@@ -1,0 +1,1 @@
+Configuration and protocol documentation for the Elektron Monomachine SFX-60.

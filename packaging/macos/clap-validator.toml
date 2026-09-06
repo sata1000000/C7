@@ -1,0 +1,21 @@
+# Disables `clap-validator` tests that fail due to bugs in `clap-validator` or `nih_plug` rather than in `c7_bridge`.
+# This file is only used by `bridge-test.sh`, and isn't part of any normal routine.
+
+[test]
+
+# `nih_plug`'s CLAP state loader trusts an untrusted length prefix from the state stream with no upper bound.
+#
+# Random input can turn that into an exabyte-sized allocation request, aborting the process (`wrapper/clap/wrapper.rs`, `ext_state_load`).
+state-invalid-random = false
+
+# `nih_plug` never calls `host_params.rescan()` after `state::load()`, so the host is never told parameter values changed.
+#
+# `clap-validator` correctly flags this as a spec violation, but it isn't something `c7_bridge` controls (`wrapper/clap/wrapper.rs`, `set_state_inner`).
+state-reproducibility-basic = false
+state-reproducibility-binary = false
+state-reproducibility-buffered = false
+
+# Crashes with "Tried to create a temporary file ... but this file already exists. This is a bug in the validator."
+#
+# That message comes from `clap-validator` itself, not from `c7_bridge` or `nih_plug`.
+param-fuzz-bounds = false

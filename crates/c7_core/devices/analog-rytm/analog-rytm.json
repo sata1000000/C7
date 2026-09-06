@@ -1,0 +1,2008 @@
+{
+  "brand": "Elektron",
+  "device": "Analog Rytm",
+  "device_max": "Analog Rytm MKII",
+  "device_short": "Analog Rytm",
+  "device_shorter": "AR",
+  "firmware": {
+    "links": [
+      {
+        "label": "Elektron Firmware",
+        "url": "https://www.elektron.se/support-downloads/analog-rytm-mkii#resources",
+        "official": true
+      }
+    ],
+    "upload_instructions": [
+      "Set the MIDI Inter-packet delay to 30 ms.",
+      "Hold FUNCTION during power-on and select TRIG 4 (OS Upgrade).",
+      "Click 'Upload MIDI Upgrade File' below and pick the .syx file."
+    ]
+  },
+  "sysex_header": [
+    240,
+    0,
+    32,
+    60,
+    7
+  ],
+  "system": {
+    "panic_all_notes_off": {
+      "cc": 123,
+      "val": 0,
+      "description": "All Notes Off."
+    },
+    "bank_select_reset": {
+      "cc": 0,
+      "val": 0,
+      "description": "Sent alongside Panic to reset bank selects."
+    },
+    "piano_keyboard_input": true,
+    "piano_keyboard_output": true,
+    "pitch_bend_input": false,
+    "note": "Each drum track answers on its own MIDI channel and owns the full CC range there, so a track needs no CC offset. The FX track and the auto-channel that addresses the selected track are both set in the MIDI CHANNELS menu, and neither number appears in the MIDI appendix, which also lists no pitch bend, so none is forwarded."
+  },
+  "sampler": {
+    "native_bit_depth": 16,
+    "lowest_accepted_bit_depth": 8,
+    "highest_accepted_bit_depth": 16,
+    "lowest_sample_rate_hz": 48000,
+    "highest_sample_rate_hz": 48000
+  },
+  "sysex_api": {
+    "librarian": false,
+    "has_turbomidi": false,
+    "proto_version": [
+      1,
+      1
+    ],
+    "footer": [
+      0,
+      0,
+      0,
+      5
+    ],
+    "description": "`F0 [sysex_header] [device_id] [type] [proto_version] [object_number] [footer] F7`, fifteen bytes in all. The same request frame the Analog Four uses with the product byte changed, so no existing C7 SysEx path can address the Rytm yet.",
+    "request_size_bytes": 15,
+    "note": "Checksums are the sum-of-bytes scheme the Analog Four introduced rather than the XOR the Machinedrum and Monomachine use. Sample transfers are the exception that works today, and they ride the Sample Dump Standard rather than this frame.",
+    "kit": {
+      "request_cmd": 98,
+      "write_cmd": 82,
+      "request_ram_cmd": 104,
+      "write_ram_cmd": 88,
+      "slots": 128,
+      "first_slot": 0,
+      "display_offset": 1
+    },
+    "sound": {
+      "request_cmd": 99,
+      "write_cmd": 83,
+      "request_ram_cmd": 105,
+      "write_ram_cmd": 89,
+      "slots": 128,
+      "first_slot": 0,
+      "display_offset": 1,
+      "note": "Request workbuffers 0-11 (\"SOUNDX\") to retrieve the 12 track sounds of the currently loaded kit."
+    },
+    "pattern": {
+      "request_cmd": 100,
+      "write_cmd": 84,
+      "request_ram_cmd": 106,
+      "write_ram_cmd": 90,
+      "slots": 128,
+      "first_slot": 0,
+      "display_offset": 1
+    },
+    "song": {
+      "request_cmd": 101,
+      "write_cmd": 85,
+      "request_ram_cmd": 107,
+      "write_ram_cmd": 91,
+      "slots": 16,
+      "first_slot": 0,
+      "display_offset": 1
+    },
+    "settings": {
+      "request_cmd": 102,
+      "write_cmd": 86,
+      "request_ram_cmd": 108,
+      "write_ram_cmd": 92,
+      "slots": 1,
+      "first_slot": 0
+    },
+    "global": {
+      "request_cmd": 103,
+      "write_cmd": 87,
+      "request_ram_cmd": 109,
+      "write_ram_cmd": 93,
+      "slots": 4,
+      "first_slot": 0
+    },
+    "sample": {
+      "request_cmd": 0,
+      "write_cmd": 0,
+      "slots": 127,
+      "first_slot": 0,
+      "display_offset": 1,
+      "name_length": 15,
+      "can_dump": false,
+      "note": "A transfer lands as a file in a +Drive directory rather than a numbered slot, so the slot number only names the file."
+    }
+  },
+  "sysex_layout": {
+    "kit": {
+      "wire_size": 2998,
+      "fields": {
+        "sysex_header": {"fullname": "SysEx Header", "offset": 0, "size": 5},
+        "sysex_channel": {"fullname": "Device Channel", "offset": 5, "size": 1},
+        "sysex_type": {"fullname": "Message Type", "offset": 6, "size": 1},
+        "sysex_version": {"fullname": "Dump Version", "offset": 7, "size": 1},
+        "sysex_revision": {"fullname": "Dump Revision", "offset": 8, "size": 1},
+        "slot": {"fullname": "Object Number", "offset": 9, "size": 1, "min": 0, "max": 127, "note": "Object number >=128 addresses the RAM/workbuffer copy instead of a saved slot, which also switches the dump/request id to its +6 'X' variant. See `sysex_api.kit`."},
+        "payload": {"fullname": "Kit Data", "offset": 10, "encoding": "7bit", "wire_len": 2983, "decoded_size": 2610},
+        "payload_structure": {
+          "unknown_1": {"fullname": "Unexplained Header Bytes", "offset": 0, "size": 4, "kind": "unknown", "note": "Reads `00 00 00 06` on FW1.70. Possibly a format/version marker."},
+          "name": {"fullname": "Kit Name", "offset": 4, "size": 15, "kind": "ascii"},
+          "levels": {"fullname": "Track Levels", "offset": 20, "count": 13, "item_size": 2, "note": "12 drum tracks plus FX track. LSB is unused, always 0."},
+          "tracks": {"fullname": "Track Sounds", "offset": 46, "count": 12, "item_size": 162, "note": "One full Sound structure per drum track (FX track is not included here). Same layout as `sysex_layout.sound.fields.payload_structure`."},
+          "unknown_2": {"fullname": "Unexplained Bytes", "offset": 1990, "size": 4, "kind": "unknown"},
+          "fx_delay_time": {"fullname": "Delay Time", "offset": 1994},
+          "fx_delay_pingpong": {"fullname": "Delay Pingpong", "offset": 1996, "min": 0, "max": 1},
+          "fx_delay_stereo_width": {"fullname": "Delay Stereo Width", "offset": 1998, "note": "`$40`=+0."},
+          "fx_delay_feedback": {"fullname": "Delay Feedback", "offset": 2000},
+          "fx_delay_high_pass": {"fullname": "Delay Highpass Filter", "offset": 2002},
+          "fx_delay_low_pass": {"fullname": "Delay Lowpass Filter", "offset": 2004},
+          "fx_delay_reverb_send": {"fullname": "Delay Reverb Send", "offset": 2006},
+          "fx_delay_volume": {"fullname": "Delay Mix Volume", "offset": 2008},
+          "fx_dist_reverb_send": {"fullname": "Distortion Reverb Send", "offset": 2010, "note": "[SPECULATION] Offset and meaning unconfirmed."},
+          "fx_dist_delay_pre_post": {"fullname": "Distortion/Delay Routing", "offset": 2012, "note": "[SPECULATION] Offset and meaning unconfirmed."},
+          "fx_reverb_pre": {"fullname": "Reverb Predelay", "offset": 2014},
+          "fx_reverb_decay": {"fullname": "Reverb Decay Time", "offset": 2016},
+          "fx_reverb_frequency": {"fullname": "Reverb Shelving Freq", "offset": 2018},
+          "fx_reverb_gain": {"fullname": "Reverb Shelving Gain", "offset": 2020},
+          "fx_reverb_high_pass": {"fullname": "Reverb Highpass Filter", "offset": 2022},
+          "fx_reverb_low_pass": {"fullname": "Reverb Lowpass Filter", "offset": 2024},
+          "fx_reverb_volume": {"fullname": "Reverb Mix Volume", "offset": 2026},
+          "fx_dist_reverb_pre_post": {"fullname": "Distortion/Reverb Routing", "offset": 2028},
+          "fx_dist_amount": {"fullname": "Distortion Amount", "offset": 2030},
+          "fx_dist_symmetry": {"fullname": "Distortion Symmetry", "offset": 2032},
+          "unknown_3": {"fullname": "Unexplained Byte", "offset": 2034, "size": 1, "kind": "unknown"},
+          "unknown_4": {"fullname": "Unexplained Byte", "offset": 2035, "size": 1, "kind": "unknown"},
+          "fx_comp_threshold": {"fullname": "Compressor Threshold", "offset": 2036},
+          "fx_comp_attack": {"fullname": "Compressor Attack Time", "offset": 2038},
+          "fx_comp_release": {"fullname": "Compressor Release Time", "offset": 2040},
+          "fx_comp_ratio": {"fullname": "Compressor Ratio", "offset": 2042},
+          "fx_comp_seq": {"fullname": "Compressor Sidechain EQ", "offset": 2044, "min": 0, "max": 3, "values_ref": "fx_comp_seq"},
+          "fx_comp_gain": {"fullname": "Compressor Makeup Gain", "offset": 2046},
+          "fx_comp_mix": {"fullname": "Compressor Dry/Wet Mix", "offset": 2048},
+          "fx_comp_volume": {"fullname": "Compressor Output Volume", "offset": 2050},
+          "fx_lfo_speed": {"fullname": "FX LFO Speed", "offset": 2052},
+          "fx_lfo_multiplier": {"fullname": "FX LFO Multiplier", "offset": 2054},
+          "fx_lfo_fade": {"fullname": "FX LFO Fade In/Out", "offset": 2056},
+          "fx_lfo_destination": {"fullname": "FX LFO Destination", "offset": 2058, "min": 0, "max": 37, "note": "37=off/None."},
+          "fx_lfo_waveform": {"fullname": "FX LFO Waveform", "offset": 2060},
+          "fx_lfo_start_phase": {"fullname": "FX LFO Start Phase", "offset": 2062},
+          "fx_lfo_mode": {"fullname": "FX LFO Trig Mode", "offset": 2064},
+          "fx_lfo_depth": {"fullname": "FX LFO Depth", "offset": 2066, "size": 2},
+          "unknown_5": {"fullname": "Unexplained Bytes", "offset": 2068, "size": 46, "kind": "unknown", "note": "Observed all-zero in one captured kit, but not confirmed always zero."},
+          "performance_ctrl": {"fullname": "Performance Control Assignments", "offset": 2114, "count": 48, "item_size": 4, "note": "[SPECULATION] per-slot assignment encoding not decoded."},
+          "unknown_6": {"fullname": "Unexplained Bytes", "offset": 2306, "size": 21, "kind": "unknown"},
+          "scene_ctrl": {"fullname": "Scene Control Assignments", "offset": 2327, "count": 48, "item_size": 4, "note": "[SPECULATION] Not decoded. Same shape as `performance_ctrl`."},
+          "unknown_7": {"fullname": "Unexplained Byte", "offset": 2519, "size": 1, "kind": "unknown", "note": "[SPECULATION] Possibly the current scene id's MSB."},
+          "current_scene_id": {"fullname": "Current Scene", "offset": 2520, "min": 0, "max": 11},
+          "unknown_8": {"fullname": "Unexplained Bytes", "offset": 2521, "size": 4, "kind": "unknown"},
+          "retrig_always_on": {"fullname": "Retrig Always-On Mask", "offset": 2525, "size": 2, "note": "bit0=track 1 .. bit11=track 12."},
+          "retrig": {"fullname": "Per-Track Retrig Settings", "offset": 2527, "count": 12, "item_size": 4},
+          "retrig_structure": {
+            "retrig_rate": {"fullname": "Retrig Rate", "offset": 0},
+            "retrig_length": {"fullname": "Retrig Length", "offset": 1},
+            "retrig_velocity_curve": {"fullname": "Retrig Velocity Curve", "offset": 2, "signed": true},
+            "retrig_unknown": {"fullname": "Unexplained Byte", "offset": 3, "kind": "unknown"}
+          },
+          "unknown_9": {"fullname": "Unexplained Bytes", "offset": 2575, "size": 3, "kind": "unknown"},
+          "ctrl_in_mod_1_amount_1": {"fullname": "CTRL IN 1 Mod Amount 1", "offset": 2578, "signed": true, "note": "MKII only."},
+          "ctrl_in_mod_1_target_1": {"fullname": "CTRL IN 1 Mod Target 1", "offset": 2580, "note": "Same destination ids as sound mod targets, but the LFO-parameter destinations cannot be used here."},
+          "ctrl_in_mod_1_amount_2": {"fullname": "CTRL IN 1 Mod Amount 2", "offset": 2581, "signed": true},
+          "ctrl_in_mod_1_target_2": {"fullname": "CTRL IN 1 Mod Target 2", "offset": 2583},
+          "ctrl_in_mod_1_amount_3": {"fullname": "CTRL IN 1 Mod Amount 3", "offset": 2584, "signed": true},
+          "ctrl_in_mod_1_target_3": {"fullname": "CTRL IN 1 Mod Target 3", "offset": 2586},
+          "ctrl_in_mod_1_amount_4": {"fullname": "CTRL IN 1 Mod Amount 4", "offset": 2587, "signed": true},
+          "ctrl_in_mod_1_target_4": {"fullname": "CTRL IN 1 Mod Target 4", "offset": 2589},
+          "ctrl_in_mod_1_pad": {"fullname": "Reserved", "offset": 2590, "size": 4, "kind": "unused"},
+          "ctrl_in_mod_2_amount_1": {"fullname": "CTRL IN 2 Mod Amount 1", "offset": 2594, "signed": true},
+          "ctrl_in_mod_2_target_1": {"fullname": "CTRL IN 2 Mod Target 1", "offset": 2596},
+          "ctrl_in_mod_2_amount_2": {"fullname": "CTRL IN 2 Mod Amount 2", "offset": 2597, "signed": true},
+          "ctrl_in_mod_2_target_2": {"fullname": "CTRL IN 2 Mod Target 2", "offset": 2599},
+          "ctrl_in_mod_2_amount_3": {"fullname": "CTRL IN 2 Mod Amount 3", "offset": 2600, "signed": true},
+          "ctrl_in_mod_2_target_3": {"fullname": "CTRL IN 2 Mod Target 3", "offset": 2602},
+          "ctrl_in_mod_2_amount_4": {"fullname": "CTRL IN 2 Mod Amount 4", "offset": 2603, "signed": true},
+          "ctrl_in_mod_2_target_4": {"fullname": "CTRL IN 2 Mod Target 4", "offset": 2605},
+          "ctrl_in_mod_2_pad": {"fullname": "Reserved", "offset": 2606, "size": 4, "kind": "unused"}
+        },
+        "sysex_checksum": {"fullname": "Checksum", "offset": 2993, "size": 2},
+        "sysex_length": {"fullname": "Payload Length", "offset": 2995, "size": 2},
+        "sysex_end": {"fullname": "SysEx End", "offset": 2997, "size": 1}
+      },
+      "constants": {
+        "fx_comp_seq": ["Off", "LPF", "HPF", "Hit"]
+      }
+    },
+    "sound": {
+      "wire_size": 201,
+      "fields": {
+        "sysex_header": {"fullname": "SysEx Header", "offset": 0, "size": 5},
+        "sysex_channel": {"fullname": "Device Channel", "offset": 5, "size": 1},
+        "sysex_type": {"fullname": "Message Type", "offset": 6, "size": 1},
+        "sysex_version": {"fullname": "Dump Version", "offset": 7, "size": 1},
+        "sysex_revision": {"fullname": "Dump Revision", "offset": 8, "size": 1},
+        "slot": {"fullname": "Object Number", "offset": 9, "size": 1, "min": 0, "max": 127, "note": "Object number >=128 addresses the RAM/workbuffer copy instead of a saved slot, which also switches the dump/request id to its +6 'X' variant. See `sysex_api.sound`."},
+        "payload": {"fullname": "Sound Body", "offset": 10, "encoding": "7bit", "wire_len": 186, "decoded_size": 162},
+        "payload_structure": {
+          "header_marker": {"fullname": "Sound Header Marker", "offset": 0, "size": 12, "kind": "unknown", "note": "Reads `BE EF BA CE 00 00 00 04 00 00 00 00` on FW1.70. Purpose unconfirmed."},
+          "name": {"fullname": "Sound Name", "offset": 12, "size": 15, "kind": "ascii"},
+          "synth_param_1": {"fullname": "Synth Parameter 1", "offset": 28, "size": 2, "note": "Meaning is machine-dependent, see the top-level machines section. LSB unused pre-FW1.70."},
+          "synth_param_2": {"fullname": "Synth Parameter 2", "offset": 30, "size": 2},
+          "synth_param_3": {"fullname": "Synth Parameter 3", "offset": 32, "size": 2},
+          "synth_param_4": {"fullname": "Synth Parameter 4", "offset": 34, "size": 2},
+          "synth_param_5": {"fullname": "Synth Parameter 5", "offset": 36, "size": 2},
+          "synth_param_6": {"fullname": "Synth Parameter 6", "offset": 38, "size": 2},
+          "synth_param_7": {"fullname": "Synth Parameter 7", "offset": 40, "size": 2},
+          "synth_param_8": {"fullname": "Synth Parameter 8", "offset": 42, "size": 2},
+          "sample_tune": {"fullname": "Sample Tune", "offset": 44, "note": "`$40`=+0."},
+          "sample_fine_tune": {"fullname": "Sample Fine Tune", "offset": 46, "note": "`$40`=+0."},
+          "sample_number": {"fullname": "Sample Slot", "offset": 48, "min": 0, "max": 127, "note": "0=off."},
+          "sample_bit_reduction": {"fullname": "Sample Bit Reduction", "offset": 50},
+          "sample_start": {"fullname": "Sample Start", "offset": 52, "size": 2},
+          "sample_end": {"fullname": "Sample End", "offset": 54, "size": 2},
+          "sample_loop_flag": {"fullname": "Sample Loop", "offset": 56, "min": 0, "max": 1},
+          "sample_volume": {"fullname": "Sample Level", "offset": 58},
+          "filter_attack": {"fullname": "Filter Attack Time", "offset": 60},
+          "filter_sustain": {"fullname": "Filter Sustain Level", "offset": 62},
+          "filter_decay": {"fullname": "Filter Decay Time", "offset": 64},
+          "filter_release": {"fullname": "Filter Release Time", "offset": 66},
+          "filter_cutoff": {"fullname": "Filter Frequency", "offset": 68},
+          "filter_resonance": {"fullname": "Filter Resonance", "offset": 70},
+          "filter_type": {"fullname": "Filter Type", "offset": 72, "min": 0, "max": 6, "values_ref": "filter_type"},
+          "filter_envelope": {"fullname": "Filter Env Depth", "offset": 74, "note": "64=0, 0=-64, 127=+63."},
+          "amp_attack": {"fullname": "Amp Attack Time", "offset": 76},
+          "amp_hold": {"fullname": "Amp Hold Time", "offset": 78},
+          "amp_decay": {"fullname": "Amp Decay Time", "offset": 80},
+          "amp_overdrive": {"fullname": "Amp Overdrive", "offset": 82},
+          "amp_delay_send": {"fullname": "Amp Delay Send", "offset": 84},
+          "amp_reverb_send": {"fullname": "Amp Reverb Send", "offset": 86},
+          "amp_pan": {"fullname": "Amp Pan", "offset": 88},
+          "amp_volume": {"fullname": "Amp Volume", "offset": 90},
+          "accent_level": {"fullname": "Accent Level", "offset": 92},
+          "lfo_speed": {"fullname": "LFO Speed", "offset": 94},
+          "lfo_multiplier": {"fullname": "LFO Multiplier", "offset": 96},
+          "lfo_fade": {"fullname": "LFO Fade In/Out", "offset": 98, "note": "`$40`=0."},
+          "lfo_destination": {"fullname": "LFO Destination", "offset": 100},
+          "lfo_waveform": {"fullname": "LFO Waveform", "offset": 102, "min": 0, "max": 6, "values_ref": "lfo_waveform"},
+          "lfo_start_phase": {"fullname": "LFO Start Phase", "offset": 104},
+          "lfo_mode": {"fullname": "LFO Trig Mode", "offset": 106, "min": 0, "max": 4, "values_ref": "lfo_trigmode"},
+          "lfo_depth": {"fullname": "LFO Depth", "offset": 108, "size": 2},
+          "default_note": {"fullname": "Default Note", "offset": 110, "note": "`$3C`=0, not used inside a standalone sound dump (only meaningful inside a kit)."},
+          "unknown_1": {"fullname": "Unexplained Bytes", "offset": 111, "size": 13, "kind": "unknown"},
+          "machine_type": {"fullname": "Machine Type", "offset": 124, "values_ref": "machine_names_by_id"},
+          "mode_envelope_reset_filter": {"fullname": "Env Reset Filter Switch", "offset": 125, "kind": "bitmask", "mask": 2, "min": 0, "max": 1},
+          "mode_legacy_fx_send": {"fullname": "Legacy FX Send Switch", "offset": 125, "kind": "bitmask", "mask": 4, "min": 0, "max": 1},
+          "mode_chromatic": {"fullname": "Chromatic Mode", "offset": 125, "kind": "bitmask", "mask": 48, "shift": 4, "min": 0, "max": 3, "values_ref": "chromatic_mode"},
+          "mode_velocity_to_volume": {"fullname": "Velocity To Volume Switch", "offset": 125, "kind": "bitmask", "mask": 64, "min": 0, "max": 1},
+          "unknown_2": {"fullname": "Unexplained Bytes", "offset": 126, "size": 16, "kind": "unknown"},
+          "velocity_amount_1": {"fullname": "Velocity Mod Amount 1", "offset": 142, "signed": true},
+          "velocity_target_1": {"fullname": "Velocity Mod Target 1", "offset": 143},
+          "velocity_amount_2": {"fullname": "Velocity Mod Amount 2", "offset": 144, "signed": true},
+          "velocity_target_2": {"fullname": "Velocity Mod Target 2", "offset": 145},
+          "velocity_amount_3": {"fullname": "Velocity Mod Amount 3", "offset": 146, "signed": true},
+          "velocity_target_3": {"fullname": "Velocity Mod Target 3", "offset": 147},
+          "velocity_amount_4": {"fullname": "Velocity Mod Amount 4", "offset": 148, "signed": true},
+          "velocity_target_4": {"fullname": "Velocity Mod Target 4", "offset": 149},
+          "aftertouch_amount_1": {"fullname": "Aftertouch Mod Amount 1", "offset": 150, "signed": true},
+          "aftertouch_target_1": {"fullname": "Aftertouch Mod Target 1", "offset": 151},
+          "aftertouch_amount_2": {"fullname": "Aftertouch Mod Amount 2", "offset": 152, "signed": true},
+          "aftertouch_target_2": {"fullname": "Aftertouch Mod Target 2", "offset": 153},
+          "aftertouch_amount_3": {"fullname": "Aftertouch Mod Amount 3", "offset": 154, "signed": true},
+          "aftertouch_target_3": {"fullname": "Aftertouch Mod Target 3", "offset": 155},
+          "aftertouch_amount_4": {"fullname": "Aftertouch Mod Amount 4", "offset": 156, "signed": true},
+          "aftertouch_target_4": {"fullname": "Aftertouch Mod Target 4", "offset": 157},
+          "unknown_3": {"fullname": "Unexplained Bytes", "offset": 158, "size": 4, "kind": "unknown"}
+        },
+        "sysex_checksum": {"fullname": "Checksum", "offset": 196, "size": 2},
+        "sysex_length": {"fullname": "Payload Length", "offset": 198, "size": 2},
+        "sysex_end": {"fullname": "SysEx End", "offset": 200, "size": 1}
+      },
+      "constants": {
+        "machine_names_by_id": ["BD-HARD", "BD-CLASSIC", "SD-HARD", "SD-CLASSIC", "RS-HARD", "RS-CLASSIC", "CP-CLASSIC", "BT-CLASSIC", "XT-CLASSIC", "CH-CLASSIC", "OH-CLASSIC", "CY-CLASSIC", "CB-CLASSIC", "BD-FM", "SD-FM", "UT-NOISE", "UT-IMPULSE", "CH-METALLIC", "OH-METALLIC", "CY-METALLIC", "CB-METALLIC", "BD-PLASTIC", "BD-SILKY", "SD-NATURAL", "HH-BASIC", "CY-RIDE", "BD-SHARP", "DISABLE", "SY-DUAL VCO", "SY-CHIP", "BD-ACOUSTIC", "SD-ACOUSTIC", "SY-RAW", "HH-LAB"],
+        "filter_type": ["LP2", "LP1", "BP", "HP1", "HP2", "BS", "PK"],
+        "lfo_waveform": ["Triangle", "Sine", "Square", "Saw", "Exponential", "Ramp", "Random"],
+        "lfo_trigmode": ["Free", "Trig", "Hold", "One", "Half"],
+        "chromatic_mode": ["Off", "Synth", "Sample", "Synth+Sample"]
+      }
+    },
+    "pattern": {
+      "wire_size": 14988,
+      "fields": {
+        "sysex_header": {"fullname": "SysEx Header", "offset": 0, "size": 5},
+        "sysex_channel": {"fullname": "Device Channel", "offset": 5, "size": 1},
+        "sysex_type": {"fullname": "Message Type", "offset": 6, "size": 1},
+        "sysex_version": {"fullname": "Dump Version", "offset": 7, "size": 1},
+        "sysex_revision": {"fullname": "Dump Revision", "offset": 8, "size": 1},
+        "slot": {"fullname": "Object Number", "offset": 9, "size": 1, "min": 0, "max": 127, "note": "Object number >=128 addresses the RAM/workbuffer copy instead of a saved slot, which also switches the dump/request id to its +6 'X' variant. See `sysex_api.pattern`."},
+        "payload": {"fullname": "Pattern Data", "offset": 10, "encoding": "7bit", "wire_len": 14973, "decoded_size": 13101},
+        "payload_structure": {
+          "magic": {"fullname": "Format Marker", "offset": 0, "size": 4, "note": "`00 00 00 01`=FW1.0, `00 00 00 03`=FW1.50, `00 00 00 05`=FW1.70."},
+          "tracks": {"fullname": "Tracks", "offset": 4, "count": 13, "item_size": 641, "note": "Tracks 0-11 are the 12 drum tracks, track 12 is the FX track."},
+          "tracks_structure": {
+            "trig_bits": {"fullname": "Trig Flags (packed)", "offset": 0, "size": 112, "note": "14 flag bits per step across 64 steps (896 bits / 112 bytes), not byte-aligned per step. Bits: 0=enable trig, 1=retrig, 2=mute, 3=accent, 4=swing, 5=slide, 6=enable LFO p-lock, 7=p-locked SYN state, 8=p-locked SMP state, 9=p-locked ENV state, 10=p-locked LFO state, 11=enable SYN p-lock, 12=enable SMP p-lock, 13=enable ENV p-lock."},
+            "step_notes": {"fullname": "Step Notes", "offset": 112, "count": 64, "item_size": 1, "note": "`$FF`=unset (use default note). Bit 7 clear means the step also carries a trig condition. Low 7 bits are the MIDI note."},
+            "step_velocities": {"fullname": "Step Velocities", "offset": 176, "count": 64, "item_size": 1, "note": "`$FF`=unset (use default velocity)."},
+            "step_note_lengths": {"fullname": "Step Note Lengths", "offset": 240, "count": 64, "item_size": 1, "note": "`$FF`=unset (use default length). 127=infinite. The values in between follow a non-linear scale."},
+            "step_micro_timings": {"fullname": "Step Micro Timings", "offset": 304, "count": 64, "item_size": 1, "signed": true, "note": "Lower 6 bits, -23..+23."},
+            "step_retrig_lengths": {"fullname": "Step Retrig Lengths", "offset": 368, "count": 64, "item_size": 1, "note": "[SPECULATION] Lower 7 bits, 0..126, 127=infinite."},
+            "step_retrig_rates": {"fullname": "Step Retrig Rates", "offset": 432, "count": 64, "item_size": 1, "note": "[SPECULATION] Lower 5 bits, 0=1/1 .. 16=1/80."},
+            "step_retrig_velocity_offsets": {"fullname": "Step Retrig Velocity Offsets", "offset": 496, "count": 64, "item_size": 1, "signed": true, "note": "[SPECULATION] Not decoded."},
+            "default_note": {"fullname": "Default Note", "offset": 560},
+            "default_velocity": {"fullname": "Default Velocity", "offset": 561},
+            "default_note_length": {"fullname": "Default Note Length", "offset": 562},
+            "default_trig_flags": {"fullname": "Default Trig Flags", "offset": 563, "size": 2},
+            "num_steps": {"fullname": "Number of Steps", "offset": 565, "min": 1, "max": 64},
+            "quantize_amount": {"fullname": "Quantize Amount", "offset": 566},
+            "step_sound_locks": {"fullname": "Step Sound Locks", "offset": 567, "count": 64, "item_size": 1, "note": "[SPECULATION] Not decoded."},
+            "send_midi": {"fullname": "Send MIDI", "offset": 631, "kind": "bitmask", "mask": 128, "min": 0, "max": 1},
+            "speed": {"fullname": "Track Speed", "offset": 631, "kind": "bitmask", "mask": 7, "min": 0, "max": 6, "values_ref": "track_speed"},
+            "trig_probability": {"fullname": "Trig Probability", "offset": 632, "min": 0, "max": 100},
+            "euclidean_mode": {"fullname": "Euclidean On/Off", "offset": 633, "values_ref": "euclidean_mode"},
+            "euclidean_pulse_1": {"fullname": "Euclidean Pulse Generator 1", "offset": 634, "min": 0, "max": 64},
+            "euclidean_pulse_2": {"fullname": "Euclidean Pulse Generator 2", "offset": 635, "min": 0, "max": 64},
+            "euclidean_rotation_1": {"fullname": "Euclidean Rotation Generator 1", "offset": 636, "min": 0, "max": 126},
+            "euclidean_rotation_2": {"fullname": "Euclidean Rotation Generator 2", "offset": 637, "min": 0, "max": 126},
+            "euclidean_track_rotation": {"fullname": "Euclidean Track Rotation", "offset": 638, "min": 0, "max": 126},
+            "pad_scale": {"fullname": "Pad Scale", "offset": 639, "min": 0, "max": 34, "values_ref": "pad_scale"},
+            "root_note": {"fullname": "Root Note", "offset": 640, "kind": "bitmask", "mask": 15, "min": 0, "max": 11, "note": "0=C..11=B."},
+            "pad_row_offset": {"fullname": "Pad Row Offset", "offset": 640, "kind": "bitmask", "mask": 240, "shift": 4, "min": 0, "max": 9, "note": "Default 6."}
+          },
+          "plock_sequences": {"fullname": "P-Lock Sequences", "offset": 8337, "count": 72, "item_size": 66},
+          "plock_sequences_structure": {
+            "type": {"fullname": "P-Lock Parameter Type", "offset": 0, "note": "`$FF`=unused sequence."},
+            "track_number": {"fullname": "P-Lock Track", "offset": 1, "min": 0, "max": 12, "note": "`$FF`=unused sequence, 12=FX track."},
+            "data": {"fullname": "P-Lock Step Data", "offset": 2, "count": 64, "item_size": 1, "note": "One value per step. The value's meaning depends on `type`."}
+          },
+          "master_length": {"fullname": "Master Length", "offset": 13089, "size": 2, "note": "In advanced timing mode. 1=infinite."},
+          "master_change_msb": {"fullname": "Master Change MSB", "offset": 13091},
+          "master_change_lsb": {"fullname": "Master Change LSB", "offset": 13092, "note": "1=off, 2=x2, 3=x3, and so on."},
+          "kit_number": {"fullname": "Kit Number", "offset": 13093, "min": 0, "max": 127, "note": "`$FF` when no kit is saved with the pattern."},
+          "swing_amount": {"fullname": "Swing Amount", "offset": 13094, "min": 0, "max": 30, "note": "0..30 maps to 50%..80%."},
+          "time_mode": {"fullname": "Time Mode", "offset": 13095, "min": 0, "max": 1, "values_ref": "time_mode"},
+          "master_speed": {"fullname": "Master Speed", "offset": 13096},
+          "global_quantize": {"fullname": "Global Quantize", "offset": 13097},
+          "bpm_msb": {"fullname": "Pattern BPM MSB", "offset": 13098, "note": "Multiplied by 120. Used when BPM mode=PTN."},
+          "bpm_lsb": {"fullname": "Pattern BPM LSB", "offset": 13099},
+          "pad_scale_per_pattern": {"fullname": "Pad Scale Applies To All Tracks", "offset": 13100, "min": 0, "max": 1, "values_ref": "pad_scale_per_pattern"}
+        },
+        "sysex_checksum": {"fullname": "Checksum", "offset": 14983, "size": 2},
+        "sysex_length": {"fullname": "Payload Length", "offset": 14985, "size": 2},
+        "sysex_end": {"fullname": "SysEx End", "offset": 14987, "size": 1}
+      },
+      "constants": {
+        "track_speed": ["2x", "3/2x", "1x", "3/4x", "1/2x", "1/4x", "1/8x"],
+        "euclidean_mode": [{"value": 0, "label": "Off"}, {"value": 128, "label": "On"}],
+        "time_mode": ["Normal", "Advanced"],
+        "pad_scale_per_pattern": [{"value": 0, "label": "Current Track Only"}, {"value": 1, "label": "All Tracks"}],
+        "pad_scale": [
+          {"value": 0, "label": "Ionian Major"}, {"value": 1, "label": "Dorian"}, {"value": 2, "label": "Phrygian"},
+          {"value": 3, "label": "Lydian"}, {"value": 4, "label": "Mixolydian"}, {"value": 5, "label": "Aeolian Minor"},
+          {"value": 6, "label": "Locrian"}, {"value": 7, "label": "Pentatonic Minor"}, {"value": 8, "label": "Pentatonic Major"},
+          {"value": 9, "label": "Melodic Minor"}, {"value": 10, "label": "Harmonic Minor"}, {"value": 11, "label": "Whole Tone"},
+          {"value": 12, "label": "Blues"}, {"value": 13, "label": "Combo Minor"}, {"value": 14, "label": "Persian"},
+          {"value": 15, "label": "Iwato"}, {"value": 16, "label": "In Sen"}, {"value": 17, "label": "Hirajoshi"},
+          {"value": 18, "label": "Pelog"}, {"value": 19, "label": "Phrygian Dominant"}, {"value": 20, "label": "Whole-Half Diminished"},
+          {"value": 21, "label": "Half-Whole Diminished"}, {"value": 22, "label": "Spanish"}, {"value": 23, "label": "Major Locrian"},
+          {"value": 24, "label": "Super Locrian"}, {"value": 25, "label": "Dorian b2"}, {"value": 26, "label": "Lydian Augmented"},
+          {"value": 27, "label": "Lydian Dominant"}, {"value": 28, "label": "Double Harmonic Major"}, {"value": 29, "label": "Lydian 2 6"},
+          {"value": 30, "label": "Ultraphrygian"}, {"value": 31, "label": "Hungarian Minor"}, {"value": 32, "label": "Oriental"},
+          {"value": 33, "label": "Ionian 2 5"}, {"value": 34, "label": "Locrian bb3 bb7"}
+        ]
+      }
+    },
+    "settings": {
+      "wire_size": 2401,
+      "fields": {
+        "sysex_header": {"fullname": "SysEx Header", "offset": 0, "size": 5},
+        "sysex_channel": {"fullname": "Device Channel", "offset": 5, "size": 1},
+        "sysex_type": {"fullname": "Message Type", "offset": 6, "size": 1},
+        "sysex_version": {"fullname": "Dump Version", "offset": 7, "size": 1},
+        "sysex_revision": {"fullname": "Dump Revision", "offset": 8, "size": 1},
+        "slot": {"fullname": "Object Number", "offset": 9, "size": 1, "min": 0, "max": 0, "note": "Always 0, since there is only one settings object."},
+        "payload": {"fullname": "Settings Data", "offset": 10, "encoding": "7bit", "wire_len": 2386, "decoded_size": 2087},
+        "payload_structure": {
+          "version": {"fullname": "Format Version", "offset": 0, "size": 4},
+          "bpm_msb": {"fullname": "Project BPM MSB", "offset": 4, "note": "Multiplied by 120. Used when BPM mode=PRJ."},
+          "bpm_lsb": {"fullname": "Project BPM LSB", "offset": 5},
+          "selected_track": {"fullname": "Selected Track", "offset": 6, "min": 0, "max": 11},
+          "selected_track_duplicate": {"fullname": "Selected Track (duplicate)", "offset": 7, "note": "Duplicate of `selected_track`, for an unknown purpose."},
+          "selected_trig_or_parameter_menu": {"fullname": "Selected Trig/Parameter Menu", "offset": 8, "min": 0, "max": 5, "values_ref": "selected_trig_or_parameter_menu"},
+          "selected_fx_menu": {"fullname": "Selected FX Menu", "offset": 9, "min": 0, "max": 5, "values_ref": "selected_fx_menu"},
+          "selected_page": {"fullname": "Selected Page", "offset": 10, "min": 0, "max": 3},
+          "unknown_1": {"fullname": "Unexplained Byte", "offset": 11, "size": 1, "kind": "unknown", "note": "Reads `$00`."},
+          "track_mute_msb": {"fullname": "Track Mute MSB", "offset": 12, "kind": "unknown"},
+          "track_mute_lsb": {"fullname": "Track Mute LSB", "offset": 13, "kind": "unknown"},
+          "unknown_2": {"fullname": "Unexplained Bytes", "offset": 14, "size": 7, "kind": "unknown", "note": "Observed all-zero."},
+          "selected_mode": {"fullname": "Selected Mode", "offset": 21, "min": 0, "max": 2, "values_ref": "selected_mode", "note": "Stops at 2 rather than an expected 3, possibly a firmware bug."},
+          "selected_pattern_transition_mode": {"fullname": "Pattern Transition Mode", "offset": 22, "min": 0, "max": 2, "values_ref": "selected_pattern_transition_mode"},
+          "unknown_3": {"fullname": "Unexplained Bytes", "offset": 23, "size": 3, "kind": "unknown", "note": "Observed all-zero."},
+          "fixed_velocity_enable": {"fullname": "Fixed Velocity Enable", "offset": 26, "min": 0, "max": 1},
+          "fixed_velocity_amount": {"fullname": "Fixed Velocity Amount", "offset": 27, "min": 0, "max": 127},
+          "sample_recorder_source": {"fullname": "Sample Recorder Source", "offset": 28, "min": 0, "max": 14, "values_ref": "sample_recorder_source"},
+          "sample_recorder_threshold": {"fullname": "Sample Recorder Threshold", "offset": 29, "min": 0, "max": 127},
+          "sample_recorder_monitor": {"fullname": "Sample Recorder Monitor", "offset": 30, "min": 0, "max": 1},
+          "sample_info_table": {"fullname": "Sample Slot Info Table", "offset": 31, "count": 128, "item_size": 16, "kind": "unknown", "note": "[SPECULATION] Per-slot sample info/checksum block. First 4 bytes = `$FFFFFFFF` when the slot is unused. Fields within each 16-byte entry are not decoded."},
+          "unknown_4": {"fullname": "Unexplained Byte", "offset": 2079, "size": 1, "kind": "unknown", "note": "Always reads 1."},
+          "sample_recorder_length": {"fullname": "Sample Recorder Length", "offset": 2080, "min": 0, "max": 8},
+          "unknown_5": {"fullname": "Unexplained Bytes", "offset": 2081, "size": 6, "kind": "unknown", "note": "Observed all-zero."}
+        },
+        "sysex_checksum": {"fullname": "Checksum", "offset": 2396, "size": 2},
+        "sysex_length": {"fullname": "Payload Length", "offset": 2398, "size": 2},
+        "sysex_end": {"fullname": "SysEx End", "offset": 2400, "size": 1}
+      },
+      "constants": {
+        "selected_trig_or_parameter_menu": ["TRIG", "SRC", "SMPL", "FLTR", "AMP", "LFO"],
+        "selected_fx_menu": ["None", "Delay", "Reverb", "Dist", "Comp", "LFO"],
+        "selected_mode": ["Normal", "Chain", "Song"],
+        "selected_pattern_transition_mode": ["Sequential", "Direct Start", "Direct Jump / Temp Jump"],
+        "sample_recorder_source": ["AUD L+R", "AUD L", "AUD R", "BD", "SD", "RS/CP", "BT", "LT", "MT/HT", "CH/OH", "CY/CB", "MAIN", "USB L", "USB R", "USB L+R"]
+      }
+    },
+    "global": {
+      "wire_size": 107,
+      "fields": {
+        "sysex_header": {"fullname": "SysEx Header", "offset": 0, "size": 5},
+        "sysex_channel": {"fullname": "Device Channel", "offset": 5, "size": 1},
+        "sysex_type": {"fullname": "Message Type", "offset": 6, "size": 1},
+        "sysex_version": {"fullname": "Dump Version", "offset": 7, "size": 1},
+        "sysex_revision": {"fullname": "Dump Revision", "offset": 8, "size": 1},
+        "slot": {"fullname": "Object Number", "offset": 9, "size": 1, "min": 0, "max": 3, "note": "Global slot 0-3. Object number >=128 addresses the RAM/workbuffer copy, which also switches the dump/request id to its +6 'X' variant. See `sysex_api.global`."},
+        "payload": {"fullname": "Global Data", "offset": 10, "encoding": "7bit", "wire_len": 92, "decoded_size": 80},
+        "payload_structure": {
+          "version": {"fullname": "Format Version", "offset": 0, "size": 4},
+          "click_active": {"fullname": "Metronome Active", "offset": 4, "min": 0, "max": 1},
+          "click_time_signature_numerator": {"fullname": "Metronome Time Sig Numerator", "offset": 5, "min": 0, "max": 15, "display_offset": 1},
+          "click_time_signature_denominator": {"fullname": "Metronome Time Sig Denominator", "offset": 6, "min": 0, "max": 4, "values_ref": "click_time_signature_denominator"},
+          "click_pre_roll": {"fullname": "Metronome Pre-Roll", "offset": 7, "min": 0, "max": 15, "note": "0=off, otherwise shown as 1-16 bars on the device."},
+          "click_volume": {"fullname": "Metronome Volume", "offset": 8, "min": 0, "max": 127},
+          "unknown_1": {"fullname": "Unexplained Bytes", "offset": 9, "size": 2, "kind": "unknown", "note": "Observed as `$40 $00`."},
+          "auto_channel": {"fullname": "Auto Channel", "offset": 11, "min": 0, "max": 15, "values_ref": "channel_or_off"},
+          "track_channels": {"fullname": "Track Channels", "offset": 12, "per_track": true, "stride": 1, "min": 0, "max": 15, "values_ref": "channel_or_off"},
+          "track_fx_channel": {"fullname": "FX Track Channel", "offset": 24, "min": 0, "max": 15, "values_ref": "channel_or_off"},
+          "program_change_in": {"fullname": "Program Change In", "offset": 25, "min": 0, "max": 15, "values_ref": "channel_or_auto"},
+          "program_change_out": {"fullname": "Program Change Out", "offset": 26, "min": 0, "max": 15, "values_ref": "channel_or_auto"},
+          "performance_channel": {"fullname": "Performance Channel", "offset": 27, "min": 0, "max": 15, "values_ref": "channel_or_off"},
+          "out_port_function": {"fullname": "Output Port Function", "offset": 28, "min": 0, "max": 2, "values_ref": "port_function"},
+          "thru_port_function": {"fullname": "Thru Port Function", "offset": 29, "min": 0, "max": 2, "values_ref": "port_function"},
+          "input_from": {"fullname": "MIDI Input From", "offset": 30, "min": 0, "max": 3, "values_ref": "midi_io_mode"},
+          "output_to": {"fullname": "MIDI Output To", "offset": 31, "min": 0, "max": 3, "values_ref": "midi_io_mode"},
+          "param_output": {"fullname": "Parameter Output Format", "offset": 32, "min": 0, "max": 1, "values_ref": "param_output"},
+          "clock_receive": {"fullname": "Clock Receive", "offset": 33, "min": 0, "max": 1},
+          "clock_send": {"fullname": "Clock Send", "offset": 34, "min": 0, "max": 1},
+          "transport_receive": {"fullname": "Transport Receive", "offset": 35, "min": 0, "max": 1},
+          "transport_send": {"fullname": "Transport Send", "offset": 36, "min": 0, "max": 1},
+          "program_change_receive": {"fullname": "Program Change Receive", "offset": 37, "min": 0, "max": 1},
+          "program_change_send": {"fullname": "Program Change Send", "offset": 38, "min": 0, "max": 1},
+          "receive_notes": {"fullname": "Receive Notes", "offset": 39, "min": 0, "max": 1},
+          "receive_cc_nrpn": {"fullname": "Receive CC/NRPN", "offset": 40, "min": 0, "max": 1},
+          "unknown_2": {"fullname": "Unexplained Byte", "offset": 41, "size": 1, "kind": "unknown", "note": "[SPECULATION] Possibly Turbo Speed, unconfirmed."},
+          "pad_destination": {"fullname": "Pad Destination", "offset": 42, "min": 0, "max": 2, "values_ref": "control_destination"},
+          "pressure_destination": {"fullname": "Pressure Destination", "offset": 43, "min": 0, "max": 2, "values_ref": "control_destination"},
+          "encoder_destination": {"fullname": "Encoder Destination", "offset": 44, "min": 0, "max": 1, "values_ref": "encoder_destination"},
+          "mute_destination": {"fullname": "Mute Destination", "offset": 45, "min": 0, "max": 2, "values_ref": "control_destination"},
+          "ports_output_channel": {"fullname": "Ports Output Channel", "offset": 46, "min": 0, "max": 1, "values_ref": "ports_output_channel"},
+          "kit_reload_on_change": {"fullname": "Reload Kit On Change", "offset": 47, "min": 0, "max": 1},
+          "quantize_live_recording": {"fullname": "Quantize Live Recording", "offset": 48, "min": 0, "max": 1},
+          "unknown_3": {"fullname": "Unexplained Byte", "offset": 49, "size": 1, "kind": "unknown"},
+          "route_to_main_msb": {"fullname": "Route To Main MSB", "offset": 50, "kind": "unknown"},
+          "route_to_main_lsb": {"fullname": "Route To Main LSB", "offset": 51, "kind": "unknown"},
+          "send_to_fx_msb": {"fullname": "Send To FX MSB", "offset": 52, "kind": "unknown"},
+          "send_to_fx_lsb": {"fullname": "Send To FX LSB", "offset": 53, "kind": "unknown"},
+          "unknown_4": {"fullname": "Unexplained Bytes", "offset": 54, "size": 16, "kind": "unknown", "note": "Always reads zero. Exactly 16 bytes, possibly related to the 12 track channels plus a few more, unconfirmed."},
+          "auto_track_switch": {"fullname": "Auto Track Switch", "offset": 70, "min": 0, "max": 1},
+          "usb_in": {"fullname": "USB In Routing", "offset": 71, "kind": "unknown"},
+          "usb_out": {"fullname": "USB Out Routing", "offset": 72, "kind": "unknown"},
+          "usb_to_main_db": {"fullname": "USB To Main Gain", "offset": 73, "min": 0, "max": 3, "values_ref": "usb_to_main_db"},
+          "unknown_5": {"fullname": "Unexplained Bytes", "offset": 74, "size": 6, "kind": "unknown"}
+        },
+        "sysex_checksum": {"fullname": "Checksum", "offset": 102, "size": 2},
+        "sysex_length": {"fullname": "Payload Length", "offset": 104, "size": 2},
+        "sysex_end": {"fullname": "SysEx End", "offset": 106, "size": 1}
+      },
+      "constants": {
+        "click_time_signature_denominator": ["1", "2", "4", "8", "16"],
+        "port_function": ["MIDI", "DIN24", "DIN48"],
+        "midi_io_mode": ["Disabled", "MIDI", "USB", "MIDI+USB"],
+        "param_output": ["NRPN", "CC"],
+        "control_destination": ["Internal", "Internal+External", "External"],
+        "encoder_destination": ["Internal", "Internal+External"],
+        "ports_output_channel": ["Auto Channel", "Track Channel"],
+        "usb_to_main_db": ["+0dB", "+6dB", "+12dB", "+18dB"],
+        "channel_or_off": ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", {"value": 255, "label": "Off"}],
+        "channel_or_auto": ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", {"value": 255, "label": "Auto"}]
+      }
+    }
+  },
+  "note_mapping": {
+    "default_mode": "standard",
+    "note": "The single map the device reads incoming notes with. An entry marked `per_track` walks the twelve tracks upward from the note it lists.",
+    "modes": {
+      "standard": {
+        "fullname": "Standard",
+        "note": "The low octave fires one track each and everything above it plays the selected track chromatically.",
+        "entries": [
+          {"note": 0, "fullname": "Sound Track Trigger", "per_track": true, "stride": 1},
+          {"note": 12, "fullname": "Active Track Chromatic", "size": 48}
+        ]
+      }
+    }
+  },
+  "tracks": [
+    {
+      "id": 0,
+      "name": "BD",
+      "trackname": "01-BD",
+      "fullname": "Bass Drum",
+      "channel": 0,
+      "offset": 0,
+      "note": 0,
+      "mute": { "cc": 94, "muted_value": 1, "unmuted_value": 0, "nrpn_msb": 1, "nrpn_lsb": 101 },
+      "solo": { "cc": 93, "soloed_value": 1, "unsoloed_value": 0, "nrpn_msb": 1, "nrpn_lsb": 102 }
+    },
+    {
+      "id": 1,
+      "name": "SD",
+      "trackname": "02-SD",
+      "fullname": "Snare Drum",
+      "channel": 1,
+      "offset": 0,
+      "note": 1,
+      "mute": { "cc": 94, "muted_value": 1, "unmuted_value": 0, "nrpn_msb": 1, "nrpn_lsb": 101 },
+      "solo": { "cc": 93, "soloed_value": 1, "unsoloed_value": 0, "nrpn_msb": 1, "nrpn_lsb": 102 }
+    },
+    {
+      "id": 2,
+      "name": "RS",
+      "trackname": "03-RS",
+      "fullname": "Rim Shot",
+      "channel": 2,
+      "offset": 0,
+      "note": 2,
+      "mute": { "cc": 94, "muted_value": 1, "unmuted_value": 0, "nrpn_msb": 1, "nrpn_lsb": 101 },
+      "solo": { "cc": 93, "soloed_value": 1, "unsoloed_value": 0, "nrpn_msb": 1, "nrpn_lsb": 102 }
+    },
+    {
+      "id": 3,
+      "name": "CP",
+      "trackname": "04-CP",
+      "fullname": "Clap",
+      "channel": 3,
+      "offset": 0,
+      "note": 3,
+      "mute": { "cc": 94, "muted_value": 1, "unmuted_value": 0, "nrpn_msb": 1, "nrpn_lsb": 101 },
+      "solo": { "cc": 93, "soloed_value": 1, "unsoloed_value": 0, "nrpn_msb": 1, "nrpn_lsb": 102 }
+    },
+    {
+      "id": 4,
+      "name": "BT",
+      "trackname": "05-BT",
+      "fullname": "Bass Tom",
+      "channel": 4,
+      "offset": 0,
+      "note": 4,
+      "mute": { "cc": 94, "muted_value": 1, "unmuted_value": 0, "nrpn_msb": 1, "nrpn_lsb": 101 },
+      "solo": { "cc": 93, "soloed_value": 1, "unsoloed_value": 0, "nrpn_msb": 1, "nrpn_lsb": 102 }
+    },
+    {
+      "id": 5,
+      "name": "LT",
+      "trackname": "06-LT",
+      "fullname": "Low Tom",
+      "channel": 5,
+      "offset": 0,
+      "note": 5,
+      "mute": { "cc": 94, "muted_value": 1, "unmuted_value": 0, "nrpn_msb": 1, "nrpn_lsb": 101 },
+      "solo": { "cc": 93, "soloed_value": 1, "unsoloed_value": 0, "nrpn_msb": 1, "nrpn_lsb": 102 }
+    },
+    {
+      "id": 6,
+      "name": "MT",
+      "trackname": "07-MT",
+      "fullname": "Mid Tom",
+      "channel": 6,
+      "offset": 0,
+      "note": 6,
+      "mute": { "cc": 94, "muted_value": 1, "unmuted_value": 0, "nrpn_msb": 1, "nrpn_lsb": 101 },
+      "solo": { "cc": 93, "soloed_value": 1, "unsoloed_value": 0, "nrpn_msb": 1, "nrpn_lsb": 102 }
+    },
+    {
+      "id": 7,
+      "name": "HT",
+      "trackname": "08-HT",
+      "fullname": "High Tom",
+      "channel": 7,
+      "offset": 0,
+      "note": 7,
+      "mute": { "cc": 94, "muted_value": 1, "unmuted_value": 0, "nrpn_msb": 1, "nrpn_lsb": 101 },
+      "solo": { "cc": 93, "soloed_value": 1, "unsoloed_value": 0, "nrpn_msb": 1, "nrpn_lsb": 102 }
+    },
+    {
+      "id": 8,
+      "name": "CH",
+      "trackname": "09-CH",
+      "fullname": "Closed Hihat",
+      "channel": 8,
+      "offset": 0,
+      "note": 8,
+      "mute": { "cc": 94, "muted_value": 1, "unmuted_value": 0, "nrpn_msb": 1, "nrpn_lsb": 101 },
+      "solo": { "cc": 93, "soloed_value": 1, "unsoloed_value": 0, "nrpn_msb": 1, "nrpn_lsb": 102 }
+    },
+    {
+      "id": 9,
+      "name": "OH",
+      "trackname": "10-OH",
+      "fullname": "Open Hihat",
+      "channel": 9,
+      "offset": 0,
+      "note": 9,
+      "mute": { "cc": 94, "muted_value": 1, "unmuted_value": 0, "nrpn_msb": 1, "nrpn_lsb": 101 },
+      "solo": { "cc": 93, "soloed_value": 1, "unsoloed_value": 0, "nrpn_msb": 1, "nrpn_lsb": 102 }
+    },
+    {
+      "id": 10,
+      "name": "CY",
+      "trackname": "11-CY",
+      "fullname": "Cymbal",
+      "channel": 10,
+      "offset": 0,
+      "note": 10,
+      "mute": { "cc": 94, "muted_value": 1, "unmuted_value": 0, "nrpn_msb": 1, "nrpn_lsb": 101 },
+      "solo": { "cc": 93, "soloed_value": 1, "unsoloed_value": 0, "nrpn_msb": 1, "nrpn_lsb": 102 }
+    },
+    {
+      "id": 11,
+      "name": "CB",
+      "trackname": "12-CB",
+      "fullname": "Cowbell",
+      "channel": 11,
+      "offset": 0,
+      "note": 11,
+      "mute": { "cc": 94, "muted_value": 1, "unmuted_value": 0, "nrpn_msb": 1, "nrpn_lsb": 101 },
+      "solo": { "cc": 93, "soloed_value": 1, "unsoloed_value": 0, "nrpn_msb": 1, "nrpn_lsb": 102 }
+    }
+  ],
+  "pages": {
+    "standalone": [
+      {
+        "name": "Level",
+        "fullname": "Level",
+        "params": [
+          {
+            "name": "LEV",
+            "fullname": "Track Level",
+            "cc_id": 95,
+            "nrpn_msb": 1,
+            "nrpn_lsb": 100
+          }
+        ]
+      },
+      {
+        "name": "Machine",
+        "fullname": "Machine",
+        "note": "Picks which machine the track runs, which in turn decides what the eight SYNTH parameters mean. The value that selects each machine is not in the MIDI appendix.",
+        "params": [
+          {
+            "name": "MACH",
+            "fullname": "Track Machine Type",
+            "cc_id": 15,
+            "nrpn_msb": 1,
+            "nrpn_lsb": 103
+          }
+        ]
+      }
+    ],
+    "synth": [
+      {
+        "name": "TRIG",
+        "fullname": "Trig",
+        "params": [
+          {
+            "name": "NOTE",
+            "fullname": "Note",
+            "cc_id": 3,
+            "nrpn_msb": 3,
+            "nrpn_lsb": 0
+          },
+          {
+            "name": "VEL",
+            "fullname": "Velocity",
+            "cc_id": 4,
+            "nrpn_msb": 3,
+            "nrpn_lsb": 1
+          },
+          {
+            "name": "LEN",
+            "fullname": "Length",
+            "cc_id": 5,
+            "nrpn_msb": 3,
+            "nrpn_lsb": 2
+          },
+          {
+            "name": "SYN",
+            "fullname": "Synth Trig",
+            "cc_id": 11,
+            "nrpn_msb": 3,
+            "nrpn_lsb": 3
+          },
+          {
+            "name": "SMP",
+            "fullname": "Sample Trig",
+            "cc_id": 12,
+            "nrpn_msb": 3,
+            "nrpn_lsb": 4
+          },
+          {
+            "name": "ENV",
+            "fullname": "ENV Trig",
+            "cc_id": 13,
+            "nrpn_msb": 3,
+            "nrpn_lsb": 5
+          },
+          {
+            "name": "LFO",
+            "fullname": "LFO Trig",
+            "cc_id": 14,
+            "nrpn_msb": 3,
+            "nrpn_lsb": 6
+          }
+        ]
+      },
+      {
+        "name": "EUCLID",
+        "fullname": "Euclidean Sequencer",
+        "params": [
+          {
+            "name": "PL1",
+            "fullname": "Pulse Generator 1",
+            "cc_id": 86,
+            "nrpn_msb": 3,
+            "nrpn_lsb": 8
+          },
+          {
+            "name": "PL2",
+            "fullname": "Pulse Generator 2",
+            "cc_id": 87,
+            "nrpn_msb": 3,
+            "nrpn_lsb": 9
+          },
+          {
+            "name": "EUC",
+            "fullname": "Euclidean On/Off",
+            "cc_id": 117,
+            "nrpn_msb": 3,
+            "nrpn_lsb": 14,
+            "widget": "combo",
+            "options": ["Off", "On"]
+          },
+          {
+            "name": "RO1",
+            "fullname": "Rotation Generator 1",
+            "cc_id": 89,
+            "nrpn_msb": 3,
+            "nrpn_lsb": 11
+          },
+          {
+            "name": "RO2",
+            "fullname": "Rotation Generator 2",
+            "cc_id": 90,
+            "nrpn_msb": 3,
+            "nrpn_lsb": 12
+          },
+          {
+            "name": "TRO",
+            "fullname": "Track Rotation",
+            "cc_id": 91,
+            "nrpn_msb": 3,
+            "nrpn_lsb": 13
+          },
+          {
+            "name": "BOOL",
+            "fullname": "Boolean Operator",
+            "cc_id": 88,
+            "nrpn_msb": 3,
+            "nrpn_lsb": 10
+          }
+        ]
+      },
+      {
+        "name": "SYNTH",
+        "fullname": "Synth",
+        "note": "What each of the eight means changes with the track's machine. The machines block lists the per-machine names, and their order there is the machine's own, which is sometimes not the order the SRC page shows.",
+        "params": [
+          {
+            "name": "SYN1",
+            "fullname": "Synth Parameter 1",
+            "cc_id": 16,
+            "nrpn_msb": 1,
+            "nrpn_lsb": 0
+          },
+          {
+            "name": "SYN2",
+            "fullname": "Synth Parameter 2",
+            "cc_id": 17,
+            "nrpn_msb": 1,
+            "nrpn_lsb": 1
+          },
+          {
+            "name": "SYN3",
+            "fullname": "Synth Parameter 3",
+            "cc_id": 18,
+            "nrpn_msb": 1,
+            "nrpn_lsb": 2
+          },
+          {
+            "name": "SYN4",
+            "fullname": "Synth Parameter 4",
+            "cc_id": 19,
+            "nrpn_msb": 1,
+            "nrpn_lsb": 3
+          },
+          {
+            "name": "SYN5",
+            "fullname": "Synth Parameter 5",
+            "cc_id": 20,
+            "nrpn_msb": 1,
+            "nrpn_lsb": 4
+          },
+          {
+            "name": "SYN6",
+            "fullname": "Synth Parameter 6",
+            "cc_id": 21,
+            "nrpn_msb": 1,
+            "nrpn_lsb": 5
+          },
+          {
+            "name": "SYN7",
+            "fullname": "Synth Parameter 7",
+            "cc_id": 22,
+            "nrpn_msb": 1,
+            "nrpn_lsb": 6
+          },
+          {
+            "name": "SYN8",
+            "fullname": "Synth Parameter 8",
+            "cc_id": 23,
+            "nrpn_msb": 1,
+            "nrpn_lsb": 7
+          }
+        ]
+      },
+      {
+        "name": "SAMPLE",
+        "fullname": "Sample",
+        "params": [
+          {
+            "name": "TUNE",
+            "fullname": "Sample Tune",
+            "cc_id": 24,
+            "nrpn_msb": 1,
+            "nrpn_lsb": 8
+          },
+          {
+            "name": "FINE",
+            "fullname": "Sample Fine Tune",
+            "cc_id": 25,
+            "nrpn_msb": 1,
+            "nrpn_lsb": 9
+          },
+          {
+            "name": "BR",
+            "fullname": "Sample Bit Reduction",
+            "cc_id": 26,
+            "nrpn_msb": 1,
+            "nrpn_lsb": 10
+          },
+          {
+            "name": "SMP",
+            "fullname": "Sample Slot",
+            "cc_id": 27,
+            "nrpn_msb": 1,
+            "nrpn_lsb": 11
+          },
+          {
+            "name": "STRT",
+            "fullname": "Sample Start",
+            "cc_id": 28,
+            "nrpn_msb": 1,
+            "nrpn_lsb": 12
+          },
+          {
+            "name": "END",
+            "fullname": "Sample End",
+            "cc_id": 29,
+            "nrpn_msb": 1,
+            "nrpn_lsb": 13
+          },
+          {
+            "name": "LOOP",
+            "fullname": "Sample Loop",
+            "cc_id": 30,
+            "nrpn_msb": 1,
+            "nrpn_lsb": 14
+          },
+          {
+            "name": "LEV",
+            "fullname": "Sample Level",
+            "cc_id": 31,
+            "nrpn_msb": 1,
+            "nrpn_lsb": 15
+          }
+        ]
+      },
+      {
+        "name": "FILTER",
+        "fullname": "Filter",
+        "params": [
+          {
+            "name": "ATK",
+            "fullname": "Filter Attack Time",
+            "cc_id": 70,
+            "nrpn_msb": 1,
+            "nrpn_lsb": 16
+          },
+          {
+            "name": "DEC",
+            "fullname": "Filter Decay Time",
+            "cc_id": 71,
+            "nrpn_msb": 1,
+            "nrpn_lsb": 17
+          },
+          {
+            "name": "SUS",
+            "fullname": "Filter Sustain Level",
+            "cc_id": 72,
+            "nrpn_msb": 1,
+            "nrpn_lsb": 18
+          },
+          {
+            "name": "REL",
+            "fullname": "Filter Release Time",
+            "cc_id": 73,
+            "nrpn_msb": 1,
+            "nrpn_lsb": 19
+          },
+          {
+            "name": "FRQ",
+            "fullname": "Filter Frequency",
+            "cc_id": 74,
+            "nrpn_msb": 1,
+            "nrpn_lsb": 20
+          },
+          {
+            "name": "RES",
+            "fullname": "Filter Resonance",
+            "cc_id": 75,
+            "nrpn_msb": 1,
+            "nrpn_lsb": 21
+          },
+          {
+            "name": "MODE",
+            "fullname": "Filter Mode",
+            "cc_id": 76,
+            "nrpn_msb": 1,
+            "nrpn_lsb": 22
+          },
+          {
+            "name": "ENV",
+            "fullname": "Filter Env Depth",
+            "cc_id": 77,
+            "nrpn_msb": 1,
+            "nrpn_lsb": 23
+          }
+        ]
+      },
+      {
+        "name": "AMP",
+        "fullname": "Amplifier",
+        "params": [
+          {
+            "name": "ATK",
+            "fullname": "Amp Attack Time",
+            "cc_id": 78,
+            "nrpn_msb": 1,
+            "nrpn_lsb": 24
+          },
+          {
+            "name": "HOLD",
+            "fullname": "Amp Hold Time",
+            "cc_id": 79,
+            "nrpn_msb": 1,
+            "nrpn_lsb": 25
+          },
+          {
+            "name": "DEC",
+            "fullname": "Amp Decay Time",
+            "cc_id": 80,
+            "nrpn_msb": 1,
+            "nrpn_lsb": 26
+          },
+          {
+            "name": "OVR",
+            "fullname": "Amp Overdrive",
+            "cc_id": 81,
+            "nrpn_msb": 1,
+            "nrpn_lsb": 27
+          },
+          {
+            "name": "DEL",
+            "fullname": "Amp Delay Send",
+            "cc_id": 82,
+            "nrpn_msb": 1,
+            "nrpn_lsb": 28
+          },
+          {
+            "name": "REV",
+            "fullname": "Amp Reverb Send",
+            "cc_id": 83,
+            "nrpn_msb": 1,
+            "nrpn_lsb": 29
+          },
+          {
+            "name": "PAN",
+            "fullname": "Amp Pan",
+            "cc_id": 10,
+            "nrpn_msb": 1,
+            "nrpn_lsb": 30
+          },
+          {
+            "name": "VOL",
+            "fullname": "Amp Volume",
+            "cc_id": 7,
+            "nrpn_msb": 1,
+            "nrpn_lsb": 31
+          }
+        ]
+      }
+    ],
+    "lfo": [
+      {
+        "name": "LFO",
+        "fullname": "LFO",
+        "transport": "cc",
+        "params": [
+          {
+            "name": "SPD",
+            "fullname": "LFO Speed",
+            "cc_id": 102,
+            "nrpn_msb": 1,
+            "nrpn_lsb": 32
+          },
+          {
+            "name": "MULT",
+            "fullname": "LFO Multiplier",
+            "cc_id": 103,
+            "nrpn_msb": 1,
+            "nrpn_lsb": 33
+          },
+          {
+            "name": "FADE",
+            "fullname": "LFO Fade In/Out",
+            "cc_id": 104,
+            "nrpn_msb": 1,
+            "nrpn_lsb": 34
+          },
+          {
+            "name": "DEST",
+            "fullname": "LFO Destination",
+            "cc_id": 105,
+            "nrpn_msb": 1,
+            "nrpn_lsb": 35
+          },
+          {
+            "name": "WAVE",
+            "fullname": "LFO Waveform",
+            "cc_id": 106,
+            "nrpn_msb": 1,
+            "nrpn_lsb": 36
+          },
+          {
+            "name": "PHSE",
+            "fullname": "LFO Start Phase",
+            "cc_id": 107,
+            "nrpn_msb": 1,
+            "nrpn_lsb": 37
+          },
+          {
+            "name": "MODE",
+            "fullname": "LFO Trig Mode",
+            "cc_id": 108,
+            "nrpn_msb": 1,
+            "nrpn_lsb": 38
+          },
+          {
+            "name": "DPTH",
+            "fullname": "LFO Depth",
+            "cc_id": 109,
+            "cc_lsb": 118,
+            "nrpn_msb": 1,
+            "nrpn_lsb": 39
+          }
+        ]
+      }
+    ]
+  },
+  "ccs": {
+    "performance": {
+      "name": "PERF",
+      "fullname": "Performance",
+      "params": [
+        {
+          "name": "PERF 1",
+          "fullname": "Performance Parameter 1",
+          "cc_id": 35,
+          "nrpn_msb": 0,
+          "nrpn_lsb": 0
+        },
+        {
+          "name": "PERF 2",
+          "fullname": "Performance Parameter 2",
+          "cc_id": 36,
+          "nrpn_msb": 0,
+          "nrpn_lsb": 1
+        },
+        {
+          "name": "PERF 3",
+          "fullname": "Performance Parameter 3",
+          "cc_id": 37,
+          "nrpn_msb": 0,
+          "nrpn_lsb": 2
+        },
+        {
+          "name": "PERF 4",
+          "fullname": "Performance Parameter 4",
+          "cc_id": 39,
+          "nrpn_msb": 0,
+          "nrpn_lsb": 3
+        },
+        {
+          "name": "PERF 5",
+          "fullname": "Performance Parameter 5",
+          "cc_id": 40,
+          "nrpn_msb": 0,
+          "nrpn_lsb": 4
+        },
+        {
+          "name": "PERF 6",
+          "fullname": "Performance Parameter 6",
+          "cc_id": 41,
+          "nrpn_msb": 0,
+          "nrpn_lsb": 5
+        },
+        {
+          "name": "PERF 7",
+          "fullname": "Performance Parameter 7",
+          "cc_id": 42,
+          "nrpn_msb": 0,
+          "nrpn_lsb": 6
+        },
+        {
+          "name": "PERF 8",
+          "fullname": "Performance Parameter 8",
+          "cc_id": 43,
+          "nrpn_msb": 0,
+          "nrpn_lsb": 7
+        },
+        {
+          "name": "PERF 9",
+          "fullname": "Performance Parameter 9",
+          "cc_id": 44,
+          "nrpn_msb": 0,
+          "nrpn_lsb": 8
+        },
+        {
+          "name": "PERF 10",
+          "fullname": "Performance Parameter 10",
+          "cc_id": 45,
+          "nrpn_msb": 0,
+          "nrpn_lsb": 9
+        },
+        {
+          "name": "PERF 11",
+          "fullname": "Performance Parameter 11",
+          "cc_id": 46,
+          "nrpn_msb": 0,
+          "nrpn_lsb": 10
+        },
+        {
+          "name": "PERF 12",
+          "fullname": "Performance Parameter 12",
+          "cc_id": 47,
+          "nrpn_msb": 0,
+          "nrpn_lsb": 11
+        }
+      ]
+    },
+    "global": {
+      "name": "GLOBAL",
+      "fullname": "Global Controls",
+      "params": [
+        {
+          "name": "SCNE",
+          "fullname": "Active Scene",
+          "cc_id": 92,
+          "nrpn_msb": 1,
+          "nrpn_lsb": 104
+        }
+      ]
+    },
+    "fx": {
+      "name": "FX",
+      "fullname": "FX Track",
+      "note": "A second CC map the FX track answers with. These numbers overlap the drum-track map in `pages.synth`, and the channel a message arrives on decides which applies. The FX channel is set in the MIDI CHANNELS menu and is not in the MIDI appendix. NRPN bank 2 is unique to this map, so NRPN addresses it without the collision.",
+      "pages": [
+        {
+          "name": "DELAY",
+          "fullname": "Delay",
+          "params": [
+            {
+              "name": "TIME",
+              "fullname": "Delay Time",
+              "cc_id": 16,
+              "nrpn_msb": 2,
+              "nrpn_lsb": 0
+            },
+            {
+              "name": "PING",
+              "fullname": "Delay Pingpong",
+              "cc_id": 17,
+              "nrpn_msb": 2,
+              "nrpn_lsb": 1
+            },
+            {
+              "name": "WID",
+              "fullname": "Delay Stereo Width",
+              "cc_id": 18,
+              "nrpn_msb": 2,
+              "nrpn_lsb": 2
+            },
+            {
+              "name": "FB",
+              "fullname": "Delay Feedback",
+              "cc_id": 19,
+              "nrpn_msb": 2,
+              "nrpn_lsb": 3
+            },
+            {
+              "name": "HPF",
+              "fullname": "Delay Highpass Filter",
+              "cc_id": 20,
+              "nrpn_msb": 2,
+              "nrpn_lsb": 4
+            },
+            {
+              "name": "LPF",
+              "fullname": "Delay Lowpass Filter",
+              "cc_id": 21,
+              "nrpn_msb": 2,
+              "nrpn_lsb": 5
+            },
+            {
+              "name": "REV",
+              "fullname": "Delay Reverb Send",
+              "cc_id": 22,
+              "nrpn_msb": 2,
+              "nrpn_lsb": 6
+            },
+            {
+              "name": "MIX",
+              "fullname": "Delay Mix Volume",
+              "cc_id": 23,
+              "nrpn_msb": 2,
+              "nrpn_lsb": 7
+            }
+          ]
+        },
+        {
+          "name": "REVERB",
+          "fullname": "Reverb",
+          "note": "NRPN 2:14 is absent from the MIDI appendix, so the seven below are the whole page.",
+          "params": [
+            {
+              "name": "PRE",
+              "fullname": "Reverb Predelay",
+              "cc_id": 24,
+              "nrpn_msb": 2,
+              "nrpn_lsb": 8
+            },
+            {
+              "name": "DEC",
+              "fullname": "Reverb Decay Time",
+              "cc_id": 25,
+              "nrpn_msb": 2,
+              "nrpn_lsb": 9
+            },
+            {
+              "name": "FREQ",
+              "fullname": "Reverb Shelving Freq",
+              "cc_id": 26,
+              "nrpn_msb": 2,
+              "nrpn_lsb": 10
+            },
+            {
+              "name": "GAIN",
+              "fullname": "Reverb Shelving Gain",
+              "cc_id": 27,
+              "nrpn_msb": 2,
+              "nrpn_lsb": 11
+            },
+            {
+              "name": "HPF",
+              "fullname": "Reverb Highpass Filter",
+              "cc_id": 28,
+              "nrpn_msb": 2,
+              "nrpn_lsb": 12
+            },
+            {
+              "name": "LPF",
+              "fullname": "Reverb Lowpass Filter",
+              "cc_id": 29,
+              "nrpn_msb": 2,
+              "nrpn_lsb": 13
+            },
+            {
+              "name": "MIX",
+              "fullname": "Reverb Mix Volume",
+              "cc_id": 31,
+              "nrpn_msb": 2,
+              "nrpn_lsb": 15
+            }
+          ]
+        },
+        {
+          "name": "DIST",
+          "fullname": "Distortion",
+          "note": "The appendix files Delay Overdrive and the two routing switches here rather than with the delay. NRPN 2:19 through 2:21 are absent from it.",
+          "params": [
+            {
+              "name": "AMT",
+              "fullname": "Dist Amount",
+              "cc_id": 70,
+              "nrpn_msb": 2,
+              "nrpn_lsb": 16
+            },
+            {
+              "name": "SYM",
+              "fullname": "Dist Symmetry",
+              "cc_id": 71,
+              "nrpn_msb": 2,
+              "nrpn_lsb": 17
+            },
+            {
+              "name": "DOVR",
+              "fullname": "Delay Overdrive",
+              "cc_id": 72,
+              "nrpn_msb": 2,
+              "nrpn_lsb": 18
+            },
+            {
+              "name": "DRTE",
+              "fullname": "Delay Dist/Comp Routing",
+              "cc_id": 76,
+              "nrpn_msb": 2,
+              "nrpn_lsb": 22,
+              "widget": "combo",
+              "options": [
+                "Pre",
+                "Post"
+              ]
+            },
+            {
+              "name": "RRTE",
+              "fullname": "Reverb Dist/Comp Routing",
+              "cc_id": 77,
+              "nrpn_msb": 2,
+              "nrpn_lsb": 23,
+              "widget": "combo",
+              "options": [
+                "Pre",
+                "Post"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "COMP",
+          "fullname": "Compressor",
+          "params": [
+            {
+              "name": "THR",
+              "fullname": "Compressor Threshold",
+              "cc_id": 78,
+              "nrpn_msb": 2,
+              "nrpn_lsb": 24
+            },
+            {
+              "name": "ATK",
+              "fullname": "Compressor Attack Time",
+              "cc_id": 79,
+              "nrpn_msb": 2,
+              "nrpn_lsb": 25
+            },
+            {
+              "name": "REL",
+              "fullname": "Compressor Release Time",
+              "cc_id": 80,
+              "nrpn_msb": 2,
+              "nrpn_lsb": 26
+            },
+            {
+              "name": "MUP",
+              "fullname": "Compressor Makeup Gain",
+              "cc_id": 81,
+              "nrpn_msb": 2,
+              "nrpn_lsb": 27
+            },
+            {
+              "name": "RAT",
+              "fullname": "Compressor Ratio",
+              "cc_id": 82,
+              "nrpn_msb": 2,
+              "nrpn_lsb": 28
+            },
+            {
+              "name": "SEQ",
+              "fullname": "Compressor Sidechain EQ",
+              "cc_id": 83,
+              "nrpn_msb": 2,
+              "nrpn_lsb": 29
+            },
+            {
+              "name": "MIX",
+              "fullname": "Compressor Dry/Wet Mix",
+              "cc_id": 84,
+              "nrpn_msb": 2,
+              "nrpn_lsb": 30
+            },
+            {
+              "name": "VOL",
+              "fullname": "Compressor Output Volume",
+              "cc_id": 85,
+              "nrpn_msb": 2,
+              "nrpn_lsb": 31
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "machines": {
+    "note": "What the eight SYNTH parameters mean on a track, one entry per machine. Slots a machine does not use are left empty. The MIDI appendix gives no id for any of these, so the value CC 15 wants to select one is unknown, and it spells the slot names out rather than printing the four-character labels the screen shows.",
+    "machine_order": {
+      "BD": [
+        "PLASTIC",
+        "SHARP",
+        "HARD",
+        "CLASSIC",
+        "FM",
+        "SILKY",
+        "ACOUSTIC"
+      ],
+      "SD": [
+        "NATURAL",
+        "HARD",
+        "CLASSIC",
+        "FM",
+        "ACOUSTIC"
+      ],
+      "RS": [
+        "HARD",
+        "CLASSIC"
+      ],
+      "CP": [
+        "CLASSIC"
+      ],
+      "SY": [
+        "DUAL VCO",
+        "CHIP",
+        "RAW"
+      ],
+      "BT": [
+        "CLASSIC"
+      ],
+      "LT": [
+        "CLASSIC"
+      ],
+      "MT": [
+        "CLASSIC"
+      ],
+      "HT": [
+        "CLASSIC"
+      ],
+      "CH": [
+        "CLASSIC",
+        "METALLIC"
+      ],
+      "OH": [
+        "CLASSIC",
+        "METALLIC"
+      ],
+      "HH": [
+        "BASIC",
+        "LAB"
+      ],
+      "CY": [
+        "METALLIC",
+        "CLASSIC",
+        "RIDE"
+      ],
+      "CB": [
+        "CLASSIC",
+        "METALLIC"
+      ],
+      "UT": [
+        "NOISE",
+        "IMPULSE"
+      ]
+    },
+    "rytm": [
+      {
+        "name": "BD-PLASTIC",
+        "params": [
+          "Level",
+          "Tune",
+          "Decay Time",
+          "Sweep Depth",
+          "Sweep Time",
+          "Hold Time",
+          "VCO Click",
+          "Dust Level"
+        ]
+      },
+      {
+        "name": "BD-SHARP",
+        "params": [
+          "Level",
+          "Tune",
+          "Decay",
+          "Sweep Depth",
+          "Sweep Time",
+          "Hold Time",
+          "Tick Level",
+          "Waveform"
+        ]
+      },
+      {
+        "name": "BD-HARD",
+        "params": [
+          "Level",
+          "Tune",
+          "Decay",
+          "Hold",
+          "Sweep Time",
+          "Sweep Depth",
+          "Waveform",
+          "Transient Tick"
+        ]
+      },
+      {
+        "name": "BD-CLASSIC",
+        "params": [
+          "Level",
+          "Tune",
+          "Decay",
+          "Hold",
+          "Sweep Time",
+          "Sweep Depth",
+          "Waveform",
+          "Transient Tick"
+        ]
+      },
+      {
+        "name": "BD-FM",
+        "params": [
+          "Level",
+          "Tune",
+          "Decay",
+          "FM Amount",
+          "Sweep Time",
+          "FM Sweep Time",
+          "FM Decay Time",
+          "FM Tune"
+        ]
+      },
+      {
+        "name": "BD-SILKY",
+        "params": [
+          "Level",
+          "Tune",
+          "Decay",
+          "Sweep Depth",
+          "Sweep Time",
+          "Hold",
+          "VCO Click",
+          "Dust Level"
+        ]
+      },
+      {
+        "name": "BD-ACOUSTIC",
+        "params": [
+          "Level",
+          "Tune",
+          "Decay",
+          "Sweep Depth",
+          "Sweep Time",
+          "Hold Time",
+          "Impact",
+          "Waveform"
+        ]
+      },
+      {
+        "name": "SD-NATURAL",
+        "params": [
+          "Level",
+          "Tune",
+          "Body Decay",
+          "Noise Decay",
+          "Noise LPF",
+          "Noise Balance",
+          "Noise Resonance",
+          "Noise HPF"
+        ]
+      },
+      {
+        "name": "SD-HARD",
+        "params": [
+          "Level",
+          "Tune",
+          "Decay",
+          "Sweep Depth",
+          "Tick Level",
+          "Noise Decay",
+          "Noise Level",
+          "Sweep Time"
+        ]
+      },
+      {
+        "name": "SD-CLASSIC",
+        "params": [
+          "Level",
+          "Tune",
+          "Decay",
+          "Detune",
+          "Snap Amount",
+          "Noise Decay",
+          "Noise Level",
+          "Osc Balance"
+        ]
+      },
+      {
+        "name": "SD-FM",
+        "params": [
+          "Level",
+          "Tune",
+          "Decay",
+          "FM Tune",
+          "FM Decay Time",
+          "Noise Decay",
+          "Noise Level",
+          "FM Amount"
+        ]
+      },
+      {
+        "name": "SD-ACOUSTIC",
+        "params": [
+          "Level",
+          "Tune",
+          "Decay",
+          "Noise Decay",
+          "Hold Time",
+          "Noise Level",
+          "Impact",
+          "Sweep Depth"
+        ]
+      },
+      {
+        "name": "RS-HARD",
+        "params": [
+          "Level",
+          "Tune",
+          "Decay",
+          "Sweep Depth",
+          "Tick Level",
+          "Noise Level",
+          "Symmetry",
+          "Sweep Time"
+        ]
+      },
+      {
+        "name": "RS-CLASSIC",
+        "params": [
+          "Level",
+          "Tune Osc 1",
+          "Decay",
+          "Osc Balance",
+          "Tune Osc 2",
+          "Symmetry",
+          "Noise Level",
+          "Tick Level"
+        ]
+      },
+      {
+        "name": "CP-CLASSIC",
+        "params": [
+          "Level",
+          "Noise Tone",
+          "Noise Decay",
+          "Clap Number",
+          "Clap Rate",
+          "Noise Level",
+          "Random Claps",
+          "Clap Decay"
+        ]
+      },
+      {
+        "name": "SY-DUAL VCO",
+        "params": [
+          "Level",
+          "Osc 1 Tune",
+          "Osc 1 Decay",
+          "Balance",
+          "Osc 2 Detune",
+          "Osc Config",
+          "Osc 2 Decay",
+          "Bend"
+        ]
+      },
+      {
+        "name": "SY-CHIP",
+        "params": [
+          "Level",
+          "Tune",
+          "Decay",
+          "Waveform",
+          "Speed",
+          "Offset 2",
+          "Offset 3",
+          "Offset 4"
+        ]
+      },
+      {
+        "name": "SY-RAW",
+        "params": [
+          "Level",
+          "Tune",
+          "Decay",
+          "Noise Level",
+          "Osc 2 Detune",
+          "Waveform 1",
+          "Waveform 2",
+          "Balance"
+        ]
+      },
+      {
+        "name": "BT-CLASSIC",
+        "params": [
+          "Level",
+          "Tune",
+          "Decay",
+          "Sweep Depth",
+          "Noise Level",
+          "Snap Type",
+          "",
+          ""
+        ]
+      },
+      {
+        "name": "LT-CLASSIC",
+        "params": [
+          "Level",
+          "Tune",
+          "Decay",
+          "Sweep Depth",
+          "Sweep Time",
+          "Noise Decay",
+          "Noise Level",
+          "Noise Tone"
+        ]
+      },
+      {
+        "name": "MT-CLASSIC",
+        "params": [
+          "Level",
+          "Tune",
+          "Decay",
+          "Sweep Depth",
+          "Sweep Time",
+          "Noise Decay",
+          "Noise Level",
+          "Noise Tone"
+        ]
+      },
+      {
+        "name": "HT-CLASSIC",
+        "params": [
+          "Level",
+          "Tune",
+          "Decay",
+          "Sweep Depth",
+          "Sweep Time",
+          "Noise Decay",
+          "Noise Level",
+          "Noise Tone"
+        ]
+      },
+      {
+        "name": "CH-CLASSIC",
+        "params": [
+          "Level",
+          "Tune",
+          "Decay",
+          "Color",
+          "",
+          "",
+          "",
+          ""
+        ]
+      },
+      {
+        "name": "CH-METALLIC",
+        "params": [
+          "Level",
+          "Tune",
+          "Decay Time",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ]
+      },
+      {
+        "name": "OH-CLASSIC",
+        "params": [
+          "Level",
+          "Tune",
+          "Decay",
+          "Color",
+          "",
+          "",
+          "",
+          ""
+        ]
+      },
+      {
+        "name": "OH-METALLIC",
+        "params": [
+          "Level",
+          "Tune",
+          "Decay Time",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ]
+      },
+      {
+        "name": "HH-BASIC",
+        "params": [
+          "Level",
+          "Tune",
+          "Decay Time",
+          "Tone",
+          "Transient Decay",
+          "Osc Reset",
+          "",
+          ""
+        ]
+      },
+      {
+        "name": "HH-LAB",
+        "params": [
+          "Level",
+          "Tune 1",
+          "Decay Time",
+          "Tune 2",
+          "Tune 3",
+          "Tune 4",
+          "Tune 5",
+          "Tune 6"
+        ]
+      },
+      {
+        "name": "CY-METALLIC",
+        "params": [
+          "Level",
+          "Tune",
+          "Decay Time",
+          "Tone",
+          "Transient Decay",
+          "",
+          "",
+          ""
+        ]
+      },
+      {
+        "name": "CY-CLASSIC",
+        "params": [
+          "Level",
+          "Tune",
+          "Decay",
+          "Color",
+          "Tone",
+          "",
+          "",
+          ""
+        ]
+      },
+      {
+        "name": "CY-RIDE",
+        "params": [
+          "Level",
+          "Tune",
+          "Tail Decay",
+          "Hit Decay",
+          "Cymbal Type",
+          "Component 1",
+          "Component 2",
+          "Component 3"
+        ]
+      },
+      {
+        "name": "CB-CLASSIC",
+        "params": [
+          "Level",
+          "Tune",
+          "Decay Time",
+          "Detune",
+          "",
+          "",
+          "",
+          ""
+        ]
+      },
+      {
+        "name": "CB-METALLIC",
+        "params": [
+          "Level",
+          "Tune",
+          "Decay Time",
+          "Detune",
+          "",
+          "",
+          "",
+          ""
+        ]
+      },
+      {
+        "name": "UT-NOISE",
+        "params": [
+          "Level",
+          "LP Frequency",
+          "Decay",
+          "Sweep Depth",
+          "Sweep Time",
+          "LP Resonance",
+          "HP Frequency",
+          "Attack"
+        ]
+      },
+      {
+        "name": "UT-IMPULSE",
+        "params": [
+          "Level",
+          "Attack",
+          "Decay",
+          "Polarity",
+          "",
+          "",
+          "",
+          ""
+        ]
+      }
+    ]
+  }
+}

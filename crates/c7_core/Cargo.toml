@@ -1,0 +1,50 @@
+[package]
+
+name = "c7_core"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+publish.workspace = true
+readme = "README.md"
+description = "Hardware protocol and audio utility layer for C7."
+
+[dependencies]
+
+async-channel = { workspace = true }
+glib = { workspace = true }
+serde_json = { workspace = true }
+
+# Callback-based MIDI I/O.
+#
+# The `winrt` feature swaps the Windows MIDI backend from `WinMM` to `Windows.Devices.Midi` (`WinRT`).
+midir = { version = "0.11", features = ["winrt"] }
+
+# Base64 encoding and decoding.
+#
+# Compressed FLAC audio is base64-encoded before being stored as a text value inside a `.c7` JSON file, and decoded on load.
+base64 = "0.23"
+
+# Image loading and pixel-buffer manipulation.
+#
+# Used by `image_to_table()`, which converts an image to wavetable frames.
+gdk-pixbuf = "0.22"
+
+# Pure-Rust audio decoder.
+#
+# Default codecs cover WAV, FLAC, OGG/Vorbis, and common PCM codecs.
+# `mp3`, `aac`, & `isomp4` are opt-in.
+symphonia = { version = "0.6", features = ["mp3", "aac", "isomp4"] }
+
+# Pure-Rust FLAC encoder.
+#
+# Used by the SDS pipeline to compress sample audio for `.c7` storage.
+flacenc = "0.5.1"
+
+# Cross-platform host audio output (WASAPI/CoreAudio/ALSA).
+#
+# Used to preview audio through the local computer's speakers.
+cpal = "0.18"
+
+[lints]
+
+workspace = true

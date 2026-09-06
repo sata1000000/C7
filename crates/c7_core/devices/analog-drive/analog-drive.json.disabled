@@ -1,0 +1,173 @@
+{
+  "brand": "Elektron",
+  "device": "Analog Drive",
+  "device_max": "Analog Drive",
+  "device_short": "Analog Drive",
+  "device_shorter": "AD",
+  "firmware": {
+    "links": [
+      {
+        "label": "Elektron Firmware",
+        "url": "https://www.elektron.se/support-downloads/analog-drive#resources",
+        "official": true
+      }
+    ],
+    "upload_instructions": [
+      "Set the MIDI Inter-packet delay to 30 ms.",
+      "Hold the PRESET knob during power-on. The display should show \"UP\".",
+      "Click 'Upload MIDI Upgrade File' below and pick the .syx file.",
+      "Restart the pedal once the display changes."
+    ]
+  },
+  "sysex_header": [
+    240,
+    0,
+    32,
+    60,
+    9
+  ],
+  "system": {
+    "piano_keyboard_input": false,
+    "piano_keyboard_output": false,
+    "pitch_bend_input": false
+  },
+  "sysex_api": {
+    "librarian": false,
+    "has_turbomidi": false,
+    "preset": {
+      "slots": 100,
+      "first_slot": 0,
+      "display_offset": 0
+    }
+  },
+  "sysex_layout": {
+    "preset": {
+      "wire_size": 23,
+      "note": "AL repeats this message once per slot (0-99).",
+      "fields": {
+        "sysex_header": {"fullname": "SysEx Header", "offset": 0, "size": 5},
+        "sysex_channel": {"fullname": "Device Channel", "offset": 5, "size": 1},
+        "sysex_type": {"fullname": "Message Type", "offset": 6, "size": 1},
+        "sysex_subtype": {"fullname": "Sub-type", "offset": 7, "size": 1, "note": "Constant `0x65`. Likely a dump-format identifier for this layout."},
+        "slot": {"fullname": "Original Position", "offset": 8, "size": 1, "min": 0, "max": 99},
+        "circuit_select": {"fullname": "Circuit Select", "offset": 9, "size": 1, "values_ref": "circuit_select_index"},
+        "gain": {"fullname": "Gain", "offset": 10, "size": 2},
+        "low": {"fullname": "Low", "offset": 12, "size": 2},
+        "mid_frequency": {"fullname": "Mid Freq", "offset": 14, "size": 2},
+        "mid": {"fullname": "Mid", "offset": 16, "size": 2},
+        "high": {"fullname": "High", "offset": 18, "size": 2},
+        "level": {"fullname": "Level", "offset": 20, "size": 2},
+        "sysex_end": {"fullname": "SysEx End", "offset": 22, "size": 1}
+      }
+    },
+    "param_encoding_note": "Each 2-byte param field is (carry, value). Combined = carry*128+value, an internal ~0-255 scale, distinct from the 0-127 CC input range."
+  },
+  "tracks": [
+    {
+      "id": 0,
+      "name": "T1",
+      "trackname": "Audio Path",
+      "fullname": "Analog Drive Audio Path",
+      "channel": 0,
+      "offset": 0
+    }
+  ],
+  "pages": {
+    "standalone": [
+      {
+        "name": "Expression",
+        "fullname": "Expression Jacks",
+        "params": [
+          {
+            "name": "Expression Gain",
+            "fullname": "Expression Gain",
+            "cc_id": 4,
+            "cc_lsb": 36
+          },
+          {
+            "name": "Expression Mid",
+            "fullname": "Expression Mid",
+            "cc_id": 1,
+            "cc_lsb": 33
+          }
+        ]
+      }
+    ],
+    "synth": [
+      {
+        "name": "Drive",
+        "fullname": "Drive",
+        "params": [
+          {
+            "name": "Gain",
+            "fullname": "Gain",
+            "cc_id": 16,
+            "cc_lsb": 48
+          },
+          {
+            "name": "Low",
+            "fullname": "Low",
+            "cc_id": 17,
+            "cc_lsb": 49
+          },
+          {
+            "name": "Mid Freq",
+            "fullname": "Mid Freq",
+            "cc_id": 18,
+            "cc_lsb": 50
+          },
+          {
+            "name": "Mid",
+            "fullname": "Mid",
+            "cc_id": 19,
+            "cc_lsb": 51
+          },
+          {
+            "name": "High",
+            "fullname": "High",
+            "cc_id": 20,
+            "cc_lsb": 52
+          },
+          {
+            "name": "Level",
+            "fullname": "Level",
+            "cc_id": 21,
+            "cc_lsb": 53
+          },
+          {
+            "name": "Circuit Select",
+            "fullname": "Circuit Select",
+            "cc_id": 3,
+            "widget": "combo",
+            "values_ref": "circuit_select"
+          },
+          {
+            "name": "Effect Active",
+            "fullname": "Effect Active",
+            "cc_id": 80,
+            "widget": "combo",
+            "values_ref": "effect_active",
+            "note": "Live only. Not stored in presets."
+          }
+        ]
+      }
+    ]
+  },
+  "constants": {
+    "circuit_select_index": ["Clean Boost", "Mid Drive", "Dirty Drive", "Big Dist", "Focused Dist", "Harmonic Fuzz", "High Gain", "Thick Gain"],
+    "circuit_select": [
+      {"min": 0, "max": 15, "label": "Clean Boost"},
+      {"min": 16, "max": 31, "label": "Mid Drive"},
+      {"min": 32, "max": 47, "label": "Dirty Drive"},
+      {"min": 48, "max": 63, "label": "Big Dist"},
+      {"min": 64, "max": 79, "label": "Focused Dist"},
+      {"min": 80, "max": 95, "label": "Harmonic Fuzz"},
+      {"min": 96, "max": 111, "label": "High Gain"},
+      {"min": 112, "max": 127, "label": "Thick Gain"}
+    ],
+    "effect_active": [
+      {"min": 0, "max": 63, "label": "Off"},
+      {"min": 64, "max": 127, "label": "On"}
+    ]
+  }
+}

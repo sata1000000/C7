@@ -1,0 +1,124 @@
+name: Build C7 on Windows
+
+# Called by `publish-release.yml` on a version bump. Also runnable on its own.
+on:
+  workflow_call:
+  workflow_dispatch:
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: msys2 {0} # Forces Windows to use the MSYS2 Linux-like terminal environment.
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v6
+
+      - name: Setup MSYS2
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: UCRT64 # UCRT64 is the modern Microsoft C-Runtime, preventing legacy DLL issues.
+          update: true    # Refresh the pacman repository database first.
+          cache: true     # Caches the MSYS2 installation and installed packages between runs.
+
+      - name: Install MSYS2 Packages
+        run: |
+          packages=(
+            mingw-w64-ucrt-x86_64-rust                # Rust toolchain.
+            mingw-w64-ucrt-x86_64-gcc                 # Links the build to GTK4's C libraries.
+            mingw-w64-ucrt-x86_64-pkg-config          # Lets Rust build scripts locate GTK4/libadwaita headers.
+            mingw-w64-ucrt-x86_64-gtk4                # GTK4 C library.
+            mingw-w64-ucrt-x86_64-libadwaita          # GNOME Adwaita widgets.
+            mingw-w64-ucrt-x86_64-adwaita-icon-theme  # Adwaita icon set required by libadwaita.
+            mingw-w64-ucrt-x86_64-hicolor-icon-theme  # hicolor fallback theme required by GTK4.
+            mingw-w64-ucrt-x86_64-librsvg             # Provides `rsvg-convert`, which turns `icon.svg` into PNG for ImageMagick.
+            mingw-w64-ucrt-x86_64-imagemagick         # Converts PNG to ICO and generates the NSIS header bitmap.
+            mingw-w64-ucrt-x86_64-nsis                # NSIS installer packager.
+            mingw-w64-ucrt-x86_64-ntldd               # Lists DLL dependencies of Windows PE binaries.
+          )
+
+          # Retry to survive flaky MSYS2 mirrors.
+          for attempt in 1 2 3; do
+            pacman -S --noconfirm --needed "${packages[@]}" && break
+            [ "$attempt" -eq 3 ] && { echo "pacman failed after 3 attempts"; exit 1; }
+            echo "pacman failed (attempt $attempt). Retrying shortly..."
+            sleep 15
+          done
+
+      - name: Compile C7
+        run: |
+          rsvg-convert -w 512 -h 512 crates/c7_app/icon.svg -o icon.png
+
+          # Multi-resolution ICO, used by the NSIS installer UI and embedded into the exe.
+          magick icon.png -define icon:auto-resize="256,128,64,48,32,16" icon.ico
+
+          # Generate the 150x57 header bitmap for the NSIS installer (white bg, icon right-aligned).
+          mkdir -p packaging/windows/assets
+          magick -size 150x57 xc:white \( icon.png -resize 45x45 \) -geometry +99+6 -composite BMP3:packaging/windows/assets/header.bmp
+
+          # Build the C7 Bridge plugin.
+          cargo build --release --package c7_bridge
+
+          # `pkg-config` finds GTK4/libadwaita in the UCRT64 prefix.
+          export PKG_CONFIG_PATH=/ucrt64/lib/pkgconfig
+
+          # Build the C7 application.
+          cargo build --release --package c7_app
+
+      - name: Build EXE
+        run: |
+          # Assemble the dist folder that NSIS will package.
+          mkdir -p dist/C7_Windows
+          cp target/release/c7_app.exe dist/C7_Windows/c7_app.exe
+
+          # Embed the app icon and some metadata into the exe.
+          VERSION=$(cargo pkgid -p c7_app | cut -d'#' -f2)
+          curl -L -o rcedit.exe https://github.com/electron/rcedit/releases/download/v2.0.0/rcedit-x64.exe
+          ./rcedit.exe dist/C7_Windows/c7_app.exe \
+            --set-icon icon.ico \
+            --set-version-string ProductName "C7" \
+            --set-version-string FileDescription "C7" \
+            --set-file-version "$VERSION" \
+            --set-product-version "$VERSION"
+
+          cp -r crates/c7_app/settings dist/C7_Windows/
+          cp -r crates/c7_core/devices dist/C7_Windows/
+
+          # `about.rs` looks for the icon in `cwd` to load the about dialog icon.
+          cp crates/c7_app/icon.svg dist/C7_Windows/
+
+          # Bundle the Windows CLAP plugin alongside the data dirs.
+          mkdir -p dist/C7_Windows/bridge
+          cp target/release/c7_bridge.dll dist/C7_Windows/bridge/C7-Bridge.clap
+
+          # Recursively bundle the UCRT64 DLLs the exe depends on.
+          ntldd -R dist/C7_Windows/c7_app.exe 2>/dev/null \
+            | awk '/ucrt64/ {print $1}' \
+            | sort -u \
+            | while IFS= read -r dll; do
+                [ -f "/ucrt64/bin/$dll" ] && cp -n "/ucrt64/bin/$dll" dist/C7_Windows/
+              done || true
+
+          # Bundle the GTK4 runtime data.
+          mkdir -p dist/C7_Windows/share/glib-2.0/schemas dist/C7_Windows/share/icons dist/C7_Windows/lib
+          cp /ucrt64/share/glib-2.0/schemas/gschemas.compiled dist/C7_Windows/share/glib-2.0/schemas/
+          cp -r /ucrt64/share/icons/hicolor dist/C7_Windows/share/icons/
+          cp -r /ucrt64/share/icons/Adwaita dist/C7_Windows/share/icons/
+          cp -r /ucrt64/lib/gdk-pixbuf-2.0  dist/C7_Windows/lib/
+
+      - name: Build Installer
+        run: |
+          VERSION=$(cargo pkgid -p c7_app | cut -d'#' -f2)
+          # `cygpath -m` converts the MSYS2 `pwd` to a Windows absolute path (e.g. `D:\C7\C7`).
+          # NSIS needs this because `${__FILEDIR__}` returns a relative path in MSYS2 context.
+          REPO_ROOT=$(cygpath -m "$(pwd)")
+          makensis -DAPP_VERSION="$VERSION" -DREPO_ROOT="$REPO_ROOT" packaging/windows/installer.nsi
+
+      - name: Upload EXE
+        uses: actions/upload-artifact@v7
+        with:
+          name: windows-asset
+          path: dist/C7_Windows.exe
+          retention-days: 1

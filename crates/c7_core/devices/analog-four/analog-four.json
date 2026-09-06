@@ -1,0 +1,1320 @@
+{
+  "brand": "Elektron",
+  "device": "Analog Four",
+  "device_max": "Analog Four MKII",
+  "device_short": "Analog Four",
+  "device_shorter": "A4",
+  "firmware": {
+    "links": [
+      {
+        "label": "Elektron Firmware",
+        "url": "https://www.elektron.se/support-downloads/analog-four-mki#resources",
+        "official": true
+      }
+    ],
+    "upload_instructions": [
+      "Set the MIDI Inter-packet delay to 30 ms.",
+      "Hold FUNCTION during power-on and select TRIG 4 (OS Upgrade).",
+      "Click 'Upload MIDI Upgrade File' below and pick the .syx file."
+    ]
+  },
+  "sysex_header": [
+    240,
+    0,
+    32,
+    60,
+    6
+  ],
+  "system": {
+    "panic_all_notes_off": {
+      "cc": 123,
+      "val": 0,
+      "description": "All Notes Off."
+    },
+    "bank_select_reset": {
+      "cc": 0,
+      "val": 0,
+      "description": "Sent alongside Panic to reset bank selects."
+    },
+    "piano_keyboard_input": true,
+    "piano_keyboard_output": true,
+    "pitch_bend_input": true,
+    "note_velocity": 100,
+    "note": "Each synth track answers on its own MIDI channel and owns the full CC range there, so a track needs no CC offset. An auto-channel that addresses whichever track is selected also exists and is set in Global settings."
+  },
+  "sysex_api": {
+    "librarian": false,
+    "has_turbomidi": false,
+    "proto_version": [
+      1,
+      1
+    ],
+    "footer": [
+      0,
+      0,
+      0,
+      5
+    ],
+    "description": "`F0 [sysex_header] [type] [proto_version] [param] [footer] F7`, fifteen bytes in all. The `proto_version` pair and the four-byte footer are absent on the MD and MnM, so no existing C7 SysEx path can address the A4 yet.",
+    "request_size_bytes": 15,
+    "kit": {
+      "request_cmd": 98,
+      "write_cmd": 82,
+      "request_ram_cmd": 104,
+      "write_ram_cmd": 88,
+      "slots": 128,
+      "first_slot": 0,
+      "display_offset": 1,
+      "note": "A saved kit must be loaded into the workspace before parameter locks apply to it. The RAM pair reads and writes that workspace directly."
+    },
+    "sound": {
+      "request_cmd": 99,
+      "write_cmd": 83,
+      "request_ram_cmd": 105,
+      "write_ram_cmd": 89,
+      "slots": 128,
+      "first_slot": 0,
+      "display_offset": 1,
+      "note": "A saved sound must be loaded onto a track before it can be parameter-locked. A RAM sound can be locked directly."
+    },
+    "pattern": {
+      "request_cmd": 100,
+      "write_cmd": 84,
+      "request_ram_cmd": 106,
+      "write_ram_cmd": 90,
+      "slots": 128,
+      "first_slot": 0,
+      "banks": 8,
+      "max_params": 24,
+      "max_tracks": 16,
+      "max_locks": 64
+    },
+    "song": {
+      "request_cmd": 101,
+      "write_cmd": 85,
+      "request_ram_cmd": 107,
+      "write_ram_cmd": 91,
+      "slots": 16,
+      "first_slot": 0,
+      "display_offset": 1
+    },
+    "settings": {
+      "request_cmd": 102,
+      "write_cmd": 86,
+      "request_ram_cmd": 108,
+      "write_ram_cmd": 92,
+      "slots": 8,
+      "first_slot": 0,
+      "display_offset": 1,
+      "note": "SETTINGS is the object that identifies the device, the role Global plays on the MD and MnM. Requesting slot 0 is the usual probe."
+    },
+    "global": {
+      "request_cmd": 103,
+      "write_cmd": 87,
+      "request_ram_cmd": 109,
+      "write_ram_cmd": 93,
+      "slots": 8,
+      "first_slot": 0,
+      "display_offset": 1,
+      "bpm_min": 30,
+      "bpm_max": 300,
+      "bpm_multiplier": 24
+    },
+    "misc_commands": {
+      "note": "Reverse-engineered and unconfirmed. Recorded so the bytes survive, not because anything sends them.",
+      "analog_calibration": {
+        "cmd": 124,
+        "description": "Analog calibration request."
+      },
+      "press_stop": {
+        "cmd": 248,
+        "description": "Presses the Stop key. The BPM display does not show LOCK."
+      },
+      "press_stop_variant": {
+        "cmd": 252,
+        "description": "A second byte that also presses Stop. The BPM display does not show LOCK."
+      },
+      "freeze_bpm_lock_a": {
+        "cmd": 250,
+        "description": "Freezes the device briefly. The BPM display shows LOCK."
+      },
+      "freeze_bpm_lock_b": {
+        "cmd": 251,
+        "description": "Freezes the device briefly. The BPM display shows LOCK."
+      },
+      "multi_block_dump": {
+        "cmd": 253,
+        "description": "Replies with a large multi-block dump in an unknown format. Takes one parameter byte."
+      },
+      "dump_stream": {
+        "cmd": 96,
+        "description": "Starts a continuous stream of dumps. Purpose unknown."
+      },
+      "track_pitch": {
+        "cmd": 224,
+        "stride": 1,
+        "description": "One command byte per track counting up from 224, so track 1 is 224 and track 4 is 227. Shifts that track's pitch. 232 appears to be an alternate range for the same thing."
+      }
+    }
+  },
+  "sysex_layout": {
+    "kit": {
+      "wire_size": 2679,
+      "fields": {
+        "sysex_header": {"fullname": "SysEx Header", "offset": 0, "size": 5},
+        "sysex_channel": {"fullname": "Device Channel", "offset": 5, "size": 1},
+        "sysex_type": {"fullname": "Message Type", "offset": 6, "size": 1},
+        "sysex_version": {"fullname": "Dump Version", "offset": 7, "size": 1},
+        "sysex_revision": {"fullname": "Dump Revision", "offset": 8, "size": 1},
+        "slot": {"fullname": "Original Position", "offset": 9, "size": 1, "min": 0, "max": 127},
+        "payload": {"fullname": "Kit Data", "offset": 10, "size": 2664, "kind": "unknown"},
+        "sysex_checksum": {"fullname": "Checksum", "offset": 2674, "size": 2},
+        "sysex_length": {"fullname": "Payload Length", "offset": 2676, "size": 2},
+        "sysex_end": {"fullname": "SysEx End", "offset": 2678, "size": 1}
+      }
+    },
+    "sound": {
+      "wire_size": 415,
+      "fields": {
+        "sysex_header": {"fullname": "SysEx Header", "offset": 0, "size": 5},
+        "sysex_channel": {"fullname": "Device Channel", "offset": 5, "size": 1},
+        "sysex_type": {"fullname": "Message Type", "offset": 6, "size": 1},
+        "sysex_version": {"fullname": "Dump Version", "offset": 7, "size": 1},
+        "sysex_revision": {"fullname": "Dump Revision", "offset": 8, "size": 1},
+        "slot": {"fullname": "Original Position", "offset": 9, "size": 1, "min": 0, "max": 127},
+        "sound_header": {"fullname": "Sound Header", "offset": 10, "size": 8},
+        "payload": {"fullname": "Sound Body", "offset": 18, "encoding": "7bit", "wire_len": 392, "decoded_size": 343},
+        "payload_structure": {
+          "marker_byte": {"fullname": "Sound Marker Byte", "offset": 0, "size": 1},
+          "tag_bits": {"fullname": "Tag Bits", "offset": 1, "size": 4},
+          "sound_name": {"fullname": "Sound Name", "offset": 5, "size": 16, "kind": "ascii"},
+          "params": {"fullname": "Sound Parameters", "offset": 21, "size": 318},
+          "sound_footer": {"fullname": "Sound Footer", "offset": 339, "size": 4},
+          "params_structure": {
+            "osc1_tuning": {"fullname": "OSC 1 Semitone Tuning", "offset": 0, "signed": true},
+            "osc1_fine": {"fullname": "OSC 1 Fine Tuning", "offset": 1, "signed": true},
+            "osc2_tuning": {"fullname": "OSC 2 Semitone Tuning", "offset": 2, "signed": true},
+            "osc2_fine": {"fullname": "OSC 2 Fine Tuning", "offset": 3, "signed": true},
+            "osc1_detune": {"fullname": "OSC 1 Detune", "offset": 4, "signed": true},
+            "osc2_detune": {"fullname": "OSC 2 Detune", "offset": 6, "signed": true},
+            "osc1_keytrack": {"fullname": "OSC 1 Keytracking", "offset": 8, "min": 0, "max": 1},
+            "osc2_keytrack": {"fullname": "OSC 2 Keytracking", "offset": 10, "min": 0, "max": 1},
+            "osc1_level": {"fullname": "OSC 1 Level", "offset": 12},
+            "osc2_level": {"fullname": "OSC 2 Level", "offset": 14},
+            "osc1_waveform": {"fullname": "OSC 1 Waveform", "offset": 16},
+            "osc2_waveform": {"fullname": "OSC 2 Waveform", "offset": 18},
+            "osc1_sub": {"fullname": "OSC 1 Sub Oscillator Level", "offset": 20},
+            "osc2_sub": {"fullname": "OSC 2 Sub Oscillator Level", "offset": 22},
+            "osc1_pulse_width": {"fullname": "OSC 1 Pulsewidth", "offset": 24, "signed": true},
+            "osc2_pulse_width": {"fullname": "OSC 2 Pulsewidth", "offset": 26, "signed": true},
+            "osc1_pwm_speed": {"fullname": "OSC 1 PWM Speed", "offset": 28},
+            "osc2_pwm_speed": {"fullname": "OSC 2 PWM Speed", "offset": 30},
+            "osc1_pwm_depth": {"fullname": "OSC 1 PWM Depth", "offset": 32},
+            "osc2_pwm_depth": {"fullname": "OSC 2 PWM Depth", "offset": 34},
+            "osc_pad": {"fullname": "Reserved", "offset": 36, "size": 6, "kind": "unused"},
+            "noise_sample_hold": {"fullname": "Noise Sample & Hold", "offset": 42},
+            "noise_fade": {"fullname": "Noise Fade", "offset": 44, "signed": true},
+            "noise_level": {"fullname": "Noise Level", "offset": 46},
+            "osc1_am": {"fullname": "OSC 1 Amplitude Modulation", "offset": 48, "min": 0, "max": 1},
+            "osc2_am": {"fullname": "OSC 2 Amplitude Modulation", "offset": 50, "min": 0, "max": 1},
+            "sync_mode": {"fullname": "Sync Mode", "offset": 52},
+            "sync_amount": {"fullname": "Sync Amount", "offset": 54},
+            "bend_depth": {"fullname": "Bend Amount", "offset": 56, "signed": true},
+            "note_slide_time": {"fullname": "Slide Time", "offset": 58},
+            "osc_retrig": {"fullname": "Oscillator Retrigger", "offset": 60, "min": 0, "max": 1},
+            "vibrato_fade": {"fullname": "Vibrato Fade", "offset": 62, "signed": true},
+            "vibrato_speed": {"fullname": "Vibrato Speed", "offset": 64},
+            "vibrato_depth": {"fullname": "Vibrato Depth", "offset": 66},
+            "filter_pair": {"fullname": "Filter 1 and Filter 2", "offset": 68, "count": 2, "item_size": 10},
+            "filter_pair_pad": {"fullname": "Reserved", "offset": 88, "size": 2, "kind": "unused"},
+            "amp_chorus": {"fullname": "Chorus Send Level", "offset": 90},
+            "amp_delay": {"fullname": "Delay Send Level", "offset": 92},
+            "amp_reverb": {"fullname": "Reverb Send Level", "offset": 94},
+            "amp_panning": {"fullname": "Pan", "offset": 96, "signed": true},
+            "amp_level": {"fullname": "Volume", "offset": 98},
+            "amp_accent": {"fullname": "Accent Level", "offset": 100},
+            "envF_attack": {"fullname": "Filter Env Attack", "offset": 102},
+            "env2_attack": {"fullname": "Env 2 Attack", "offset": 104},
+            "amp_attack": {"fullname": "Amp Env Attack", "offset": 106},
+            "envF_decay": {"fullname": "Filter Env Decay", "offset": 108},
+            "env2_decay": {"fullname": "Env 2 Decay", "offset": 110},
+            "amp_decay": {"fullname": "Amp Env Decay", "offset": 112},
+            "envF_sustain": {"fullname": "Filter Env Sustain", "offset": 114},
+            "env2_sustain": {"fullname": "Env 2 Sustain", "offset": 116},
+            "amp_sustain": {"fullname": "Amp Env Sustain", "offset": 118},
+            "envF_release": {"fullname": "Filter Env Release", "offset": 120},
+            "env2_release": {"fullname": "Env 2 Release", "offset": 122},
+            "amp_release": {"fullname": "Amp Env Release", "offset": 124},
+            "envF_shape": {"fullname": "Filter Env Shape", "offset": 126},
+            "env2_shape": {"fullname": "Env 2 Shape", "offset": 128},
+            "amp_shape": {"fullname": "Amp Env Shape", "offset": 130},
+            "envF_gate_length": {"fullname": "Filter Env Gate Length", "offset": 132, "size": 2, "note": "Raw 16-bit value. Time-scale conversion not confirmed."},
+            "env2_gate_length": {"fullname": "Env 2 Gate Length", "offset": 134, "size": 2, "note": "Raw 16-bit value. Time-scale conversion not confirmed."},
+            "envF_destination_A": {"fullname": "Filter Env Destination A", "offset": 136},
+            "envF_destination_B": {"fullname": "Filter Env Destination B", "offset": 138},
+            "env2_destination_A": {"fullname": "Env 2 Destination A", "offset": 140},
+            "env2_destination_B": {"fullname": "Env 2 Destination B", "offset": 142},
+            "envF_depth_B": {"fullname": "Filter Env Depth B", "offset": 144, "size": 2, "signed": true},
+            "envF_depth_A": {"fullname": "Filter Env Depth A", "offset": 146, "size": 2, "signed": true},
+            "env2_depth_A": {"fullname": "Env 2 Depth A", "offset": 148, "size": 2, "signed": true},
+            "env2_depth_B": {"fullname": "Env 2 Depth B", "offset": 150, "size": 2, "signed": true},
+            "lfo1_speed": {"fullname": "LFO 1 Speed", "offset": 152, "signed": true},
+            "lfo2_speed": {"fullname": "LFO 2 Speed", "offset": 154, "signed": true},
+            "lfo1_multiplier": {"fullname": "LFO 1 Speed Multiplier", "offset": 156},
+            "lfo2_multiplier": {"fullname": "LFO 2 Speed Multiplier", "offset": 158},
+            "lfo1_fade": {"fullname": "LFO 1 Fade", "offset": 160, "signed": true},
+            "lfo2_fade": {"fullname": "LFO 2 Fade", "offset": 162, "signed": true},
+            "lfo1_phase": {"fullname": "LFO 1 Start Phase", "offset": 164},
+            "lfo2_phase": {"fullname": "LFO 2 Start Phase", "offset": 166},
+            "lfo1_mode": {"fullname": "LFO 1 Mode", "offset": 168},
+            "lfo2_mode": {"fullname": "LFO 2 Mode", "offset": 170},
+            "lfo1_wave": {"fullname": "LFO 1 Waveform", "offset": 172},
+            "lfo2_wave": {"fullname": "LFO 2 Waveform", "offset": 174},
+            "lfo1_destination_1": {"fullname": "LFO 1 Destination 1", "offset": 176},
+            "lfo1_destination_2": {"fullname": "LFO 1 Destination 2", "offset": 178},
+            "lfo2_destination_1": {"fullname": "LFO 2 Destination 1", "offset": 180},
+            "lfo2_destination_2": {"fullname": "LFO 2 Destination 2", "offset": 182},
+            "lfo1_depth_A": {"fullname": "LFO 1 Depth 1", "offset": 184, "size": 2, "signed": true},
+            "lfo1_depth_B": {"fullname": "LFO 1 Depth 2", "offset": 186, "size": 2, "signed": true},
+            "lfo2_depth_A": {"fullname": "LFO 2 Depth 1", "offset": 188, "size": 2, "signed": true},
+            "lfo2_depth_B": {"fullname": "LFO 2 Depth 2", "offset": 190, "size": 2, "signed": true},
+            "lfo_pad": {"fullname": "Reserved", "offset": 192, "size": 8, "kind": "unused"},
+            "noise_color": {"fullname": "Noise Color", "offset": 200, "signed": true},
+            "noise_color_pad": {"fullname": "Reserved", "offset": 201, "size": 7, "kind": "unused"},
+            "osc_drift": {"fullname": "Oscillator Drift", "offset": 208, "min": 0, "max": 1},
+            "note_portamento_mode": {"fullname": "Portamento Mode", "offset": 209},
+            "note_legato": {"fullname": "Legato", "offset": 210, "min": 0, "max": 1},
+            "note_velocity_curve": {"fullname": "Velocity Curve", "offset": 211},
+            "filter_1_resonance_boost": {"fullname": "Filter 1 Resonance Boost", "offset": 212, "min": 0, "max": 1},
+            "filter_1_resonance_boost_pad": {"fullname": "Reserved", "offset": 213, "size": 3, "kind": "unused"},
+            "mod_velocity": {"fullname": "Velocity Modulation Routes", "offset": 216, "size": 20},
+            "mod_velocity_bipolar": {"fullname": "Velocity Modulation Bipolar", "offset": 237, "min": 0, "max": 1},
+            "mod_aftertouch": {"fullname": "Aftertouch Modulation Routes", "offset": 238, "size": 20},
+            "mod_modwheel": {"fullname": "Mod Wheel Modulation Routes", "offset": 258, "size": 20},
+            "mod_pitchbend": {"fullname": "Pitch Bend Modulation Routes", "offset": 278, "size": 20},
+            "mod_breadth": {"fullname": "Breath Modulation Routes", "offset": 298, "size": 20},
+            "filter_pair_structure": {
+              "filter_frequency": {"fullname": "Filter Frequency", "offset": 0, "size": 2},
+              "filter_resonance": {"fullname": "Filter Resonance", "offset": 2},
+              "filter_overdrive": {"fullname": "Filter Overdrive", "offset": 4, "signed": true},
+              "filter_keytracking": {"fullname": "Filter Keytracking", "offset": 6, "signed": true},
+              "filter_envelope_depth": {"fullname": "Filter Envelope Depth", "offset": 8, "signed": true}
+            },
+            "mod_velocity_structure": {
+              "destination_1": {"fullname": "Destination 1", "offset": 0, "size": 2},
+              "depth_1": {"fullname": "Depth 1", "offset": 2, "size": 2, "signed": true},
+              "destination_2": {"fullname": "Destination 2", "offset": 4, "size": 2},
+              "depth_2": {"fullname": "Depth 2", "offset": 6, "size": 2, "signed": true},
+              "destination_3": {"fullname": "Destination 3", "offset": 8, "size": 2},
+              "depth_3": {"fullname": "Depth 3", "offset": 10, "size": 2, "signed": true},
+              "destination_4": {"fullname": "Destination 4", "offset": 12, "size": 2},
+              "depth_4": {"fullname": "Depth 4", "offset": 14, "size": 2, "signed": true},
+              "destination_5": {"fullname": "Destination 5", "offset": 16, "size": 2},
+              "depth_5": {"fullname": "Depth 5", "offset": 18, "size": 2, "signed": true}
+            },
+            "mod_aftertouch_structure": {
+              "destination_1": {"fullname": "Destination 1", "offset": 0, "size": 2},
+              "depth_1": {"fullname": "Depth 1", "offset": 2, "size": 2, "signed": true},
+              "destination_2": {"fullname": "Destination 2", "offset": 4, "size": 2},
+              "depth_2": {"fullname": "Depth 2", "offset": 6, "size": 2, "signed": true},
+              "destination_3": {"fullname": "Destination 3", "offset": 8, "size": 2},
+              "depth_3": {"fullname": "Depth 3", "offset": 10, "size": 2, "signed": true},
+              "destination_4": {"fullname": "Destination 4", "offset": 12, "size": 2},
+              "depth_4": {"fullname": "Depth 4", "offset": 14, "size": 2, "signed": true},
+              "destination_5": {"fullname": "Destination 5", "offset": 16, "size": 2},
+              "depth_5": {"fullname": "Depth 5", "offset": 18, "size": 2, "signed": true}
+            },
+            "mod_modwheel_structure": {
+              "destination_1": {"fullname": "Destination 1", "offset": 0, "size": 2},
+              "depth_1": {"fullname": "Depth 1", "offset": 2, "size": 2, "signed": true},
+              "destination_2": {"fullname": "Destination 2", "offset": 4, "size": 2},
+              "depth_2": {"fullname": "Depth 2", "offset": 6, "size": 2, "signed": true},
+              "destination_3": {"fullname": "Destination 3", "offset": 8, "size": 2},
+              "depth_3": {"fullname": "Depth 3", "offset": 10, "size": 2, "signed": true},
+              "destination_4": {"fullname": "Destination 4", "offset": 12, "size": 2},
+              "depth_4": {"fullname": "Depth 4", "offset": 14, "size": 2, "signed": true},
+              "destination_5": {"fullname": "Destination 5", "offset": 16, "size": 2},
+              "depth_5": {"fullname": "Depth 5", "offset": 18, "size": 2, "signed": true}
+            },
+            "mod_pitchbend_structure": {
+              "destination_1": {"fullname": "Destination 1", "offset": 0, "size": 2},
+              "depth_1": {"fullname": "Depth 1", "offset": 2, "size": 2, "signed": true},
+              "destination_2": {"fullname": "Destination 2", "offset": 4, "size": 2},
+              "depth_2": {"fullname": "Depth 2", "offset": 6, "size": 2, "signed": true},
+              "destination_3": {"fullname": "Destination 3", "offset": 8, "size": 2},
+              "depth_3": {"fullname": "Depth 3", "offset": 10, "size": 2, "signed": true},
+              "destination_4": {"fullname": "Destination 4", "offset": 12, "size": 2},
+              "depth_4": {"fullname": "Depth 4", "offset": 14, "size": 2, "signed": true},
+              "destination_5": {"fullname": "Destination 5", "offset": 16, "size": 2},
+              "depth_5": {"fullname": "Depth 5", "offset": 18, "size": 2, "signed": true}
+            },
+            "mod_breadth_structure": {
+              "destination_1": {"fullname": "Destination 1", "offset": 0, "size": 2},
+              "depth_1": {"fullname": "Depth 1", "offset": 2, "size": 2, "signed": true},
+              "destination_2": {"fullname": "Destination 2", "offset": 4, "size": 2},
+              "depth_2": {"fullname": "Depth 2", "offset": 6, "size": 2, "signed": true},
+              "destination_3": {"fullname": "Destination 3", "offset": 8, "size": 2},
+              "depth_3": {"fullname": "Depth 3", "offset": 10, "size": 2, "signed": true},
+              "destination_4": {"fullname": "Destination 4", "offset": 12, "size": 2},
+              "depth_4": {"fullname": "Depth 4", "offset": 14, "size": 2, "signed": true},
+              "destination_5": {"fullname": "Destination 5", "offset": 16, "size": 2},
+              "depth_5": {"fullname": "Depth 5", "offset": 18, "size": 2, "signed": true}
+            }
+          }
+        },
+        "sysex_checksum": {"fullname": "Checksum", "offset": 410, "size": 2},
+        "sysex_length": {"fullname": "Payload Length", "offset": 412, "size": 2},
+        "sysex_end": {"fullname": "SysEx End", "offset": 414, "size": 1}
+      },
+      "constants": {
+        "header": [120, 62, 111, 58, 58, 0, 0, 0],
+        "marker": 5,
+        "footer": [58, 62, 122, 78],
+        "note": "Every single-byte parameter in `params_structure` is followed by a pad byte. The transmitted value is the first byte of the pair, the pad is believed to always be zero, and that is why offsets step by two. Only the multi-byte reserved runs are listed as their own fields."
+      }
+    },
+    "pattern": {
+      "fields": {
+        "sysex_header": {"fullname": "SysEx Header", "offset": 0, "size": 5},
+        "sysex_channel": {"fullname": "Device Channel", "offset": 5, "size": 1},
+        "sysex_type": {"fullname": "Message Type", "offset": 6, "size": 1},
+        "sysex_version": {"fullname": "Dump Version", "offset": 7, "size": 1},
+        "sysex_revision": {"fullname": "Dump Revision", "offset": 8, "size": 1},
+        "slot": {"fullname": "Original Position", "offset": 9, "size": 1, "min": 0, "max": 127},
+        "payload": {"fullname": "Pattern Data", "offset": 10, "kind": "unknown", "dynamic_length": true}
+      }
+    },
+    "song": {
+      "fields": {
+        "sysex_header": {"fullname": "SysEx Header", "offset": 0, "size": 5},
+        "sysex_channel": {"fullname": "Device Channel", "offset": 5, "size": 1},
+        "sysex_type": {"fullname": "Message Type", "offset": 6, "size": 1},
+        "sysex_version": {"fullname": "Dump Version", "offset": 7, "size": 1},
+        "sysex_revision": {"fullname": "Dump Revision", "offset": 8, "size": 1},
+        "slot": {"fullname": "Original Position", "offset": 9, "size": 1, "min": 0, "max": 127},
+        "payload": {"fullname": "Song Data", "offset": 10, "kind": "unknown", "dynamic_length": true}
+      }
+    },
+    "settings": {
+      "fields": {
+        "sysex_header": {"fullname": "SysEx Header", "offset": 0, "size": 5},
+        "sysex_channel": {"fullname": "Device Channel", "offset": 5, "size": 1},
+        "sysex_type": {"fullname": "Message Type", "offset": 6, "size": 1},
+        "sysex_version": {"fullname": "Dump Version", "offset": 7, "size": 1},
+        "sysex_revision": {"fullname": "Dump Revision", "offset": 8, "size": 1},
+        "slot": {"fullname": "Original Position", "offset": 9, "size": 1, "min": 0, "max": 127},
+        "payload": {"fullname": "Settings Data", "offset": 10, "kind": "unknown", "dynamic_length": true}
+      }
+    }
+  },
+  "tracks": [
+    {
+      "id": 0,
+      "name": "T1",
+      "trackname": "Track 1",
+      "fullname": "Synth Track 1",
+      "channel": 0,
+      "offset": 0,
+      "mute": { "cc": 94, "muted_value": 1, "unmuted_value": 0, "nrpn_msb": 1, "nrpn_lsb": 101 }
+    },
+    {
+      "id": 1,
+      "name": "T2",
+      "trackname": "Track 2",
+      "fullname": "Synth Track 2",
+      "channel": 1,
+      "offset": 0,
+      "mute": { "cc": 94, "muted_value": 1, "unmuted_value": 0, "nrpn_msb": 1, "nrpn_lsb": 101 }
+    },
+    {
+      "id": 2,
+      "name": "T3",
+      "trackname": "Track 3",
+      "fullname": "Synth Track 3",
+      "channel": 2,
+      "offset": 0,
+      "mute": { "cc": 94, "muted_value": 1, "unmuted_value": 0, "nrpn_msb": 1, "nrpn_lsb": 101 }
+    },
+    {
+      "id": 3,
+      "name": "T4",
+      "trackname": "Track 4",
+      "fullname": "Synth Track 4",
+      "channel": 3,
+      "offset": 0,
+      "mute": { "cc": 94, "muted_value": 1, "unmuted_value": 0, "nrpn_msb": 1, "nrpn_lsb": 101 }
+    }
+  ],
+  "lfo_shapes": [
+    {
+      "name": "TRI",
+      "fullname": "Triangle"
+    },
+    {
+      "name": "SIN",
+      "fullname": "Sine"
+    },
+    {
+      "name": "SQR",
+      "fullname": "Square"
+    },
+    {
+      "name": "SAW",
+      "fullname": "Sawtooth"
+    },
+    {
+      "name": "EXP",
+      "fullname": "Exponential"
+    },
+    {
+      "name": "RMP",
+      "fullname": "Ramp"
+    },
+    {
+      "name": "RND",
+      "fullname": "Random"
+    }
+  ],
+  "pages": {
+    "standalone": [
+      {
+        "name": "Level",
+        "fullname": "Level",
+        "params": [
+          {
+            "name": "LEV",
+            "fullname": "Track Level",
+            "cc_id": 95,
+            "nrpn_msb": 1,
+            "nrpn_lsb": 100,
+            "default_val": 100
+          }
+        ]
+      },
+      {
+        "name": "Mod",
+        "fullname": "Modulation",
+        "note": "Where these two land is set per sound in the SOUND SETTINGS menu, which routes each source to five destinations with signed depths.",
+        "params": [
+          {
+            "name": "MWHL",
+            "fullname": "Mod Wheel",
+            "cc_id": 1,
+            "cc_lsb": 33
+          },
+          {
+            "name": "BREA",
+            "fullname": "Breath Controller",
+            "cc_id": 2,
+            "cc_lsb": 34
+          }
+        ]
+      }
+    ],
+    "synth": [
+      {
+        "name": "OSC 1",
+        "fullname": "Oscillator 1",
+        "params": [
+          {
+            "name": "PTCH",
+            "fullname": "OSC 1 Pitch",
+            "cc_id": 16,
+            "cc_lsb": 48,
+            "nrpn_msb": 1,
+            "nrpn_lsb": 0
+          },
+          {
+            "name": "DET",
+            "fullname": "OSC 1 Detune",
+            "nrpn_msb": 1,
+            "nrpn_lsb": 2
+          },
+          {
+            "name": "KTRK",
+            "fullname": "OSC 1 Keytracking",
+            "nrpn_msb": 1,
+            "nrpn_lsb": 3
+          },
+          {
+            "name": "LEVL",
+            "fullname": "OSC 1 Level",
+            "cc_id": 69,
+            "nrpn_msb": 1,
+            "nrpn_lsb": 4
+          },
+          {
+            "name": "WAVE",
+            "fullname": "OSC 1 Waveform",
+            "cc_id": 70,
+            "nrpn_msb": 1,
+            "nrpn_lsb": 5
+          },
+          {
+            "name": "SUB",
+            "fullname": "OSC 1 Sub Oscillator",
+            "cc_id": 71,
+            "nrpn_msb": 1,
+            "nrpn_lsb": 6
+          },
+          {
+            "name": "PW",
+            "fullname": "OSC 1 Pulsewidth",
+            "cc_id": 72,
+            "nrpn_msb": 1,
+            "nrpn_lsb": 7
+          },
+          {
+            "name": "PWMS",
+            "fullname": "OSC 1 PWM Speed",
+            "cc_id": 73,
+            "nrpn_msb": 1
+          },
+          {
+            "name": "PWMD",
+            "fullname": "OSC 1 PWM Depth",
+            "cc_id": 74,
+            "nrpn_msb": 1,
+            "nrpn_lsb": 9
+          }
+        ]
+      },
+      {
+        "name": "NOISE",
+        "fullname": "Noise",
+        "params": [
+          {
+            "name": "NSH",
+            "fullname": "Noise Sample & Hold",
+            "cc_id": 75,
+            "nrpn_msb": 1,
+            "nrpn_lsb": 10
+          },
+          {
+            "name": "NFD",
+            "fullname": "Noise Fade",
+            "cc_id": 76,
+            "nrpn_msb": 1,
+            "nrpn_lsb": 12
+          },
+          {
+            "name": "NLV",
+            "fullname": "Noise Level",
+            "cc_id": 77,
+            "nrpn_msb": 1,
+            "nrpn_lsb": 14
+          }
+        ]
+      },
+      {
+        "name": "OSC 2",
+        "fullname": "Oscillator 2",
+        "params": [
+          {
+            "name": "PTCH",
+            "fullname": "OSC 2 Pitch",
+            "cc_id": 17,
+            "cc_lsb": 49,
+            "nrpn_msb": 1,
+            "nrpn_lsb": 20
+          },
+          {
+            "name": "DET",
+            "fullname": "OSC 2 Detune",
+            "nrpn_msb": 1,
+            "nrpn_lsb": 22
+          },
+          {
+            "name": "KTRK",
+            "fullname": "OSC 2 Keytracking",
+            "nrpn_msb": 1,
+            "nrpn_lsb": 23
+          },
+          {
+            "name": "LEVL",
+            "fullname": "OSC 2 Level",
+            "cc_id": 78,
+            "nrpn_msb": 1,
+            "nrpn_lsb": 24
+          },
+          {
+            "name": "WAVE",
+            "fullname": "OSC 2 Waveform",
+            "cc_id": 79,
+            "nrpn_msb": 1,
+            "nrpn_lsb": 25
+          },
+          {
+            "name": "SUB",
+            "fullname": "OSC 2 Sub Oscillator",
+            "cc_id": 80,
+            "nrpn_msb": 1,
+            "nrpn_lsb": 26
+          },
+          {
+            "name": "PW",
+            "fullname": "OSC 2 Pulsewidth",
+            "cc_id": 81,
+            "nrpn_msb": 1,
+            "nrpn_lsb": 27
+          },
+          {
+            "name": "PWMS",
+            "fullname": "OSC 2 PWM Speed",
+            "cc_id": 82,
+            "nrpn_msb": 1
+          },
+          {
+            "name": "PWMD",
+            "fullname": "OSC 2 PWM Depth",
+            "cc_id": 83,
+            "nrpn_msb": 1,
+            "nrpn_lsb": 29
+          }
+        ]
+      },
+      {
+        "name": "OSC CMN",
+        "fullname": "OSC Common",
+        "params": [
+          {
+            "name": "AM1",
+            "fullname": "OSC 1 Amplitude Modulation",
+            "nrpn_msb": 1,
+            "nrpn_lsb": 30
+          },
+          {
+            "name": "SYNM",
+            "fullname": "Sync Mode",
+            "nrpn_msb": 1,
+            "nrpn_lsb": 31
+          },
+          {
+            "name": "SYNC",
+            "fullname": "Sync Amount",
+            "cc_id": 84,
+            "nrpn_msb": 1,
+            "nrpn_lsb": 32
+          },
+          {
+            "name": "BEND",
+            "fullname": "Bend Amount",
+            "cc_id": 85,
+            "nrpn_msb": 1,
+            "nrpn_lsb": 33
+          },
+          {
+            "name": "SLID",
+            "fullname": "Slide Time",
+            "cc_id": 5,
+            "nrpn_msb": 1,
+            "nrpn_lsb": 34
+          },
+          {
+            "name": "AM2",
+            "fullname": "OSC 2 Amplitude Modulation",
+            "nrpn_msb": 1,
+            "nrpn_lsb": 35
+          },
+          {
+            "name": "NSYN",
+            "fullname": "Note Sync",
+            "nrpn_msb": 1,
+            "nrpn_lsb": 36
+          },
+          {
+            "name": "VFAD",
+            "fullname": "Vibrato Fade",
+            "nrpn_msb": 1,
+            "nrpn_lsb": 37
+          },
+          {
+            "name": "VSPE",
+            "fullname": "Vibrato Speed",
+            "cc_id": 87,
+            "nrpn_msb": 1,
+            "nrpn_lsb": 38
+          },
+          {
+            "name": "VDEP",
+            "fullname": "Vibrato Depth",
+            "cc_id": 88,
+            "nrpn_msb": 1,
+            "nrpn_lsb": 39
+          }
+        ]
+      },
+      {
+        "name": "FLT",
+        "fullname": "Filters",
+        "params": [
+          {
+            "name": "F1FR",
+            "fullname": "Filter 1 Frequency",
+            "cc_id": 18,
+            "cc_lsb": 50,
+            "nrpn_msb": 1,
+            "nrpn_lsb": 40
+          },
+          {
+            "name": "F1RS",
+            "fullname": "Filter 1 Resonance",
+            "cc_id": 89,
+            "nrpn_msb": 1,
+            "nrpn_lsb": 41
+          },
+          {
+            "name": "FOVR",
+            "fullname": "Filter Overdrive",
+            "cc_id": 86,
+            "nrpn_msb": 1,
+            "nrpn_lsb": 42
+          },
+          {
+            "name": "F1KT",
+            "fullname": "Filter 1 Keytracking",
+            "nrpn_msb": 1,
+            "nrpn_lsb": 43
+          },
+          {
+            "name": "F1EA",
+            "fullname": "Filter 1 Envelope Amount",
+            "cc_id": 102,
+            "nrpn_msb": 1,
+            "nrpn_lsb": 44
+          },
+          {
+            "name": "F2FR",
+            "fullname": "Filter 2 Frequency",
+            "cc_id": 19,
+            "cc_lsb": 51,
+            "nrpn_msb": 1,
+            "nrpn_lsb": 45
+          },
+          {
+            "name": "F2RS",
+            "fullname": "Filter 2 Resonance",
+            "cc_id": 90,
+            "nrpn_msb": 1,
+            "nrpn_lsb": 46
+          },
+          {
+            "name": "F2TY",
+            "fullname": "Filter 2 Type",
+            "nrpn_msb": 1,
+            "nrpn_lsb": 47
+          },
+          {
+            "name": "F2KT",
+            "fullname": "Filter 2 Keytracking",
+            "nrpn_msb": 1,
+            "nrpn_lsb": 48
+          },
+          {
+            "name": "F2EA",
+            "fullname": "Filter 2 Envelope Amount",
+            "cc_id": 103,
+            "nrpn_msb": 1,
+            "nrpn_lsb": 49
+          }
+        ]
+      },
+      {
+        "name": "AMP",
+        "fullname": "Amplifier",
+        "params": [
+          {
+            "name": "ATK",
+            "fullname": "Amp Env Attack",
+            "cc_id": 104,
+            "nrpn_msb": 1,
+            "nrpn_lsb": 50,
+            "default_val": 0
+          },
+          {
+            "name": "DEC",
+            "fullname": "Amp Env Decay",
+            "cc_id": 105,
+            "nrpn_msb": 1,
+            "nrpn_lsb": 51,
+            "default_val": 64
+          },
+          {
+            "name": "SUS",
+            "fullname": "Amp Env Sustain",
+            "cc_id": 106,
+            "nrpn_msb": 1,
+            "nrpn_lsb": 52,
+            "default_val": 127
+          },
+          {
+            "name": "REL",
+            "fullname": "Amp Env Release",
+            "cc_id": 107,
+            "nrpn_msb": 1,
+            "nrpn_lsb": 53,
+            "default_val": 32
+          },
+          {
+            "name": "SHP",
+            "fullname": "Amp Env Shape",
+            "nrpn_msb": 1,
+            "nrpn_lsb": 54
+          },
+          {
+            "name": "CHO",
+            "fullname": "Chorus Send",
+            "cc_id": 91,
+            "nrpn_msb": 1,
+            "nrpn_lsb": 55,
+            "default_val": 0
+          },
+          {
+            "name": "DEL",
+            "fullname": "Delay Send",
+            "cc_id": 92,
+            "nrpn_msb": 1,
+            "nrpn_lsb": 56,
+            "default_val": 0
+          },
+          {
+            "name": "REV",
+            "fullname": "Reverb Send",
+            "cc_id": 93,
+            "nrpn_msb": 1,
+            "nrpn_lsb": 57,
+            "default_val": 0
+          },
+          {
+            "name": "PAN",
+            "fullname": "Pan",
+            "cc_id": 10,
+            "nrpn_msb": 1,
+            "nrpn_lsb": 58,
+            "default_val": 64
+          },
+          {
+            "name": "VOL",
+            "fullname": "Volume",
+            "cc_id": 7,
+            "nrpn_msb": 1,
+            "nrpn_lsb": 59,
+            "default_val": 100
+          }
+        ]
+      },
+      {
+        "name": "ENVF",
+        "fullname": "Filter Envelope",
+        "params": [
+          {
+            "name": "ATK",
+            "fullname": "EnvF Attack",
+            "cc_id": 108,
+            "nrpn_msb": 1,
+            "nrpn_lsb": 60,
+            "default_val": 0
+          },
+          {
+            "name": "DEC",
+            "fullname": "EnvF Decay",
+            "cc_id": 109,
+            "nrpn_msb": 1,
+            "nrpn_lsb": 61,
+            "default_val": 64
+          },
+          {
+            "name": "SUS",
+            "fullname": "EnvF Sustain",
+            "cc_id": 110,
+            "nrpn_msb": 1,
+            "nrpn_lsb": 62,
+            "default_val": 0
+          },
+          {
+            "name": "REL",
+            "fullname": "EnvF Release",
+            "cc_id": 111,
+            "nrpn_msb": 1,
+            "nrpn_lsb": 63,
+            "default_val": 32
+          },
+          {
+            "name": "SHP",
+            "fullname": "EnvF Shape",
+            "nrpn_msb": 1,
+            "nrpn_lsb": 64
+          },
+          {
+            "name": "GATE",
+            "fullname": "EnvF Gate Length",
+            "nrpn_msb": 1,
+            "nrpn_lsb": 65
+          },
+          {
+            "name": "DSTA",
+            "fullname": "EnvF Destination A",
+            "nrpn_msb": 1,
+            "nrpn_lsb": 66
+          },
+          {
+            "name": "DPA",
+            "fullname": "EnvF Depth A",
+            "cc_id": 20,
+            "cc_lsb": 52,
+            "nrpn_msb": 1,
+            "nrpn_lsb": 67,
+            "default_val": 64
+          },
+          {
+            "name": "DSTB",
+            "fullname": "EnvF Destination B",
+            "nrpn_msb": 1,
+            "nrpn_lsb": 68
+          },
+          {
+            "name": "DPB",
+            "fullname": "EnvF Depth B",
+            "cc_id": 21,
+            "cc_lsb": 53,
+            "nrpn_msb": 1,
+            "nrpn_lsb": 69,
+            "default_val": 64
+          }
+        ]
+      },
+      {
+        "name": "ENV2",
+        "fullname": "Envelope 2",
+        "params": [
+          {
+            "name": "ATK",
+            "fullname": "Env2 Attack",
+            "cc_id": 112,
+            "nrpn_msb": 1,
+            "nrpn_lsb": 70,
+            "default_val": 0
+          },
+          {
+            "name": "DEC",
+            "fullname": "Env2 Decay",
+            "cc_id": 113,
+            "nrpn_msb": 1,
+            "nrpn_lsb": 71,
+            "default_val": 64
+          },
+          {
+            "name": "SUS",
+            "fullname": "Env2 Sustain",
+            "cc_id": 114,
+            "nrpn_msb": 1,
+            "nrpn_lsb": 72,
+            "default_val": 0
+          },
+          {
+            "name": "REL",
+            "fullname": "Env2 Release",
+            "cc_id": 115,
+            "nrpn_msb": 1,
+            "nrpn_lsb": 73,
+            "default_val": 32
+          },
+          {
+            "name": "SHP",
+            "fullname": "Env2 Shape",
+            "nrpn_msb": 1,
+            "nrpn_lsb": 74
+          },
+          {
+            "name": "GATE",
+            "fullname": "Env2 Gate Length",
+            "nrpn_msb": 1,
+            "nrpn_lsb": 75
+          },
+          {
+            "name": "DSTA",
+            "fullname": "Env2 Destination A",
+            "nrpn_msb": 1,
+            "nrpn_lsb": 76
+          },
+          {
+            "name": "DPA",
+            "fullname": "Env2 Depth A",
+            "cc_id": 22,
+            "cc_lsb": 54,
+            "nrpn_msb": 1,
+            "nrpn_lsb": 77,
+            "default_val": 64
+          },
+          {
+            "name": "DSTB",
+            "fullname": "Env2 Destination B",
+            "nrpn_msb": 1,
+            "nrpn_lsb": 78
+          },
+          {
+            "name": "DPB",
+            "fullname": "Env2 Depth B",
+            "cc_id": 23,
+            "cc_lsb": 55,
+            "nrpn_msb": 1,
+            "nrpn_lsb": 79,
+            "default_val": 64
+          }
+        ]
+      }
+    ],
+    "lfo": [
+      {
+        "name": "LFO 1",
+        "fullname": "LFO 1",
+        "transport": "cc",
+        "params": [
+          {
+            "name": "SPD",
+            "fullname": "LFO1 Speed",
+            "cc_id": 116,
+            "nrpn_msb": 1,
+            "nrpn_lsb": 80,
+            "default_val": 64
+          },
+          {
+            "name": "MULT",
+            "fullname": "LFO1 Speed Multiplier",
+            "cc_id": 117,
+            "nrpn_msb": 1,
+            "nrpn_lsb": 81,
+            "default_val": 0
+          },
+          {
+            "name": "FADE",
+            "fullname": "LFO1 Fade",
+            "nrpn_msb": 1,
+            "nrpn_lsb": 82
+          },
+          {
+            "name": "PHSE",
+            "fullname": "LFO1 Start Phase",
+            "nrpn_msb": 1,
+            "nrpn_lsb": 83
+          },
+          {
+            "name": "MODE",
+            "fullname": "LFO1 Mode",
+            "nrpn_msb": 1,
+            "nrpn_lsb": 84,
+            "widget": "combo",
+            "options": [
+              "FREE",
+              "TRIG",
+              "HOLD",
+              "ONE",
+              "HALF"
+            ]
+          },
+          {
+            "name": "WAVE",
+            "fullname": "LFO1 Waveform",
+            "nrpn_msb": 1,
+            "nrpn_lsb": 85,
+            "widget": "shape"
+          },
+          {
+            "name": "DSTA",
+            "fullname": "LFO1 Destination 1",
+            "nrpn_msb": 1,
+            "nrpn_lsb": 86
+          },
+          {
+            "name": "DPA",
+            "fullname": "LFO1 Depth 1",
+            "cc_id": 24,
+            "cc_lsb": 56,
+            "nrpn_msb": 1,
+            "nrpn_lsb": 87,
+            "default_val": 0
+          },
+          {
+            "name": "DSTB",
+            "fullname": "LFO1 Destination 2",
+            "nrpn_msb": 1,
+            "nrpn_lsb": 88
+          },
+          {
+            "name": "DPB",
+            "fullname": "LFO1 Depth 2",
+            "cc_id": 25,
+            "cc_lsb": 57,
+            "nrpn_msb": 1,
+            "nrpn_lsb": 89,
+            "default_val": 0
+          }
+        ]
+      },
+      {
+        "name": "LFO 2",
+        "fullname": "LFO 2",
+        "transport": "cc",
+        "params": [
+          {
+            "name": "SPD",
+            "fullname": "LFO2 Speed",
+            "cc_id": 118,
+            "nrpn_msb": 1,
+            "nrpn_lsb": 90,
+            "default_val": 64
+          },
+          {
+            "name": "MULT",
+            "fullname": "LFO2 Speed Multiplier",
+            "cc_id": 119,
+            "nrpn_msb": 1,
+            "nrpn_lsb": 91,
+            "default_val": 0
+          },
+          {
+            "name": "FADE",
+            "fullname": "LFO2 Fade",
+            "nrpn_msb": 1,
+            "nrpn_lsb": 92
+          },
+          {
+            "name": "PHSE",
+            "fullname": "LFO2 Start Phase",
+            "nrpn_msb": 1,
+            "nrpn_lsb": 93
+          },
+          {
+            "name": "MODE",
+            "fullname": "LFO2 Mode",
+            "nrpn_msb": 1,
+            "nrpn_lsb": 94,
+            "widget": "combo",
+            "options": [
+              "FREE",
+              "TRIG",
+              "HOLD",
+              "ONE",
+              "HALF"
+            ]
+          },
+          {
+            "name": "WAVE",
+            "fullname": "LFO2 Waveform",
+            "nrpn_msb": 1,
+            "nrpn_lsb": 95,
+            "widget": "shape"
+          },
+          {
+            "name": "DSTA",
+            "fullname": "LFO2 Destination 1",
+            "nrpn_msb": 1,
+            "nrpn_lsb": 96
+          },
+          {
+            "name": "DPA",
+            "fullname": "LFO2 Depth 1",
+            "cc_id": 26,
+            "cc_lsb": 58,
+            "nrpn_msb": 1,
+            "nrpn_lsb": 97,
+            "default_val": 0
+          },
+          {
+            "name": "DSTB",
+            "fullname": "LFO2 Destination 2",
+            "nrpn_msb": 1,
+            "nrpn_lsb": 98
+          },
+          {
+            "name": "DPB",
+            "fullname": "LFO2 Depth 2",
+            "cc_id": 27,
+            "cc_lsb": 59,
+            "nrpn_msb": 1,
+            "nrpn_lsb": 99,
+            "default_val": 0
+          }
+        ]
+      }
+    ]
+  },
+  "ccs": {
+    "performance": {
+      "name": "PERF",
+      "fullname": "Performance",
+      "params": [
+        {
+          "name": "PERF A",
+          "fullname": "Performance Parameter A",
+          "cc_id": 3,
+          "nrpn_msb": 0,
+          "nrpn_lsb": 0
+        },
+        {
+          "name": "PERF B",
+          "fullname": "Performance Parameter B",
+          "cc_id": 4,
+          "nrpn_msb": 0,
+          "nrpn_lsb": 1
+        },
+        {
+          "name": "PERF C",
+          "fullname": "Performance Parameter C",
+          "cc_id": 8,
+          "nrpn_msb": 0,
+          "nrpn_lsb": 2
+        },
+        {
+          "name": "PERF D",
+          "fullname": "Performance Parameter D",
+          "cc_id": 9,
+          "nrpn_msb": 0,
+          "nrpn_lsb": 3
+        },
+        {
+          "name": "PERF E",
+          "fullname": "Performance Parameter E",
+          "cc_id": 11,
+          "nrpn_msb": 0,
+          "nrpn_lsb": 4
+        },
+        {
+          "name": "PERF F",
+          "fullname": "Performance Parameter F",
+          "cc_id": 64,
+          "nrpn_msb": 0,
+          "nrpn_lsb": 5
+        },
+        {
+          "name": "PERF G",
+          "fullname": "Performance Parameter G",
+          "cc_id": 65,
+          "nrpn_msb": 0,
+          "nrpn_lsb": 6
+        },
+        {
+          "name": "PERF H",
+          "fullname": "Performance Parameter H",
+          "cc_id": 66,
+          "nrpn_msb": 0,
+          "nrpn_lsb": 7
+        },
+        {
+          "name": "PERF I",
+          "fullname": "Performance Parameter I",
+          "cc_id": 67,
+          "nrpn_msb": 0,
+          "nrpn_lsb": 8
+        },
+        {
+          "name": "PERF J",
+          "fullname": "Performance Parameter J",
+          "cc_id": 68,
+          "nrpn_msb": 0,
+          "nrpn_lsb": 9
+        }
+      ]
+    }
+  }
+}

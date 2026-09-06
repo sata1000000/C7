@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   viewBox="19.9305 115.3593 170.139 66.2815"
+   version="1.1"
+   id="svg1"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs id="defs1" />
+  <g
+     id="g1"
+     transform="matrix(0.29777958,0,0,0.29777958,31.552029,66.998508)">
+    <path
+       class="st0"
+       d="m 307.39258,162.40513 h -130.34 c -61.44,0 -111.24,49.8 -111.24,111.24 0,61.44 49.8,111.24 111.24,111.24 61.44,0 111.24,-49.8 111.24,-111.24 0,-29.19 -11.25,-55.76 -29.65,-75.6 h 48.75 c 41.75,0 75.6,33.85 75.6,75.6 0,41.75 -33.85,75.6 -75.6,75.6 h -26.25 c -12.58,15.14 -28.73,27.41 -47.22,35.64 h 73.48 c 61.44,0 111.24,-49.8 111.24,-111.24 0,-61.44 -49.8,-111.24 -111.24,-111.24 z m -130.34,192.97 c -45.14,0 -81.73,-36.59 -81.73,-81.73 0,-45.14 36.59,-81.73 81.73,-81.73 45.14,0 81.73,36.59 81.73,81.73 0,45.14 -36.59,81.73 -81.73,81.73 z"
+       id="path1-6"
+       style="fill:currentColor"
+       inkscape:label="g" />
+    <circle
+       class="st1"
+       cx="177.05258"
+       cy="273.64514"
+       r="60.150002"
+       id="circle1"
+       style="fill:currentColor"
+       inkscape:label="circle" />
+  </g>
+</svg>

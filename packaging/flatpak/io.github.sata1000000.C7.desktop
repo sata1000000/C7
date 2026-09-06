@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=C7
+Comment=Control legacy Elektron hardware
+Exec=c7_app
+Icon=io.github.sata1000000.C7
+Terminal=false
+Type=Application
+Categories=AudioVideo;Audio;Midi;X-HardwareConfig;
