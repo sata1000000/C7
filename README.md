@@ -30,7 +30,7 @@ The project is centered around controlling the [Elektron Monomachine](https://en
 2. Open it.
 
 > [!WARNING]
-> C7 is in beta until October 5, 2026. Any `.c7` files created are not guaranteed to work when the project goes out of beta.
+> C7 is in beta until October 15, 2026. Any `.c7` files created are not guaranteed to work when the project goes out of beta.
 
 ## Screenshots
 
