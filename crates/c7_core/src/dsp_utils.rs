@@ -145,7 +145,7 @@ pub fn load_to_i16(dc: &DeviceConfig, path: &str) -> AudioLoadResult {
         let data = std::fs::read(path).map_err(|err| err.to_string())?;
 
         if is_sds_ext || is_sds_message(&data) {
-            // Raw SDS: decode packets → i16 samples at the rate stored in the SDS header.
+            // Raw SDS: decode packets → i16 samples at the rate stored in the SDS Dump Header.
             // `decode_sds()` yields depth-native values, so scale them to full-scale i16 for the editor, playback, and waveform drawing.
             let (depth_native, rate, bits) = decode_sds(&data)?;
             let samples = sds_samples_to_i16(&depth_native, bits);

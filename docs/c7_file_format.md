@@ -102,7 +102,7 @@ A `sample` section holds a single audio sample, embedded directly into the file.
 
 The SDS packets are decoded and re-encoded at the bit depth the dump itself declared. The data is encoded in two stages:
 
-1. **Lossless Compression:** Raw sample data (SDS) is encoded losslessly as [FLAC](https://en.wikipedia.org/wiki/FLAC). The SDS Dump Header is copied into a `C7_SDS_HEADER` [Vorbis comment tag](https://en.wikipedia.org/wiki/Vorbis_comment) as a hex string, since FLAC has no slot for a sample period, loop points, or a sample number.
+1. **Lossless Compression:** Raw sample data (SDS) is encoded losslessly as [FLAC](https://en.wikipedia.org/wiki/FLAC). The SDS Dump Header is copied into an `SDS_DUMP_HEADER` [Vorbis comment tag](https://en.wikipedia.org/wiki/Vorbis_comment) as a hex string, since FLAC has no slot for a sample period, loop points, or a sample number.
 2. **Base64 Encoding:** The compressed FLAC data is then encoded into a [Base64](https://en.wikipedia.org/wiki/Base64) string.
 
 Because FLAC encoders only accept standard bit depths (like 16 or 24-bit), the compressed FLAC file might have a higher bit depth than the original sample. On import, the FLAC stream's bit depth is ignored, and the audio is repacked using the true bit depth stored in the Vorbis comment tag.

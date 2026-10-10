@@ -37,7 +37,7 @@ pub fn is_sds_message(raw: &[u8]) -> bool {
 ///
 /// Returns `None` for any message that isn't a Dump Header, which is also how a caller spots where one sample's packet run begins.
 pub fn sds_sample_number(raw: &[u8]) -> Option<usize> {
-    if !is_sds_header(raw) || raw.len() < 6 {
+    if !is_sds_dump_header(raw) || raw.len() < 6 {
         return None;
     }
     Some(usize::from(raw[4]) | (usize::from(raw[5]) << 7))
@@ -67,7 +67,7 @@ pub fn sds_dump_header(data: &[u8]) -> Option<&[u8]> {
     while pos < data.len() {
         let f0 = pos + data[pos..].iter().position(|&byte| byte == 0xF0)?;
         let f7 = f0 + data[f0..].iter().position(|&byte| byte == 0xF7)?;
-        if is_sds_header(&data[f0..=f7]) {
+        if is_sds_dump_header(&data[f0..=f7]) {
             return Some(&data[f0..=f7]);
         }
         pos = f7 + 1;
@@ -141,7 +141,7 @@ pub fn probe_sds_slot(
 
     while Instant::now() < deadline {
         if let Some(data) = midi_in.poll() {
-            if is_sds_header(&data) {
+            if is_sds_dump_header(&data) {
                 let sds_ch = data[2];
                 midi_out.sysex(&make_sds_confirmation(sds_ch, 0));
                 deadline = Instant::now() + Duration::from_secs(1);
@@ -180,7 +180,7 @@ pub fn probe_sds_slot(
 /// Positions the device's internal sample cursor at `slot` by requesting a dump then cancelling.
 ///
 /// Required before an unsolicited SDS upload.
-/// The MD routes incoming SDS data to whatever slot its cursor is on, not the slot number in the SDS header.
+/// The MD routes incoming SDS data to whatever slot its cursor is on, not the slot number in the SDS Dump Header.
 ///
 /// Empty slots receive no response, so execution falls through after the timeout.
 pub fn seek_sds_slot(midi_in: &PollableMidiInput, midi_out: &mut MidiSender, slot: u8, ch: u8) {
@@ -190,7 +190,7 @@ pub fn seek_sds_slot(midi_in: &PollableMidiInput, midi_out: &mut MidiSender, slo
     let deadline = Instant::now() + Duration::from_millis(300);
     while Instant::now() < deadline {
         if let Some(data) = midi_in.poll()
-            && is_sds_header(&data)
+            && is_sds_dump_header(&data)
         {
             let sds_ch = data[2];
             midi_out.sysex(&[0xF0, 0x7E, sds_ch, 0x7D, 0x00, 0xF7]);
@@ -228,7 +228,7 @@ pub fn fetch_and_compress_sample(
 
     while Instant::now() < deadline {
         while let Some(data) = midi_in.poll() {
-            if is_sds_header(&data) {
+            if is_sds_dump_header(&data) {
                 let sds_ch = data[2];
                 sds_data.extend_from_slice(&data);
                 midi_out.sysex(&make_sds_confirmation(sds_ch, 0));
@@ -368,13 +368,12 @@ where
             return false;
         }
 
-        let is_sds_header = packet.len() > 3 && packet[1] == 0x7E && packet[3] == 0x01;
         let needs_ack = packet.len() > 3 && packet[1] == 0x7E && packet[3] == 0x02;
 
         midi_out.sysex(packet);
 
-        if is_sds_header {
-            // Wait for the device to ACK the SDS header before sending the Elektron name SysEx (next packet).
+        if is_sds_dump_header(packet) {
+            // Wait for the device to ACK the Dump Header before sending the Elektron name SysEx (next packet).
             // That way it's already in receive mode when the name command arrives.
             //
             // Non-fatal on timeout: the device may be in non-handshake mode, in which case the transfer proceeds and the name still lands.
@@ -602,7 +601,7 @@ pub fn resolve_upload_bit_depth(dc: &DeviceConfig) -> u8 {
 
 /// Reverses the compression pipeline, decoding Base64-FLAC back into raw SDS binary data.
 ///
-/// The source's Dump Header is recovered from the custom `C7_SDS_HEADER` Vorbis comment tag and copied through.
+/// The source's Dump Header is recovered from the custom `SDS_DUMP_HEADER` Vorbis comment tag and copied through.
 /// So the period, sample number, channel, and loop points all match the original.
 /// A FLAC without that tag is rejected rather than rebuilt from, since nothing but `compress_sds_to_b64()` ever writes one.
 /// The word width comes from the depth the header declares, not the FLAC's, which may have been padded up to one flacenc accepts.
@@ -642,8 +641,8 @@ pub fn decode_flac_b64_to_sds(blob: &str) -> Result<Vec<u8>, String> {
     let dump_header = format
         .metadata()
         .current()
-        .and_then(|rev| read_sds_header_vorbis_comment(&rev.media.tags))
-        .ok_or("FLAC: missing C7_SDS_HEADER tag")?;
+        .and_then(|rev| read_sds_dump_header_vorbis_comment(&rev.media.tags))
+        .ok_or("FLAC: missing SDS_DUMP_HEADER tag")?;
 
     let mut decoder = symphonia::default::get_codecs()
         .make_audio_decoder(&audio_params, &AudioDecoderOptions::default())
@@ -791,7 +790,7 @@ pub fn compress_sds_to_b64(sds_data: &[u8]) -> Result<String, String> {
     let mut stream =
         flacenc::encode_with_fixed_block_size(&cfg, source, cfg.block_size).map_err(|e| format!("flac encode failed: {e:?}"))?;
 
-    let vorbis_comment = build_sds_header_vorbis_comment(&dump_header);
+    let vorbis_comment = build_sds_dump_header_vorbis_comment(&dump_header);
     let block = MetadataBlockData::new_unknown(4, &vorbis_comment) // 4 = VORBIS_COMMENT
         .map_err(|e| format!("flac metadata block invalid: {e}"))?;
     stream.add_metadata_block(block);
@@ -959,8 +958,8 @@ pub fn decode_sds(data: &[u8]) -> Result<(Vec<i32>, u32, u8), String> {
 // Private helpers.
 // -----------------------------------------------------------------------------------------------------------
 
-/// Returns `true` if the raw message is an SDS dump header (`$01`).
-fn is_sds_header(raw: &[u8]) -> bool {
+/// Returns `true` if the raw message is an SDS Dump Header (`$01`).
+fn is_sds_dump_header(raw: &[u8]) -> bool {
     raw.len() > 4 && raw[1] == 0x7E && raw[3] == 0x01
 }
 
@@ -999,13 +998,21 @@ fn build_sample_name_message(dc: &DeviceConfig, slot: u8, ch: u8, custom_name: &
     build_elektron_sysex(dc.prod, 0x00, &payload)
 }
 
-/// Reads the `C7_SDS_HEADER` tag back out of a parsed `VorbisComment` block.
+/// Reads the `SDS_DUMP_HEADER` tag back out of a parsed `VorbisComment` block.
 ///
 /// Returns `None` if the tag is missing or isn't a valid Dump Header, which the caller treats as an error, not something to work around.
-fn read_sds_header_vorbis_comment(tags: &[symphonia::core::meta::Tag]) -> Option<Vec<u8>> {
-    let hex = tags.iter().find(|tag| tag.raw.key == "C7_SDS_HEADER")?.raw.value.to_string();
+fn read_sds_dump_header_vorbis_comment(tags: &[symphonia::core::meta::Tag]) -> Option<Vec<u8>> {
+    // Legacy C7 versions saved as `C7_SDS_HEADER`, rather than `SDS_DUMP_HEADER`.
+    //
+    // `C7_SDS_HEADER` is still accepted as the SDS Dump Header.
+    let hex = tags
+        .iter()
+        .find(|tag| tag.raw.key == "SDS_DUMP_HEADER" || tag.raw.key == "C7_SDS_HEADER")?
+        .raw
+        .value
+        .to_string();
     let header = from_hex(&hex)?;
-    is_sds_header(&header).then_some(header)
+    is_sds_dump_header(&header).then_some(header)
 }
 
 /// Encodes depth-native samples into SDS Data Packets, without a Dump Header.
@@ -1048,14 +1055,13 @@ fn encode_sds_packets(samples: &[i32], bits: u8, ch: u8) -> Vec<u8> {
     out
 }
 
-/// Builds a FLAC `VORBIS_COMMENT` metadata block body carrying the SDS Dump Header as C7's own tag (`C7_SDS_HEADER`), hex-encoded.
+/// Builds a FLAC `VORBIS_COMMENT` metadata block body carrying the SDS Dump Header as an `SDS_DUMP_HEADER` tag, hex-encoded.
 ///
 /// FLAC has no slot for a sample period, loop points, or a sample number, so this is the standard place to stash them.
-/// Vorbis comment names are one unregistered namespace shared with every other tagger, hence the `C7_` prefix.
 /// The symphonia crate parses `VorbisComment` blocks into readable tags automatically.
-fn build_sds_header_vorbis_comment(dump_header: &str) -> Vec<u8> {
+fn build_sds_dump_header_vorbis_comment(dump_header: &str) -> Vec<u8> {
     let vendor = b"C7";
-    let comment = format!("C7_SDS_HEADER={dump_header}");
+    let comment = format!("SDS_DUMP_HEADER={dump_header}");
 
     let mut out = Vec::new();
     out.extend_from_slice(&(vendor.len() as u32).to_le_bytes());
