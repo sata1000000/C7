@@ -29,9 +29,6 @@ The project is centered around controlling the [Elektron Monomachine](https://en
 1. Download a package from the [releases](https://github.com/sata1000000/C7/releases/) page.
 2. Open it.
 
-> [!WARNING]
-> C7 is in beta until October 15, 2026. Any `.c7` files created are not guaranteed to work when the project goes out of beta.
-
 ## Screenshots
 
 ![device_selector](./docs/images/device_selector.png)  
